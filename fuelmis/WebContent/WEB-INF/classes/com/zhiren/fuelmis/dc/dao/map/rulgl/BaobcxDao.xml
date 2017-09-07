@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiren.fuelmis.dc.dao.rulgl.BaobcxDao">
+	<select id="getRulhyd" resultType="java.util.LinkedHashMap">
+	select decode(m.rulrq,null,' ',m.rulrq) AS rulrq,
+	       decode(m.lursj,null,' ',m.lursj) AS lursj,
+	       decode(h.huaysj,null,' ', h.huaysj)as fenxrq,
+	       round(m.fadhy + m.gongrhy + m.feiscy, 2) as meihy, 
+	       decode(b.mingc,null,' ', b.mingc)banzmc,
+	       decode(j.mingc,null,' ',j.mingc) jizmc,
+	       decode(m.lury,null,' ',m.lury)lury,
+	       round_new(h.mt, 1) as MT,
+	       round_new(h.mad, 2) as MAD, 
+	       round_new(h.aad, 2) as AAD,
+	       round_new(h.aar, 2) as AAR,
+	       round_new(h.ad, 2) as AD,
+	       round_new(h.vad, 2) as VAD,
+	       round_new(h.vdaf, 2) as VDAF,
+	       round_new(h.stad, 2) as STAD,
+	       round_new(h.std, 2) as STD,
+	       round_new((100 - h.MT) * h.STAD / (100 - h.MAD), 2) AS STAR,
+	       round_new(h.had, 2) as HAD,
+	       round_new(h.har, 2) as HAR,
+	       round_new(h.qbad, 3) * 1000 as QBAD,
+	       round_new(h.qgrd, 3) * 1000 as QGRD,
+	       round_new(h.qgrad, 3) * 1000 as QGRAD,
+	       round_new(h.qgrad_daf, 3) * 1000 as GANZWHJGWRZ,
+	       round_new(h.qnet_ar, 3) * 1000 as QNETAR,
+	       round_new(round_new(h.qnet_ar, 3) * 7000 / 29.271, 0) as FRL
+	  from rl_rul_meihyb m,rl_hy_huaydb h ,rl_rul_banzb b,rl_rul_jizb j 
+	 where m.rulrq = '${riq}'
+	   and m.huayd_id = h.huayd_id(+)
+	   and m.rulbzb_id = b.id(+)
+	   and m.jizfzb_id = j.id(+)
+	   and m.jizfzb_id = j.id(+)
+<!-- 	  <if
+	 test = ' dianc!="" and dianc!=null ' >
+	   and h.dianc_id = ${dianc} </if> -->
+	  <if
+	 test = ' rulbz!="" and rulbz!="" ' >
+	   and m.rulbzb_id = ${rulbz} </if> 
+	   <if
+	 test = ' jiz!="" and jiz!="" ' >
+	   and m.jizfzb_id = ${jiz} </if>
+	</select>
+
+	<select id="getRuljzbb" resultType="java.util.Map">
+				select decode(grouping(d.mingc),1,'总计',1,d.mingc) as dianc,
+		decode(grouping(m.rulrq)+GROUPING(d.mingc),1,'合计',m.rulrq ) rlrq,
+    sum(m.fadhy+m.gongrhy+m.feiscy+m.qity) meil,
+		round_new(nvl(decode(sum(m.fadhy+m.gongrhy+m.feiscy+m.qity),0,0,sum((m.fadhy+m.gongrhy+m.feiscy+m.qity)*h.mt)/sum(m.fadhy+m.gongrhy+m.feiscy+m.qity)),0),1)
+		mt,
+		round_new(nvl(decode(sum(m.fadhy+m.gongrhy+m.feiscy+m.qity),0,0,sum((m.fadhy+m.gongrhy+m.feiscy+m.qity)*h.mad)/sum(m.fadhy+m.gongrhy+m.feiscy+m.qity)),0),2)
+		mad,
+		round_new(nvl(decode(sum(m.fadhy+m.gongrhy+m.feiscy+m.qity),0,0,sum((m.fadhy+m.gongrhy+m.feiscy+m.qity)*h.aad)/sum(m.fadhy+m.gongrhy+m.feiscy+m.qity)),0),2)
+		aad,
+		round_new(nvl(decode(sum(m.fadhy+m.gongrhy+m.feiscy+m.qity),0,0,sum((m.fadhy+m.gongrhy+m.feiscy+m.qity)*h.ad)/sum(m.fadhy+m.gongrhy+m.feiscy+m.qity)),0),2)
+		ad,
+		round_new(nvl(decode(sum(m.fadhy+m.gongrhy+m.feiscy+m.qity),0,0,sum((m.fadhy+m.gongrhy+m.feiscy+m.qity)*h.aar)/sum(m.fadhy+m.gongrhy+m.feiscy+m.qity)),0),2)
+		aar,
+		round_new(nvl(decode(sum(m.fadhy+m.gongrhy+m.feiscy+m.qity),0,0,sum((m.fadhy+m.gongrhy+m.feiscy+m.qity)*h.vad)/sum(m.fadhy+m.gongrhy+m.feiscy+m.qity)),0),2)
+		vad,
+		round_new(nvl(decode(sum(m.fadhy+m.gongrhy+m.feiscy+m.qity),0,0,sum((m.fadhy+m.gongrhy+m.feiscy+m.qity)*h.vdaf)/sum(m.fadhy+m.gongrhy+m.feiscy+m.qity)),0),2)
+		vdaf,
+		round_new(nvl(decode(sum(m.fadhy+m.gongrhy+m.feiscy+m.qity),0,0,sum((m.fadhy+m.gongrhy+m.feiscy+m.qity)*h.qbad)/sum(m.fadhy+m.gongrhy+m.feiscy+m.qity)),0),2)*1000
+		qbad,
+		round_new(nvl(decode(sum(m.fadhy+m.gongrhy+m.feiscy+m.qity),0,0,sum((m.fadhy+m.gongrhy+m.feiscy+m.qity)*h.qnet_ar)/sum(m.fadhy+m.gongrhy+m.feiscy+m.qity)),0),3)*1000
+		qnet_ar,
+		round_new(round_new(nvl(decode(sum(m.fadhy+m.gongrhy+m.feiscy+m.qity),0,0,sum((m.fadhy+m.gongrhy+m.feiscy+m.qity)*h.qnet_ar)/sum(m.fadhy+m.gongrhy+m.feiscy+m.qity)),0),3)*1000/4.1816,0)
+		qnet_ar1,
+		round_new(nvl(decode(sum(m.fadhy+m.gongrhy+m.feiscy+m.qity),0,0,sum((m.fadhy+m.gongrhy+m.feiscy+m.qity)*h.stad)/sum(m.fadhy+m.gongrhy+m.feiscy+m.qity)),0),2)
+		stad,
+		round_new(nvl(decode(sum(m.fadhy+m.gongrhy+m.feiscy+m.qity),0,0,sum((m.fadhy+m.gongrhy+m.feiscy+m.qity)*h.std)/sum(m.fadhy+m.gongrhy+m.feiscy+m.qity)),0),2)
+		std,
+		round_new((100 -
+		round_new(nvl(decode(sum(m.fadhy+m.gongrhy+m.feiscy+m.qity),0,0,sum((m.fadhy+m.gongrhy+m.feiscy+m.qity)*h.mt)/sum(m.fadhy+m.gongrhy+m.feiscy+m.qity)),0),1))
+		*round_new(nvl(decode(sum(m.fadhy+m.gongrhy+m.feiscy+m.qity),0,0,sum((m.fadhy+m.gongrhy+m.feiscy+m.qity)*h.stad)/sum(m.fadhy+m.gongrhy+m.feiscy+m.qity)),0),2)
+    / (100 -
+    round_new(nvl(decode(sum(m.fadhy+m.gongrhy+m.feiscy+m.qity),0,0,sum((m.fadhy+m.gongrhy+m.feiscy+m.qity)*h.mad)/sum(m.fadhy+m.gongrhy+m.feiscy+m.qity)),0),2)),
+    2) star,
+    round_new(nvl(decode(sum(m.fadhy+m.gongrhy+m.feiscy+m.qity),0,0,sum((m.fadhy+m.gongrhy+m.feiscy+m.qity)*h.hdaf)/sum(m.fadhy+m.gongrhy+m.feiscy+m.qity)),0),2)
+    hdaf,
+    round_new(nvl(decode(sum(m.fadhy+m.gongrhy+m.feiscy+m.qity),0,0,sum((m.fadhy+m.gongrhy+m.feiscy+m.qity)*h.had)/sum(m.fadhy+m.gongrhy+m.feiscy+m.qity)),0),2)
+    had,
+    round_new(nvl(decode(sum(m.fadhy+m.gongrhy+m.feiscy+m.qity),0,0,sum((m.fadhy+m.gongrhy+m.feiscy+m.qity)*h.fcad)/sum(m.fadhy+m.gongrhy+m.feiscy+m.qity)),0),2)
+    fcad 
+    from rl_hy_huaydb h ,diancxxb d ,rl_rul_meihyb m    
+    where  m.rulrq between '${sDate}' and '${eDate}' 
+      and d.id=h.dianc_id 
+      and m.huayd_id=h.huayd_id(+)
+    <if test=' dianc!="" and dianc!=null '>
+      and (d.id = 515 or d.fuid=515) 
+    </if>
+    
+    group by rollup((d.mingc),m.rulrq)
+    ORDER BY  GROUPING(d.mingc) DESC,
+    d.mingc,grouping(m.rulrq) desc,m.rulrq
+	</select>
+
+	<select id="getRuljztz" resultType="java.util.Map">
+	select 
+    decode(grouping(m.rulrq),1,'合计',m.rulrq) rlrq,b.mingc banz,
+    decode(grouping(m.rulrq)+grouping(b.mingc)+grouping(j.mingc),2,'合计',2,'',3,'',j.mingc)as jiz ,
+		h.huaysj fenxrq,
+		sum(m.fadhy+m.gongrhy+m.feiscy+m.qity) meil,
+		round_new(nvl(decode(sum(decode(nvl(qnet_ar,0),0,0,m.fadhy+m.gongrhy+m.feiscy+m.qity)),0,0,sum((m.fadhy+m.gongrhy+m.feiscy+m.qity)*h.mt)/sum(decode(nvl(qnet_ar,0),0,0,m.fadhy+m.gongrhy+m.feiscy+m.qity))),0),1)
+		mt,
+		round_new(nvl(decode(sum(decode(nvl(qnet_ar,0),0,0,m.fadhy+m.gongrhy+m.feiscy+m.qity)),0,0,sum((m.fadhy+m.gongrhy+m.feiscy+m.qity)*h.mad)/sum(decode(nvl(qnet_ar,0),0,0,m.fadhy+m.gongrhy+m.feiscy+m.qity))),0),2)
+		mad,
+		round_new(nvl(decode(sum(decode(nvl(qnet_ar,0),0,0,m.fadhy+m.gongrhy+m.feiscy+m.qity)),0,0,sum((m.fadhy+m.gongrhy+m.feiscy+m.qity)*h.aad)/sum(decode(nvl(qnet_ar,0),0,0,m.fadhy+m.gongrhy+m.feiscy+m.qity))),0),2)
+		aad,
+		round_new(nvl(decode(sum(decode(nvl(qnet_ar,0),0,0,m.fadhy+m.gongrhy+m.feiscy+m.qity)),0,0,sum((m.fadhy+m.gongrhy+m.feiscy+m.qity)*h.ad)/sum(decode(nvl(qnet_ar,0),0,0,m.fadhy+m.gongrhy+m.feiscy+m.qity))),0),2)
+		ad,
+		round_new(nvl(decode(sum(decode(nvl(qnet_ar,0),0,0,m.fadhy+m.gongrhy+m.feiscy+m.qity)),0,0,sum((m.fadhy+m.gongrhy+m.feiscy+m.qity)*h.aar)/sum(decode(nvl(qnet_ar,0),0,0,m.fadhy+m.gongrhy+m.feiscy+m.qity))),0),2)
+		aar,
+		round_new(nvl(decode(sum(decode(nvl(qnet_ar,0),0,0,m.fadhy+m.gongrhy+m.feiscy+m.qity)),0,0,sum((m.fadhy+m.gongrhy+m.feiscy+m.qity)*h.vad)/sum(decode(nvl(qnet_ar,0),0,0,m.fadhy+m.gongrhy+m.feiscy+m.qity))),0),2)
+		vad,
+		round_new(nvl(decode(sum(decode(nvl(qnet_ar,0),0,0,m.fadhy+m.gongrhy+m.feiscy+m.qity)),0,0,sum((m.fadhy+m.gongrhy+m.feiscy+m.qity)*h.vdaf)/sum(decode(nvl(qnet_ar,0),0,0,m.fadhy+m.gongrhy+m.feiscy+m.qity))),0),2)
+		vdaf,
+		round_new(nvl(decode(sum(decode(nvl(qnet_ar,0),0,0,m.fadhy+m.gongrhy+m.feiscy+m.qity)),0,0,sum((m.fadhy+m.gongrhy+m.feiscy+m.qity)*h.var)/sum(decode(nvl(qnet_ar,0),0,0,m.fadhy+m.gongrhy+m.feiscy+m.qity))),0),2)
+		var,
+		round_new(nvl(decode(sum(decode(nvl(qnet_ar,0),0,0,m.fadhy+m.gongrhy+m.feiscy+m.qity)),0,0,sum((m.fadhy+m.gongrhy+m.feiscy+m.qity)*h.qbad)/sum(decode(nvl(qnet_ar,0),0,0,m.fadhy+m.gongrhy+m.feiscy+m.qity))),0),2)*1000
+		qbad,
+		round_new(nvl(decode(sum(decode(nvl(qnet_ar,0),0,0,m.fadhy+m.gongrhy+m.feiscy+m.qity)),0,0,sum((m.fadhy+m.gongrhy+m.feiscy+m.qity)*h.qnet_ar)/sum(decode(nvl(qnet_ar,0),0,0,m.fadhy+m.gongrhy+m.feiscy+m.qity))),0),3)*1000
+		qnet_ar,
+		round_new(round_new(nvl(decode(sum(decode(nvl(qnet_ar,0),0,0,m.fadhy+m.gongrhy+m.feiscy+m.qity)),0,0,sum((m.fadhy+m.gongrhy+m.feiscy+m.qity)*h.qnet_ar)/sum(decode(nvl(qnet_ar,0),0,0,m.fadhy+m.gongrhy+m.feiscy+m.qity))),0),3)*1000/4.1816,0)
+		qnet_ar1,
+		round_new(nvl(decode(sum(decode(nvl(qnet_ar,0),0,0,m.fadhy+m.gongrhy+m.feiscy+m.qity)),0,0,sum((m.fadhy+m.gongrhy+m.feiscy+m.qity)*h.stad)/sum(decode(nvl(qnet_ar,0),0,0,m.fadhy+m.gongrhy+m.feiscy+m.qity))),0),2)
+		stad,
+		round_new(nvl(decode(sum(decode(nvl(qnet_ar,0),0,0,m.fadhy+m.gongrhy+m.feiscy+m.qity)),0,0,sum((m.fadhy+m.gongrhy+m.feiscy+m.qity)*h.std)/sum(decode(nvl(qnet_ar,0),0,0,m.fadhy+m.gongrhy+m.feiscy+m.qity))),0),2)
+		std,
+		ROUND_NEW((100 -
+		round_new(nvl(decode(sum(decode(nvl(qnet_ar,0),0,0,decode(m.fadhy+m.gongrhy+m.feiscy+m.qity,0,0,m.fadhy+m.gongrhy+m.feiscy+m.qity))),0,0,sum((m.fadhy+m.gongrhy+m.feiscy+m.qity)*h.mt)/sum(decode(nvl(qnet_ar,0),0,0,decode(m.fadhy+m.gongrhy+m.feiscy+m.qity,0,0,m.fadhy+m.gongrhy+m.feiscy+m.qity)))),0),1))
+		*round_new(nvl(decode(sum(decode(nvl(qnet_ar,0),0,0,decode(m.fadhy+m.gongrhy+m.feiscy+m.qity,0,0,m.fadhy+m.gongrhy+m.feiscy+m.qity))),0,0,sum((m.fadhy+m.gongrhy+m.feiscy+m.qity)*h.stad)/sum(decode(nvl(qnet_ar,0),0,0,decode(m.fadhy+m.gongrhy+m.feiscy+m.qity,0,0,m.fadhy+m.gongrhy+m.feiscy+m.qity)))),0),2)
+		/ (100 -
+		round_new(nvl(decode(sum(decode(nvl(qnet_ar,0),0,0,decode(m.fadhy+m.gongrhy+m.feiscy+m.qity,0,0,m.fadhy+m.gongrhy+m.feiscy+m.qity))),0,0,sum((m.fadhy+m.gongrhy+m.feiscy+m.qity)*h.mad)/sum(decode(nvl(qnet_ar,0),0,0,decode(m.fadhy+m.gongrhy+m.feiscy+m.qity,0,0,m.fadhy+m.gongrhy+m.feiscy+m.qity)))),0),2)),
+		2) STAR,
+		round_new(nvl(decode(sum(decode(nvl(qnet_ar,0),0,0,m.fadhy+m.gongrhy+m.feiscy+m.qity)),0,0,sum((m.fadhy+m.gongrhy+m.feiscy+m.qity)*h.hdaf)/sum(decode(nvl(qnet_ar,0),0,0,m.fadhy+m.gongrhy+m.feiscy+m.qity))),0),2)
+		hdaf,
+		round_new(nvl(decode(sum(decode(nvl(qnet_ar,0),0,0,m.fadhy+m.gongrhy+m.feiscy+m.qity)),0,0,sum((m.fadhy+m.gongrhy+m.feiscy+m.qity)*h.had)/sum(decode(nvl(qnet_ar,0),0,0,m.fadhy+m.gongrhy+m.feiscy+m.qity))),0),2)
+		had,
+		round_new(nvl(decode(sum(decode(nvl(qnet_ar,0),0,0,m.fadhy+m.gongrhy+m.feiscy+m.qity)),0,0,sum((m.fadhy+m.gongrhy+m.feiscy+m.qity)*h.fcad)/sum(decode(nvl(qnet_ar,0),0,0,m.fadhy+m.gongrhy+m.feiscy+m.qity))),0),2)
+		fcad,
+		
+		round_new(nvl(decode(sum(decode(nvl(QGRAD,0),0,0,m.fadhy+m.gongrhy+m.feiscy+m.qity)),0,0,sum((m.fadhy+m.gongrhy+m.feiscy+m.qity)*h.QGRAD)/sum(decode(nvl(QGRAD,0),0,0,m.fadhy+m.gongrhy+m.feiscy+m.qity))),0),2) QGRAD,
+	    round_new(nvl(decode(sum(decode(nvl(QGRAD_DAF,0),0,0,m.fadhy+m.gongrhy+m.feiscy+m.qity)),0,0,sum((m.fadhy+m.gongrhy+m.feiscy+m.qity)*h.QGRAD_DAF)/sum(decode(nvl(QGRAD_DAF,0),0,0,m.fadhy+m.gongrhy+m.feiscy+m.qity))),0),2) QGRAD_DAF,
+	    round_new(nvl(decode(sum(decode(nvl(SDAF,0),0,0,m.fadhy+m.gongrhy+m.feiscy+m.qity)),0,0,sum((m.fadhy+m.gongrhy+m.feiscy+m.qity)*h.SDAF)/sum(decode(nvl(SDAF,0),0,0,m.fadhy+m.gongrhy+m.feiscy+m.qity))),0),2) SDAF,
+	    round_new(nvl(decode(sum(decode(nvl(HAR,0),0,0,m.fadhy+m.gongrhy+m.feiscy+m.qity)),0,0,sum((m.fadhy+m.gongrhy+m.feiscy+m.qity)*h.HAR)/sum(decode(nvl(HAR,0),0,0,m.fadhy+m.gongrhy+m.feiscy+m.qity))),0),2) HAR,    
+	    round_new(nvl(decode(sum(decode(nvl(QGRD,0),0,0,m.fadhy+m.gongrhy+m.feiscy+m.qity)),0,0,sum((m.fadhy+m.gongrhy+m.feiscy+m.qity)*h.QGRD)/sum(decode(nvl(QGRD,0),0,0,m.fadhy+m.gongrhy+m.feiscy+m.qity))),0),2) QGRD,        
+	    
+		
+		decode(grouping(m.rulrq)+grouping(b.mingc)+grouping(j.mingc),0,max(h.huaybm),'')  huaybh
+    
+		from rl_rul_meihyb m,rl_hy_huaydb h,diancxxb d,rl_rul_banzb b,rl_rul_jizb j    
+	    where m.huayd_id = h.huayd_id(+)
+	      and m.diancxxb_id = d.id(+)
+	      and m.rulbzb_id = b.id(+)
+	      and m.jizfzb_id = j.id(+)	 
+          and m.rulrq between '${sDate}' and '${eDate}' 
+		<if test=' dianc!="" and dianc!=null '>
+			and (d.id = 515 or d.fuid=515)
+		</if>
+		group by rollup(m.rulrq,b.mingc,j.mingc,h.huaysj  ,b.xuh  ) 
+    	having grouping(b.mingc)+grouping(j.mingc)+grouping(h.huaysj)+grouping(b.xuh) = 0
+      		or grouping(b.mingc)+grouping(j.mingc)+grouping(h.huaysj)+grouping(b.xuh) = 4
+    	order by grouping(m.rulrq)desc,m.rulrq,grouping(b.mingc)desc,b.xuh 
+	</select>
+	<select id="getRucrlrzc" resultType="java.util.LinkedHashMap">
+ select riq, nvl(laimsl,0) laimsl,
+		nvl(qnet_ar,0) qnet_ar,
+		nvl(round_new(qnet_ar/0.0041816,0)  ,0)  qnet_ar1,
+		nvl(mt ,0)mt,nvl(std ,0)std,nvl(stad ,0)stad,nvl(ad ,0)ad,nvl(vdaf ,0)vdaf,
+		nvl(meil ,0)meil,
+		nvl(qnet_arl ,0)qnet_arl,
+		nvl(round_new(qnet_arl/0.0041816,0) ,0) qnet_arl1,
+		nvl(mtl ,0)mtl,nvl(stdl ,0)stdl,nvl(stadl ,0) stadl,nvl(ad1 ,0) ad1,nvl(vdaf1 ,0) vdaf1,
+		nvl(qnet_ar- qnet_arl,0)  rzc,
+		nvl(round_new(qnet_ar/0.0041816,0)-round_new(qnet_arl/0.0041816,0)  ,0 ) rzc1
+		from
+		(select decode(grouping(substr(q.qingcsj,0,10)),1,'合计',substr(q.qingcsj,0,10)) daohrq,
+			sum(round(c.maoz-c.piz-c.kouz,2))laimsl,round_new(sum(round(h.qnet_ar,2)*round(c.maoz-c.piz-c.zongkd,2))/sum(round(c.maoz-c.piz-c.zongkd,2)),2)qnet_ar,
+			round_new(sum(h.mt*round(c.maoz-c.piz-c.zongkd,2))/sum(round(c.maoz-c.piz-c.zongkd,2)),1)mt,
+			round_new(sum(h.star*round(c.maoz-c.piz-c.zongkd,2))/sum(round(c.maoz-c.piz-c.zongkd,2)),2)star,
+			round_new(sum(h.std*round(c.maoz-c.piz-c.zongkd,2))/sum(round(c.maoz-c.piz-c.zongkd,2)),2)std,
+			round_new(sum(h.stad*round(c.maoz-c.piz-c.zongkd,2))/sum(round(c.maoz-c.piz-c.zongkd,2)),2)stad,
+			round_new(sum(h.ad*round(c.maoz-c.piz-c.zongkd,2))/sum(round(c.maoz-c.piz-c.zongkd,2)),2)ad,
+			round_new(sum(h.aar*round(c.maoz-c.piz-c.zongkd,2))/sum(round(c.maoz-c.piz-c.zongkd,2)),2)aar,
+			round_new(sum(h.vdaf*round(c.maoz-c.piz-c.zongkd,2))/sum(round(c.maoz-c.piz-c.zongkd,2)),2)vdaf
+    
+		from rl_ys_chepb c
+			left join rl_ys_chepb_qc q
+			on c.id = q.chepb_id
+			left join (select * from gx_chep_caizhbmb where zhuanhlb_id = 1) gx1
+			on c.samcode = gx1.yuanbm
+			left join (select * from gx_chep_caizhbmb where zhuanhlb_id = 2) gx2
+			on gx1.mubbm = gx2.yuanbm
+			left join rl_hy_huaydb h
+			on gx2.mubbm = h.huaybm
+			
+		where c.maoz-c.piz-c.zongkd <![CDATA[<>]]>0 
+		and substr(q.qingcsj,0,10) between '${sDate}' and '${eDate}' 
+		
+		group by rollup(substr(q.qingcsj,0,10))
+		)rucm ,
+		(select  decode(grouping(m.rulrq),1,'合计',m.rulrq) rulrq,
+			sum(round(m.fadhy+m.gongrhy+m.feiscy+m.qity,2))meil,
+			round_new(decode(sum(round(decode(nvl(h.qnet_ar,0),0,0,m.fadhy+m.gongrhy+m.feiscy+m.qity),2)),0,0,sum(round(h.qnet_ar,2)*round(m.fadhy+m.gongrhy+m.feiscy+m.qity,2))/sum(round(decode(nvl(h.qnet_ar,0),0,0,m.fadhy+m.gongrhy+m.feiscy+m.qity),2))),2)qnet_arl,
+			round_new(decode(sum(round(decode(nvl(h.mt,0),0,0,m.fadhy+m.gongrhy+m.feiscy+m.qity),2)),0,0,sum(h.mt*round(m.fadhy+m.gongrhy+m.feiscy+m.qity,2))/sum(round(decode(nvl(h.mt,0),0,0,m.fadhy+m.gongrhy+m.feiscy+m.qity),2))),1)mtl,
+			round_new(decode(sum(round(decode(nvl(((100-h.mt)*h.stad/(100-h.mad)),0),0,0,m.fadhy+m.gongrhy+m.feiscy+m.qity),2)),0,0,sum(((100-h.mt)*h.stad/(100-h.mad))*round(m.fadhy+m.gongrhy+m.feiscy+m.qity,2))/sum(round(decode(nvl(((100-h.mt)*h.stad/(100-h.mad)),0),0,0,m.fadhy+m.gongrhy+m.feiscy+m.qity),2))),2) star1,
+			round_new(decode(sum(round(decode(nvl(h.aar,0),0,0,m.fadhy+m.gongrhy+m.feiscy+m.qity),2)),0,0,sum(h.aar*round(m.fadhy+m.gongrhy+m.feiscy+m.qity,2))/sum(round(decode(nvl(h.aar,0),0,0,m.fadhy+m.gongrhy+m.feiscy+m.qity),2))),2)aar1,
+			round_new(decode(sum(round(decode(nvl(h.std,0),0,0,m.fadhy+m.gongrhy+m.feiscy+m.qity),2)),0,0,sum(h.std*round(m.fadhy+m.gongrhy+m.feiscy+m.qity,2))/sum(round(decode(nvl(h.std,0),0,0,m.fadhy+m.gongrhy+m.feiscy+m.qity),2))),2)stdl,
+			round_new(decode(sum(round(decode(nvl(h.stad,0),0,0,m.fadhy+m.gongrhy+m.feiscy+m.qity),2)),0,0,sum(h.stad*round(m.fadhy+m.gongrhy+m.feiscy+m.qity,2))/sum(round(decode(nvl(h.stad,0),0,0,m.fadhy+m.gongrhy+m.feiscy+m.qity),2))),2)stadl,
+			round_new(decode(sum(round(decode(nvl(h.ad,0),0,0,m.fadhy+m.gongrhy+m.feiscy+m.qity),2)),0,0,sum(h.ad*round(m.fadhy+m.gongrhy+m.feiscy+m.qity,2))/sum(round(decode(nvl(h.ad,0),0,0,m.fadhy+m.gongrhy+m.feiscy+m.qity),2))),2)ad1,
+			round_new(decode(sum(round(decode(nvl(h.vdaf,0),0,0,m.fadhy+m.gongrhy+m.feiscy+m.qity),2)),0,0,sum(h.vdaf*round(m.fadhy+m.gongrhy+m.feiscy+m.qity,2))/sum(round(decode(nvl(h.vdaf,0),0,0,m.fadhy+m.gongrhy+m.feiscy+m.qity),2))),2)vdaf1
+			
+    from rl_rul_meihyb m left join  rl_hy_huaydb h   on m.huayd_id=h.huayd_id
+    
+		where   m.fadhy+m.gongrhy+m.feiscy+m.qity <![CDATA[<>]]> 0
+	    and m.rulrq between '${sDate}' and '${eDate}' 
+    
+		group by rollup(m.rulrq)
+		)rulm,
+		(SELECT to_char((TO_DATE('${sDate}', 'yyyy-mm-dd') - 1 + ROWNUM),'yyyy-mm-dd') RIQ
+		FROM DUAL
+		CONNECT BY ROWNUM <![CDATA[<=]]> (TO_DATE('${eDate}', 'yyyy-mm-dd') - TO_DATE('${sDate}', 'yyyy-mm-dd') + 1)
+		union
+		(select '合计' from dual)
+		)biaot
+		where biaot.riq=rucm.daohrq(+) and biaot.riq=rulm.rulrq(+)
+		order by decode(riq,'合计',0,1),riq
+	</select>
+	<select id="getSIS_shujcx" resultType="java.util.LinkedHashMap">
+	    select to_char(time,'yyyy-mm-dd hh24:mi:ss') time,weizh,meil from fenjzhmb
+ 		where to_char(time,'yyyy-mm-dd') = #{riq}
+	</select>
+</mapper>

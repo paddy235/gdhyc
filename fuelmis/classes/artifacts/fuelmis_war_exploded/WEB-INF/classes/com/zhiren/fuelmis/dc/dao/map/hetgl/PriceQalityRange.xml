@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiren.fuelmis.dc.dao.hetgl.PriceQalityRangeDao" >
+	<resultMap id="BaseResultMap" type="priceQalityRange">
+		<id column="ID"              property="id" jdbcType="NUMERIC" />
+		<result column="PO_SUB_ID"    	 property="po_sub_id" jdbcType="NUMERIC" />		
+		<result column="PRICE_COMPONENT_ID" 	 	 property="price_component_id" jdbcType="NUMERIC" />
+		<result column="QUALITY_ITEM_ID" property="quality_item_id" jdbcType="NUMERIC"/>		
+		<result column="RANGE_MIN" property="range_min" jdbcType="NUMERIC"/>
+		<result column="RANGE_MAX" property="range_max" jdbcType="NUMERIC"/>
+		<result column="UNITPRICE" property="unitprice" jdbcType="NUMERIC"/>
+		<result column="STATUS"   	 property="status" jdbcType="NUMERIC" />
+		<result column="DIANCXXB_ID" property="diancxxb_id" jdbcType="NUMERIC"/>
+		<result column="CREATED_BY_USERID"    	 property="created_by_userid" jdbcType="NUMERIC" />
+		<result column="CREATED_BY_USERACC"    property="created_by_useracc" jdbcType="VARCHAR" />
+		<result column="CREATED_BY_USERNAME"    property="created_by_username" jdbcType="VARCHAR" />
+		<result column="CREATION_DATE"     property="creation_date" jdbcType="VARCHAR" />
+		<result column="LAST_UPDATED_BY_USERID"    	 property="last_updated_by_userid" jdbcType="NUMERIC" />
+		<result column="LAST_UPDATED_BY_USERACC"    property="last_updated_by_useracc" jdbcType="VARCHAR" />
+		<result column="LAST_UPDATED_BY_USERNAME"    property="last_updated_by_username" jdbcType="VARCHAR" />
+		<result column="LAST_UPDATE_DATE"    property="last_update_date" jdbcType="VARCHAR" />	
+	</resultMap>
+
+	<delete id="delPriceQalityRange" parameterType="java.util.Map">
+		delete from RL_HT_PRICE_QALITYRANGE where id = #{id}
+	</delete>
+	
+	<select id="getPriceQalityRangeById" resultMap="BaseResultMap">
+		select * from RL_HT_PRICE_QALITYRANGE
+		<if test="id != null">
+			where id = #{id}
+		</if>
+	</select>
+	
+	
+	<select id="getPriceQalityRangeByComponentId" resultMap="BaseResultMap">
+		select * from RL_HT_PRICE_QALITYRANGE
+		<if test="id != null">
+			where price_component_id = #{id}
+		</if>
+	</select>
+	
+
+	<select id="getPriceQalityRangeList" resultType="java.util.Map">		  
+	 select id,
+		       po_sub_id,
+		       price_component_id,
+		       quality_item_id,
+		       range_min,
+		       range_max,
+		       unitprice,
+		       created_by_useracc,
+		       created_by_username,
+		       creation_date,
+		       last_updated_by_userid,
+		       last_updated_by_useracc,
+		       last_updated_by_username,
+		       last_update_date,
+		       diancxxb_id,
+		        decode(status,1,'启用',0,'未启用') as status,
+		       created_by_userid
+	  from rl_ht_price_qalityrange
+	</select>
+	
+
+	<update id="updatePriceQalityRange" parameterType="priceQalityRange">
+         update RL_HT_PRICE_QALITYRANGE
+         	<trim prefix="SET" suffixOverrides=",">
+         		<if test="po_sub_id != null">po_sub_id=#{po_sub_id},</if>
+				<if test="price_component_id != null">price_component_id=#{price_component_id},</if>
+				<if test="quality_item_id != null">quality_item_id=#{quality_item_id},</if>
+				<if test="range_min != null">range_min=#{range_min},</if>
+				<if test="range_max != null">range_max=#{range_max},</if>
+				<if test="unitprice != null">unitprice=#{unitprice},</if>
+				<if test="diancxxb_id != null">DIANCXXB_ID=#{diancxxb_id},</if>				
+				<if test="created_by_userid != null">created_by_userid=#{created_by_userid},</if>
+				<if test="created_by_useracc != null">created_by_useracc=#{created_by_useracc},</if>				
+				<if test="created_by_username != null">created_by_username=#{created_by_username},</if>
+				<if test="creation_date != null">creation_date=#{creation_date},</if>
+				<if test="last_updated_by_userid != null">last_updated_by_userid=#{last_updated_by_userid},</if>				
+				<if test="last_updated_by_useracc != null">last_updated_by_useracc=#{last_updated_by_useracc},</if>	
+				<if test="last_updated_by_username != null">last_updated_by_username=#{last_updated_by_username},</if>
+				<if test="last_update_date != null">last_update_date=#{last_update_date}</if>
+		</trim>     
+           where ID = #{id}
+	</update>
+	
+	<insert id="addPriceQalityRange" parameterType="priceQalityRange">
+		insert into RL_HT_PRICE_QALITYRANGE
+			  (id,
+			   po_sub_id,
+			   price_component_id,
+			   quality_item_id,
+			   range_min,
+			   range_max,
+			   unitprice,
+			   status,
+			   created_by_userid,
+			   created_by_useracc,
+			   created_by_username,
+			   creation_date,
+			   last_updated_by_userid,
+			   last_updated_by_useracc,
+			   last_updated_by_username,
+			   last_update_date,
+			   diancxxb_id)
+		values
+			  (#{id,jdbcType=NUMERIC},
+			   #{po_sub_id,jdbcType=NUMERIC},
+			   #{price_component_id,jdbcType=NUMERIC},
+			   #{quality_item_id,jdbcType=NUMERIC},
+			   #{range_min,jdbcType=NUMERIC},
+			   #{range_max,jdbcType=NUMERIC},
+			   #{unitprice,jdbcType=NUMERIC},
+			   #{status,jdbcType=NUMERIC},
+			   #{created_by_userid,jdbcType=NUMERIC},
+			   #{created_by_useracc,jdbcType=VARCHAR},
+			   #{created_by_username,jdbcType=NUMERIC},
+			   #{creation_date,jdbcType=VARCHAR},
+			   #{last_updated_by_userid,jdbcType=NUMERIC},
+			   #{last_updated_by_useracc,jdbcType=VARCHAR},
+			   #{last_updated_by_username,jdbcType=VARCHAR},
+			   #{last_update_date,jdbcType=VARCHAR},
+			   #{diancxxb_id,jdbcType=NUMERIC})
+	</insert>
+	
+	
+</mapper>

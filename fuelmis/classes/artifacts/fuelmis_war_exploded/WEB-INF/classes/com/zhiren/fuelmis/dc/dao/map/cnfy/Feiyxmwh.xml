@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiren.fuelmis.dc.dao.cnfy.FeiyxmwhDao" >
+	<select id="getAllData"  resultType="java.util.HashMap">
+		SELECT  ROWNUM,
+				CF.ID      AS ID,
+		        CF.BIANM   AS BIANM,
+		        FL.MINGC AS FYXMFLMC,
+		        CF.MINGC   AS MINGC,
+		        CF.GUANLFL AS GUANLFL,
+		        CF.CAIWFL  AS CAIWUFL,
+		        CF.DANW AS DANW,
+		        DECODE(CF.ZHUANGT,1,'启用','未启用') AS ZHUANGT,
+		        CF.SHUOM   AS SHUOM,
+		        SX.MINGC   AS FEIYXMSX
+				FROM RL_CNFY_CHANGNFYXM CF,RL_CNFY_FEIYXMSX SX,RL_CNFY_FEIYXMFL FL
+				WHERE  CF.FEIYXMFL_ID = FL.ID
+				AND CF.FEIYXMSX_ID = SX.ID
+				<!-- ORDER BY CF.BIANM -->
+				order by rownum
+	</select>
+	<select id="getMaxBianm"  resultType="java.lang.String">
+			select max(bianm) from RL_CNFY_CHANGNFYXM
+	</select>
+	<insert id="addfeiyxmwhData"  useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO RL_CNFY_CHANGNFYXM(	  ID,
+								  bianm,
+								  feiyxmsx_id,
+								  mingc,
+								  shuom,
+								  DANW,
+								  caiwfl,
+								  guanlfl,
+								  feiyxmfl_id,
+								  zhuangt)
+								VALUES(XL_CHANGNZF_ID.NEXTVAL,
+								'${BIANM}',
+								${FEIYXMSX},
+								'${MINGC}',
+								'${SHUOM}',
+								'${DANW}',
+								'${CAIWFL}',
+								'${GUANLFL}',
+								 ${FEIYXMFLID},
+								 1)
+	</insert>
+	
+	<select id="getFeiyxmwhById"  resultType="java.util.HashMap">
+			select    ID,
+					  feiyxmsx_id,
+					  mingc,
+					  shuom,
+					  DANW,
+					  caiwfl,
+					  guanlfl,
+					  feiyxmfl_id
+  				 from RL_CNFY_CHANGNFYXM where id = #{id}
+	</select>
+	<update id="updateFeiyxmwh" flushCache="true">  
+        UPDATE RL_CNFY_CHANGNFYXM SET   MINGC = '${MINGC}',
+						   SHUOM = '${SHUOM}',
+						   DANW = '${DANW}',
+						   caiwfl = '${CAIWFL}',
+						   guanlfl = '${GUANLFL}',
+						   feiyxmfl_id = ${FEIYXMFLID},
+						   feiyxmsx_id = ${FEIYXMSX}
+						   WHERE ID = ${ID}
+    </update>
+    
+    <select id="getState"  resultType="java.lang.Integer">
+			select zhuangt from RL_CNFY_CHANGNFYXM where id = #{id}
+	</select>
+    <update id="changeState" flushCache="true">  
+        UPDATE RL_CNFY_CHANGNFYXM SET  ZHUANGT = #{zhuangt} WHERE ID = #{id}
+    </update>
+</mapper>

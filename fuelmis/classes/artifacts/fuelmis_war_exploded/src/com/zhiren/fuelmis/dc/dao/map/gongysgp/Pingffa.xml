@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.zhiren.fuelmis.dc.dao.gongyspg.pingffa.PingffaDao">
+	<resultMap id="BaseResultMap" type="pingffa">
+		<id column="ID" property="id" jdbcType="NUMERIC" />
+		<result column="DIANCXXB_ID" property="diancxxb_id" jdbcType="NUMERIC" />
+		<result column="GONGYSB_ID" property="gongysb_id" jdbcType="NUMERIC" />
+		<result column="QISRQ" property="qisrq" jdbcType="VARCHAR" />
+		<result column="JIEZRQ" property="jiezrq" jdbcType="VARCHAR" />
+		<result column="MINGC" property="mingc" jdbcType="VARCHAR" />
+		<result column="ZHUANGT" property="zhuangt" jdbcType="NUMERIC" />
+		<result column="JIHKJ_ID" property="jihkj_id" jdbcType="NUMERIC" />		
+		<result column="PINGFZT" property="pingfzt" jdbcType="VARCHAR" />
+		<result column="SHANGCZT" property="shangczt" jdbcType="VARCHAR" />
+		<result column="FUJMC" property="fujmc" jdbcType="VARCHAR" />
+		
+	</resultMap>
+
+	<insert id="addPingffa" parameterType="pingffa">
+         insert into rl_gys_pingffab
+		  (id, gongysb_id, zhuangt, qisrq, jiezrq, mingc, jihkj_id, pingfzt, shangczt, fujmc,diancxxb_id)
+		values
+		  (SEQ_Pingffab.NEXTVAL, #{gongysb_id,jdbcType=NUMERIC}, #{zhuangt,jdbcType=NUMERIC}, #{qisrq,jdbcType=VARCHAR}, #{jiezrq,jdbcType=VARCHAR}, 
+		   #{mingc,jdbcType=VARCHAR},#{jihkj_id,jdbcType=NUMERIC},#{pingfzt,jdbcType=VARCHAR}, #{shangczt,jdbcType=VARCHAR},#{fujmc,jdbcType=VARCHAR},
+		   #{diancxxb_id,jdbcType=NUMERIC})
+                
+	</insert>
+	
+	<sql id="Base_Column_List">
+		ID, GONGYSB_ID, ZHUANGT, QISRQ, JIEZRQ, MINGC, JIHKJ_ID, PINGFZT, SHANGCZT, FUJMC,DIANCXXB_ID
+	</sql>
+	
+	<select id="getPingffaById" resultMap="BaseResultMap">
+		select <include refid="Base_Column_List"></include> from rl_gys_pingffab
+		<if test="id != null">
+			where id = #{id}
+		</if>
+	</select>
+	
+	
+	
+	<select id="getPingffaList" resultType="java.util.LinkedHashMap">
+		 select a.ID,
+		       a.GONGYSB_ID,
+		       decode(a.ZHUANGT, '1', '启用', '0', '停用') as zhuangt,
+		       a.QISRQ,
+		       a.JIEZRQ,
+		       a.MINGC,
+		       b.mingc as JIHKJ_ID,
+		       a.PINGFZT,
+		       decode(a.SHANGCZT, '1', '已上传', '0', '未上传') as shangczt,
+		       FUJMC
+		  from rl_gys_pingffab a
+		  left join jihkjb b
+		    on a.jihkj_id = b.id
+	</select>
+	
+	
+	<delete id="delPingffa" parameterType="java.util.Map">
+	    delete from rl_gys_pingffab where ID = #{id}
+	</delete>
+	
+	
+	<update id="updatePingffa" parameterType="pingffa">
+	    update rl_gys_pingffab 
+	    <trim prefix="SET" suffixOverrides=",">
+			<if test="gongysb_id != null">GONGYSB_ID=#{gongysb_id},</if>
+			<if test="zhuangt != null">ZHUANGT=#{zhuangt},</if>
+			<if test="qisrq != null">QISRQ=#{qisrq},</if>
+			<if test="jiezrq != null">JIEZRQ=#{jiezrq},</if>
+			<if test="mingc != null">MINGC=#{mingc},</if>
+			<if test="jihkj_id != null">JIHKJ_ID=#{jihkj_id},</if>
+			<if test="pingfzt != null">PINGFZT=#{pingfzt},</if>
+			<if test="shangczt != null">SHANGCZT=#{shangczt},</if>
+			<if test="fujmc != null">FUJMC=#{fujmc},</if>
+		</trim>
+		where ID=#{id}
+	</update>
+	
+	
+</mapper>

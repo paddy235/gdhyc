@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiren.fuelmis.dc.dao.ruchy.ShenhDao">
+    <delete id="deleteRijiesd">
+        delete rl_js_rijsdb where id=#{0}
+    </delete>
+    <delete id="deleteGX_JIESDB_CHEPB">
+        delete gx_jiesdb_chepb where jiesdb_id=#{0}
+    </delete>
+    <select id="getJiesxxList" resultType="java.util.Map">
+		select*from vm_all where huaybm=#{huaybm}
+	</select>
+    <select id="getHuayd" resultType="java.util.Map">
+	select * from(
+		select t.* ,ROWNUM r  from (
+			select distinct
+				HUAYBM,huayd_id id,round_new(QNET_AR*1000/4.1816,0) QNET_AR_K,HUAYD_ID,HUAYSJ,HUAYY,LURY,BEIZ,rl.CAOZRY,AAR,AD,VDAF,MT,
+				STAD,AAD,MAD,QBAD,HAD,VAD,FCAD,
+				STD,QGRAD,HDAF,
+				QGRAD_DAF,SDAF,VAR,T1,T2,T3,T4,HAR,QGRD,STAR,round_new(QNET_AR,2) QNET_AR,rl.ZHUANGT,DIANC_ID,
+				C.MEIKMC,C.PINZ
+			from 
+				rl_hy_huaydb  rl
+				 left join (select * from gx_chep_caizhbmb where zhuanhlb_id = 2) gx2
+				  on gx2.mubbm = rl.huaybm
+				  left join (select * from gx_chep_caizhbmb where zhuanhlb_id = 1) gx1
+				  on gx1.mubbm = gx2.yuanbm
+              left join rl_ys_chepb c 
+               on c.samcode = gx1.yuanbm
+			where 
+				substr(huaysj,0,10) between '${sDate}' and '${eDate}' 
+				and dianc_id=${diancID} and rl.zhuangt=${zhuangt} and danjlx='入厂化验'
+				and (HUAYSJ like CONCAT('${condition}','%') or HUAYBM like CONCAT('${condition}','%') 
+				
+				) order by HUAYSJ desc
+			) t
+			 )s  
+		where r between (${page}-1)*${size}+1 and ${page}*${size}
+		
+	</select>
+    <select id="getHuaydz" resultType="java.util.Map">
+		select distinct
+		 substr(q.qingcsj, 0, 10) huaysj,
+		                gx2.mubbm HUAYBM,
+		                h.huayd_id,
+		                h.mt,
+		                h.mad,
+		                h.aad,
+		                h.vad,
+		                h.stad,
+		                h.had,
+		                h.qbad,
+		                h.t1,
+		                h.t2,
+		                h.t3,
+		                h.t4,
+		                h.huayy,
+		                h.lury,
+		                h.beiz              
+		  from rl_ys_chepb c
+		  left join rl_ys_chepb_qc q
+		    on c.id = q.chepb_id
+		  left join gx_chep_caizhbmb gx1
+		    on gx1.yuanbm = c.samcode
+		  left join gx_chep_caizhbmb gx2
+		    on gx1.mubbm = gx2.yuanbm
+		  left join rl_hy_huaydb h
+		    on h.huaybm = gx2.mubbm
+ 		where 
+			c.diancxxb_id=${DIANCXXB_ID} 
+			and substr(q.qingcsj,0,10) = '${riq}'
+			and gx2.mubbm  is not null
+			and h.huayd_id is  null
+		order by gx2.mubbm
+	</select>
+    <select id="getCount" resultType="int">
+		select
+			count(huayd_id) 
+		from
+			rl_hy_huaydb
+		where 
+			substr(huaysj,0,10) between '${sDate}' and '${eDate}'
+			and danjlx = '入厂化验'
+			and dianc_id=${diancID} and ZHUANGT=${zhuangt}
+			and (HUAYSJ like CONCAT('${condition}','%') or HUAYBM like CONCAT('${condition}','%') )
+	</select>
+    <select id="getHuaysjById" resultType="java.util.Map">
+		select
+			HUAYD_ID,HUAYSJ,HUAYY,LURY,BEIZ,CAOZSJ,CAOZRY,AAR,AD,VDAF,MT,STAD,AAD,MAD,QBAD,HAD,VAD,FCAD,STD,QGRAD,HDAF,QGRAD_DAF,SDAF,VAR,T1,T2,T3,T4,HAR,QGRD,STAR,QNET_AR,ZHUANGT,DIANC_ID
+		from
+			rl_hy_huaydb
+		where huayd_id=#{0}
+	</select>
+
+
+    <update id="shenh" parameterType="java.lang.String" flushCache="true">
+		update rl_hy_huaydb set
+		zhuangt=#{1}
+		WHERE huayd_id = #{0}
+	</update>
+
+    <insert id="shenhLs">
+		insert into rl_hy_huaydb_ls
+			(ID,XIUGSJ,XIUGRY,HUAYD_ID,HUAYY,LURY,CAOZSJ,AAR,AD,VDAF,MT,STAD,AAD,MAD,QBAD,HAD,VAD,FCAD,STD,QGRAD,HDAF,QGRAD_DAF,SDAF,QGRD,QNET_AR,ZHUANGT,DIANC_ID)
+		values
+			(${huaydlsbid},to_char(sysdate,'yyyy-mm-dd'),'${xiugry}',${HUAYD_ID},'${HUAYY}','${LURY}','${CAOZSJ}',${AAR},${AD},${VDAF},${MT},${STAD},${AAD},${MAD},${QBAD},${HAD},${VAD},${FCAD},${STD},${QGRAD},${HDAF},${QGRAD_DAF},${SDAF},${QGRD},${QNET_AR},${ZHUANGT},${DIANC_ID}
+			)
+	</insert>
+
+    <update id="huit" parameterType="java.lang.String" flushCache="true">
+		update rl_hy_huaydb set
+			ZHUANGT=#{1}
+		WHERE huayd_id = #{0}
+	</update>
+    <delete id="deleteHuayd">
+		delete from rl_hy_huaydb where huayd_id=#{0}
+	</delete>
+    <!--<delete id="deleteGX">
+            delete from gx_chep_huayd where huayd_id=#{0}
+        </delete>-->
+    <insert id="insert">
+		insert into RL_HY_HUAYDB(
+			   HUAYD_ID,HUAYY,  
+			   MAD,MT,    
+			   VAD,VDAF,VAR,
+			   AAD,AD,AAR,
+			   STAD,STD,SDAF, STAR  ,
+			   HAD,HDAF, HAR,
+			   FCAD,
+			   QBAD,
+			   QGRAD ,QGRD,QGRAD_DAF ,
+			   QNET_AR,
+			   HUAYSJ,
+			   BEIZ ,
+			   LURY ,
+			   ZHUANGT,
+			   DIANC_ID,
+			   DANJLX ,
+			   HUAYBM ,
+			   CAOZSJ,
+			   caozry
+			   )
+		VALUES(
+			${HUAYD_ID},'${HUAYY}',
+			${MAD},${MT},
+			${VAD},${VDAF},${VAR},
+			${AAD},${AD},${AAR},
+			${STAD},${STD},${STDAF},${STAR},
+			${HAD},${HDAF},${HAR},
+			${FCAD},
+			${QBAD},
+			${QGRAD},${QGRD},${QGRAD_DAF},
+			${QNET_AR},
+			to_char(SYSDATE,'yyyy-MM-dd'),'${BEIZ}','${LURY}',0 ,515,'入厂化验','${HUAYBM}',
+			to_char(sysdate,'yyyy-MM-dd hh:mi:ss'),'${LURY}'
+		)
+	</insert>
+    <update id="update">
+	update  RL_HY_HUAYDB set
+			HUAYY='${HUAYY}',
+			AAR =${AAR},AD=${AD},AAD=${AAD},
+			VDAF=${VDAF},VAD=${VAD},VAR=${VAR},
+			MT=${MT},MAD=${MAD},
+			STAD=${STAD},SDAF=${STDAF},STD=${STD},STAR=${STAR},
+			HAD=${HAD},HDAF=${HDAF},HAR=${HAR},
+			FCAD=${FCAD},
+			QBAD=${QBAD},
+			QGRAD=${QGRAD},
+			QGRAD_DAF=${QGRAD_DAF},
+			QGRD=${QGRD},
+			QNET_AR=${QNET_AR},	
+			HUAYSJ=to_char(sysdate,'yyyy-MM-dd'),
+			BEIZ='${BEIZ}',
+			ZHUANGT=0,
+			DIANC_ID=515,
+			DANJLX='入厂化验',
+			HUAYBM='${HUAYBM}'
+			WHERE HUAYD_ID = ${HUAYD_ID},
+			caozsj=to_char(sysdate,'yyyy-MM-dd hh:mi:ss'),
+			caozry='${LURY}'
+	</update>
+    <insert id="huaydLog">
+	insert into rl_hy_huaydb_log
+  (id,
+   huaysj,
+   huayy,
+   lury,
+   beiz,
+   caozsj,
+   caozry,
+   aar,
+   ad,
+   vdaf,
+   mt,
+   stad,
+   aad,
+   mad,
+   qbad,
+   had,
+   vad,
+   fcad,
+   std,
+   qgrad,
+   hdaf,
+   qgrad_daf,
+   sdaf,
+   var,
+   t1,
+   t2,
+   t3,
+   t4,
+   har,
+   qgrd,
+   star,
+   qnet_ar,
+   zhuangt,
+   dianc_id,
+   huaybm,
+   danjlx,
+   yewhj,
+   caozlx,
+   caozrip)
+select ${ID},
+          huaysj,
+          huayy,
+          lury,
+          beiz,
+          to_char(sysdate, 'yyyy-mm-dd hh:mi:ss') caozsj,
+          '${CAOZRY}' caozry,
+          aar,
+          ad,
+          vdaf,
+          mt,
+          stad,
+          aad,
+          mad,
+          qbad,
+          had,
+          vad,
+          fcad,
+          std,
+          qgrad,
+          hdaf,
+          qgrad_daf,
+          sdaf,
+          var,
+          t1,
+          t2,
+          t3,
+          t4,
+          har,
+          qgrd,
+          star,
+          qnet_ar,
+          zhuangt,
+          dianc_id,
+          huaybm,
+          danjlx ,
+          '${YEWHJ}' yewhj,
+          '${CAOZLX}' caozlx,
+          '${IP}' caozrip
+     from rl_hy_huaydb
+    where huayd_id = '${HUAYD_ID}'
+	</insert>
+</mapper>

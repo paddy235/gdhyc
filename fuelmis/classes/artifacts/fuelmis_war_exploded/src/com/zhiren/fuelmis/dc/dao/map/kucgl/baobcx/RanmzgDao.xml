@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiren.fuelmis.dc.dao.kucgl.RanmzgDao">
+	<select id="getRanmzgId" resultType="java.lang.String">
+	select q.id from rl_kc_kuaijrqb q full join gx_kuaijq_zuz g  on q.id=g.kuaijq_id where q.kuaijrq='${riq}' /*and g.zhuangt='启用'*/
+	</select>
+	
+	<select id="getRanmzg" resultType="java.util.Map">  
+	
+	select 1 hangc,'' jizrq,
+	       round(sum(shul), 2) qicsl,
+	       decode(sum(shul), 0, 0, round(sum(jine) / sum(shul), 2)) qicdj,
+	       round(sum(jine), 2) qicje,
+	       0 RUCSL, 0 RUCDJ, 0 RUCJE, 0 CHUKSL, 0 CHUKDJ, 0 CHUKJE,
+	       0 QITHYSL, 0 QITHYDJ, 0 QITHYJE, 0 DANGRSL, 0 DANGRDJ, 0 DANGRJE
+	from 
+	(SELECT mt.zuz, mt.huoz, mt.kuczz, mt.kucwz, mt.kucwl,
+         round((mt.initial_quantity + nvl(zangu.zang_sl, 0) + nvl(js.jies_sl, 0)),2) as shul, 
+         round(mt.initial_amount + nvl(zangu.zang_je, 0) + nvl(js.jies_je, 0),2) as jine
+  FROM (select * from RL_KC_MONTH_TOTAL where period_id = '${kuaijqId}' ) MT,
+      (select zuz,huoz,kuczz,kucwz,kucwl,
+              sum(decode(QUANTITY_FLAG, 0, 0, nvl(QUANTITY, 0))) as zang_sl,
+              sum(decode(MONEY_FLAG, 0, 0, nvl(AMOUNT, 0))) as zang_je
+         from RL_KC_CHURKMXHZB mx
+         where to_date(TRANSACTION_DATE,'yyyy-mm-dd') <![CDATA[<]]> (select to_date(kaisrq,'yyyy-mm-dd') from rl_kc_kuaijrqb where  id ='${kuaijqId}' ) 
+           and INV_OPERATION = 1
+           and nvl(BALANCE_FLAG, 0) = 0
+         group by zuz, huoz, kuczz, kucwz, kucwl) zangu,
+       (select zuz,huoz,kuczz,kucwz,kucwl,
+                 sum(decode(mx.BALANCE_FLAG, 1, decode(QUANTITY_FLAG, 0, 0, nvl(QUANTITY, 0)), 0)) as jies_sl,
+                 sum(decode(mx.BALANCE_FLAG, 1, decode(MONEY_FLAG, 0, 0, nvl(AMOUNT, 0)), 0)) as jies_je
+           from RL_KC_CHURKMXHZB mx
+           where to_date(TRANSACTION_DATE,'yyyy-mm-dd') <![CDATA[<]]> (select to_date(kaisrq,'yyyy-mm-dd') from rl_kc_kuaijrqb where  id ='${kuaijqId}' ) 
+             and INV_OPERATION = 1
+             and mx.period_id = '${kuaijqId}'
+            group by zuz, huoz, kuczz, kucwz, kucwl  ) js
+     where       
+       mt.zuz = zangu.zuz(+)
+      and mt.huoz = zangu.huoz(+)
+      and mt.kuczz = zangu.kuczz(+)
+      and mt.kucwz = zangu.kucwz(+)
+      and mt.kucwl = zangu.kucwl(+)
+      and mt.zuz = js.zuz(+)
+      and mt.huoz = js.huoz(+)
+      and mt.kuczz = js.kuczz(+)
+      and mt.kucwz = js.kucwz(+)
+      and mt.kucwl = js.kucwl(+))    	   
+   	union all
+	select rownum + 1, o.*
+	from (select decode(ruk.jizrq, null, chuk.jizrq, ruk.jizrq) jizrq,
+	       0 QICSL,
+	       0 QICDJ,
+	       0 QICJE,
+	       nvl(ruk.shul,0) RUCSL,
+	       nvl(decode(nvl(ruk.shul,0), 0, 0, round(ruk.jine / ruk.shul, 2)),0) RUCDJ,
+	       nvl(ruk.jine,0) RUCJE,
+	       chuk.shul CHUKSL,
+	       decode(chuk.shul, 0, 0, round(chuk.jine / chuk.shul, 2)) CHUKDJ,
+	       chuk.jine CHUKJE,
+	       0 QITHYSL,
+	       0 QITHYDJ,
+	       0 QITHYJE,
+	       get_dangrjc_sample(decode(ruk.jizrq, null, chuk.jizrq, ruk.jizrq),'${kuaijqId}', 0) DANGRSL,
+	       decode(get_dangrjc_sample(decode(ruk.jizrq, null, chuk.jizrq, ruk.jizrq),'${kuaijqId}', 0),
+	              0,0,
+	              round(get_dangrjc_sample(decode(ruk.jizrq,null,chuk.jizrq,ruk.jizrq),'${kuaijqId}' , 1) /
+	                    get_dangrjc_sample(decode(ruk.jizrq, null, chuk.jizrq, ruk.jizrq), '${kuaijqId}' ,0), 2)) DANGRDJ,
+	       get_dangrjc_sample(decode(ruk.jizrq, null, chuk.jizrq, ruk.jizrq), '${kuaijqId}' ,1) DANGRJE
+	  from (select mx.TRANSACTION_DATE jizrq,
+	               nvl(sum(decode(mx.inv_operation,1,decode(QUANTITY_FLAG, 0, 0, nvl(QUANTITY, 0)), 0)) ,0) as shul,
+	               nvl(sum(decode(mx.inv_operation, 1, decode(MONEY_FLAG, 0, 0, nvl(AMOUNT, 0)), 0)) ,0) as jine
+	          from RL_KC_CHURKMXHZB mx
+	         where transaction_date between (select kaisrq from rl_kc_kuaijrqb where id = '${kuaijqId}' )
+	           and  (select JIESRQ from rl_kc_kuaijrqb where id = '${kuaijqId}' )
+	           and INV_OPERATION = 1
+	         group by mx.TRANSACTION_DATE) ruk     
+	  full join 
+	 (select mx.TRANSACTION_DATE jizrq,
+	         nvl(sum(nvl(QUANTITY, 0)), 0) as shul,
+	         nvl(round(sum(nvl(QUANTITY, 0) * nvl(dj.chukdj, 0)), 2), 0) as jine
+	    from RL_KC_CHURKMXHZB mx, rl_kc_chukdjb dj
+	   where PERIOD_ID = '${kuaijqId}'
+	     and INV_OPERATION = -1
+	     and mx.zuz = dj.zuz(+)
+	     and mx.huoz = dj.huoz(+)
+	     and mx.kuczz = dj.kuczz(+)
+	     and mx.kucwz = dj.kucwz(+)
+	     and mx.kucwl = dj.kucwl(+)
+	     and mx.transaction_date = dj.yewrq(+)
+	   group by mx.TRANSACTION_DATE) chuk 
+	    on ruk.jizrq = chuk.jizrq
+	 where ruk.jizrq between
+	       (select kaisrq from rl_kc_kuaijrqb where id = '${kuaijqId}' ) and
+	       (select jiesrq from rl_kc_kuaijrqb where id = '${kuaijqId}' )
+	    or chuk.jizrq between
+	       (select kaisrq from rl_kc_kuaijrqb where id = '${kuaijqId}' ) and
+	       (select jiesrq from rl_kc_kuaijrqb where id = '${kuaijqId}' )
+	 order by jizrq   ) o   	
+   	   	   	
+	</select>
+</mapper>

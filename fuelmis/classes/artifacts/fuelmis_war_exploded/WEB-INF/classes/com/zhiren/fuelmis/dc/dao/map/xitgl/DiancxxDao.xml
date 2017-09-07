@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiren.fuelmis.dc.dao.xitgl.DiancxxDao" >
+	<resultMap id="BaseResultMap" type="diancxx" >
+		<id column="ID" property="id" jdbcType="NUMERIC" />
+		<result column="XUH" property="xuh" jdbcType="NUMERIC" />
+		<result column="BIANM" property="bianm" jdbcType="VARCHAR" />
+		<result column="MINGC" property="mingc" jdbcType="VARCHAR" />
+		<result column="QUANC" property="quanc" jdbcType="VARCHAR" />
+		<result column="PINY" property="piny" jdbcType="VARCHAR" />
+		<result column="SHENGFB_ID" property="shengfb_id" jdbcType="VARCHAR" />
+		<result column="FUID" property="fuid" jdbcType="VARCHAR" />
+		<result column="DIZ" property="diz" jdbcType="VARCHAR" />
+		<result column="YOUZBM" property="youzbm" jdbcType="VARCHAR" />
+		<result column="ZONGJ" property="zongj" jdbcType="VARCHAR" />
+		<result column="RANLCDH" property="ranlcdh" jdbcType="VARCHAR" />
+		<result column="ZHUANGJRL" property="zhuangjrl" jdbcType="NUMERIC" />
+		<result column="ZUIDKC" property="zuidkc" jdbcType="NUMERIC" />
+		<result column="ZHENGCCB" property="zhengccb" jdbcType="NUMERIC" />
+		<result column="XIANFHKC" property="xianfhkc" jdbcType="NUMERIC" />
+		<result column="RIJHM" property="rijhm" jdbcType="NUMERIC" />
+		<result column="JINGJCMSX" property="jingjcmsx" jdbcType="NUMERIC" />
+		<result column="JINGJCMXX" property="jingjcmxx" jdbcType="NUMERIC" />
+		<result column="DONGCMZB" property="dongcmzb" jdbcType="NUMERIC" />
+		<result column="FADDBR" property="faddbr" jdbcType="VARCHAR" />
+		<result column="WEITDLR" property="weitdlr" jdbcType="VARCHAR" />
+		<result column="KAIHYH" property="kaihyh" jdbcType="VARCHAR" />
+		<result column="ZHANGH" property="zhangh" jdbcType="VARCHAR" />
+		<result column="DIANH" property="dianh" jdbcType="VARCHAR" />
+		<result column="SHUIH" property="shuih" jdbcType="VARCHAR" />
+		<result column="JIEXFS" property="jiexfs" jdbcType="VARCHAR" />
+		<result column="JIEXX" property="jiexx" jdbcType="NUMERIC" />
+		<result column="JIEXNL" property="jiexnl" jdbcType="NUMERIC" />
+		<result column="CAIYFS" property="caiyfs" jdbcType="VARCHAR" />
+		<result column="JILFS" property="jilfs" jdbcType="VARCHAR" />
+		<result column="RANLFZR" property="ranlfzr" jdbcType="VARCHAR" />
+		<result column="LIANXDZ" property="lianxdz" jdbcType="VARCHAR" />
+		<result column="JINGJCML" property="jingjcml" jdbcType="NUMERIC" />
+		<result column="JIB" property="jib" jdbcType="NUMERIC" />
+		<result column="BEIZ" property="beiz" jdbcType="VARCHAR" />
+		<result column="DIANCLBB_ID" property="dianclbb_id" jdbcType="NUMERIC" />
+		<result column="JIESBDCBS" property="jiesbdcbs" jdbcType="VARCHAR" />
+		<result column="WANGJXXB_ID" property="wangjxxb_id" jdbcType="NUMERIC" />
+		<result column="JITBM" property="jitbm" jdbcType="VARCHAR" />
+		<result column="SHANGJGSID" property="shangjgsid" jdbcType="NUMERIC" />
+		<result column="RANLGS" property="ranlgs" jdbcType="NUMERIC" />
+		<result column="ZUIDIKC" property="zuidikc" jdbcType="NUMERIC" />
+		<result column="DONGJJJCMSX" property="dongjjjcmsx" jdbcType="NUMERIC" />
+		<result column="DONGJJJCMXX" property="dongjjjcmxx" jdbcType="NUMERIC" />
+		<result column="XIAJJJCMSX" property="xiajjjcmsx" jdbcType="NUMERIC" />
+		<result column="XIAJJJCMXX" property="xiajjjcmxx" jdbcType="NUMERIC" />
+		<result column="CHUMQCMZB" property="chumqcmzb" jdbcType="NUMERIC" />
+		<result column="XITZJH" property="xitzjh" jdbcType="NUMERIC" />
+		<result column="SHIHZJH" property="shihzjh" jdbcType="NUMERIC" />
+		<result column="CHUANZ" property="chuanz" jdbcType="VARCHAR" />
+		<result column="CHANQXZB_ID" property="chanqxzb_id" jdbcType="NUMERIC" />
+		<result column="LIANXRB_ID" property="lianxrb_id" jdbcType="NUMERIC" />
+		<result column="DAOZ" property="daoz" jdbcType="VARCHAR" />
+		<result column="DAOG" property="daog" jdbcType="VARCHAR" />
+		<result column="YUNSFS" property="yunsfs" jdbcType="VARCHAR" />
+		<result column="JIANGCQCMZB" property="jiangcqcmzb" jdbcType="NUMERIC" />
+		<result column="CANGKB_ID" property="cangkb_id" jdbcType="NUMERIC" />
+	</resultMap>
+	
+	<sql id="Base_Column_List" >
+    	ID, XUH, BIANM, MINGC, QUANC, PINY, SHENGFB_ID, FUID, DAOZ, DAOG
+	</sql>
+	
+	<!-- 构建“单位”下拉框 -->
+	<select id="getAll" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+    	from DIANCXXB where FUID <![CDATA[ <> ]]> -1 order by XUH asc
+	</select>
+	
+	<!-- 存储于session的电厂信息 -->
+	<select id="getOne" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+    	from DIANCXXB where FUID = -1 or FUID = 0 order by XUH asc
+	</select>
+	
+	<select id="selectAll" resultMap="BaseResultMap">
+	    select D.ID, D.XUH, D.BIANM, D.MINGC, D.QUANC, D.PINY, S.QUANC SHENGFB_ID, 
+		(select MINGC from DIANCXXB where ID = D.FUID) FUID, D.DAOZ, D.DAOG 
+	    from DIANCXXB D,SHENGFB S
+	    where D.SHENGFB_ID = S.ID 
+	    <if test='id != ""'>
+	        and D.ID = #{id}
+	    </if>
+	</select>
+	
+	<select id="getOneById" resultMap="BaseResultMap">
+	    select * from DIANCXXB where ID = #{id}
+	</select>
+	
+	<insert id="insertDiancxx" parameterType="java.util.Map">
+	    insert into DIANCXXB (ID, XUH,BIANM,MINGC,QUANC, PINY,SHENGFB_ID, FUID, DIZ,YOUZBM,ZONGJ,
+    	RANLCDH,ZHUANGJRL,ZUIDKC, ZHENGCCB, XIANFHKC,RIJHM,JINGJCMSX,JINGJCMXX, DONGCMZB,FADDBR,
+    	WEITDLR,KAIHYH,ZHANGH,DIANH,SHUIH,JIEXFS,JIEXX,JIEXNL,CAIYFS,JILFS,
+    	RANLFZR,LIANXDZ,JINGJCML,JIB,BEIZ,DIANCLBB_ID,JIESBDCBS,WANGJXXB_ID,JITBM,
+    	SHANGJGSID,RANLGS,ZUIDIKC,DONGJJJCMSX,DONGJJJCMXX,XIAJJJCMSX,XIAJJJCMXX,CHUMQCMZB,XITZJH,
+    	SHIHZJH,CHUANZ,CHANQXZB_ID,LIANXRB_ID,DAOG,DAOZ,YUNSFS,JIANGCQCMZB,CANGKB_ID) 
+    	values(${id}, nvl(${xuh},0),'${bianm}','${mingc}','${quanc}', '${piny}',
+    	nvl(${shengfb_id},0), nvl(${fuid},0), '${diz}','${youzbm}','${zongj}',
+    	'${ranlcdh}',nvl(${zhuangjrl},0),nvl(${zuidkc},0), nvl(${zhengccb},0), nvl(${xianfhkc},0), 
+    	nvl(${rijhm},0),nvl(${jingjcmsx},0),nvl(${jingjcmxx},0), nvl(${dongcmzb},0),'${faddbr}',
+    	'${weitdlr}','${kaihyh}','${zhangh}','${dianh}','${shuih}',
+    	'${jiexfs}',nvl(${jiexx},0),nvl(${jiexnl},0),'${caiyfs}','${jilfs}',
+    	'${ranlfzr}','${lianxdz}',nvl(${jingjcml},0),nvl(${jib},0),'${beiz}',
+    	nvl(${dianclbb_id},0),'${jiesbdcbs}',nvl(${wangjxxb_id},0),'${jitbm}',
+    	nvl(${shangjgsid},0),nvl(${ranlgs},0),nvl(${zuidikc},0),nvl(${dongjjjcmsx},0),
+    	nvl(${dongjjjcmxx},0),nvl(${xiajjjcmsx},0),nvl(${xiajjjcmxx},0),nvl(${chumqcmzb},0),nvl(${xitzjh},0),
+    	nvl(${shihzjh},0),'${chuanz}',nvl(${chanqxzb_id},0),nvl(${lianxrb_id},0),nvl(${daog},0),
+    	nvl(${daoz},0),'${yunsfs}',nvl(${jiangcqcmzb},0),nvl(${cangkb_id},0))
+	</insert>
+	
+	<update id="updateDiancxx" parameterType="java.util.Map">
+	    update DIANCXXB 
+	    <trim prefix="SET" suffixOverrides=",">
+			<if test="xuh != null">XUH=#{xuh},</if>
+			<if test="bianm != null">BIANM=#{bianm},</if>
+			<if test="mingc != null">MINGC=#{mingc},</if>
+			<if test="quanc != null">QUANC=#{quanc},</if>
+			<if test="piny != null">PINY=#{piny},</if>
+			<if test="shengfb_id != null">SHENGFB_ID=#{shengfb_id},</if>
+			<if test="fuid != null">FUID=#{fuid},</if>
+			<if test="diz != null">DIZ=#{diz},</if>
+			<if test="youzbm != null">YOUZBM=#{youzbm},</if>
+			<if test="zongj != null">ZONGJ=#{zongj},</if>
+			<if test="zhuangjrl != null">RANLCDH=#{zhuangjrl},</if>
+			<if test="zuidkc != null">ZUIDKC=#{zuidkc},</if>
+			<if test="zhengccb != null">ZHENGCCB=#{zhengccb},</if>
+			<if test="xianfhkc != null">XIANFHKC=#{xianfhkc},</if>
+			<if test="rijhm != null">RIJHM=#{rijhm},</if>
+			<if test="jingjcmsx != null">JINGJCMSX=#{jingjcmsx},</if>
+			<if test="jingjcmxx != null">JINGJCMXX=#{jingjcmxx},</if>
+			<if test="dongcmzb != null">DONGCMZB=#{dongcmzb},</if>
+			<if test="faddbr != null">FADDBR=#{faddbr},</if>
+			<if test="weitdlr != null">WEITDLR=#{weitdlr},</if>
+			<if test="kaihyh != null">KAIHYH=#{kaihyh},</if>
+			<if test="zhangh != null">ZHANGH=#{zhangh},</if>
+			<if test="dianh != null">DIANH=#{dianh},</if>
+			<if test="shuih != null">SHUIH=#{shuih},</if>
+			<if test="jiexfs != null">JIEXFS=#{jiexfs},</if>
+			<if test="jiexx != null">JIEXX=#{jiexx},</if>
+			<if test="jiexnl != null">JIEXNL=#{jiexnl},</if>
+			<if test="caiyfs != null">CAIYFS=#{caiyfs},</if>
+			<if test="jilfs != null">JILFS=#{jilfs},</if>
+			<if test="ranlfzr != null">RANLFZR=#{ranlfzr},</if>
+			<if test="lianxdz != null">LIANXDZ=#{lianxdz},</if>
+			<if test="jingjcml != null">JINGJCML=#{jingjcml},</if>
+			<if test="jib != null">JIB=#{jib},</if>
+			<if test="beiz != null">BEIZ=#{beiz},</if>
+			<if test="dianclbb_id != null">DIANCLBB_ID=#{dianclbb_id},</if>
+			<if test="jiesbdcbs != null">JIESBDCBS=#{jiesbdcbs},</if>
+			<if test="wangjxxb_id != null">WANGJXXB_ID=#{wangjxxb_id},</if>
+			<if test="jitbm != null">JITBM=#{jitbm},</if>
+			<if test="shangjgsid != null">SHANGJGSID=#{shangjgsid},</if>
+			<if test="ranlgs != null">RANLGS=#{ranlgs},</if>
+			<if test="zuidikc != null">ZUIDIKC=#{zuidikc},</if>
+			<if test="dongjjjcmsx != null">DONGJJJCMSX=#{dongjjjcmsx},</if>
+			<if test="dongjjjcmxx != null">DONGJJJCMXX=#{dongjjjcmxx},</if>
+			<if test="xiajjjcmsx != null">XIAJJJCMSX=#{xiajjjcmsx},</if>
+			<if test="xiajjjcmxx != null">XIAJJJCMXX=#{xiajjjcmxx},</if>
+			<if test="chumqcmzb != null">CHUMQCMZB=#{chumqcmzb},</if>
+			<if test="xitzjh != null">XITZJH=#{xitzjh},</if>
+			<if test="shihzjh != null">SHIHZJH=#{shihzjh},</if>
+			<if test="chuanz != null">CHUANZ=#{chuanz},</if>
+			<if test="chanqxzb_id != null">CHANQXZB_ID=#{chanqxzb_id},</if>
+			<if test="lianxrb_id != null">LIANXRB_ID=#{lianxrb_id},</if>
+			<if test="daog != null">DAOG=#{daog},</if>
+			<if test="daoz != null">DAOZ=#{daoz},</if>
+			<if test="yunsfs != null">YUNSFS=#{yunsfs},</if>
+			<if test="jiangcqcmzb != null">JIANGCQCMZB=#{jiangcqcmzb},</if>
+			<if test="cangkb_id != null">CANGKB_ID=#{cangkb_id},</if>
+		</trim>
+		where ID=#{id}
+	</update>
+</mapper>

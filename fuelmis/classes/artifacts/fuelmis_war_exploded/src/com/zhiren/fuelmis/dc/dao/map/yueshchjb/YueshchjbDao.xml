@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiren.fuelmis.dc.dao.yueshchjb.YueshchjbDao">
+    <resultMap id="BaseResultMap" type="yueshchjbb">
+        <id column="ID" property="id" jdbcType="NUMERIC"/>
+        <result column="RIQ" property="riq" jdbcType="VARCHAR"/>
+        <result column="FENX" property="fenx" jdbcType="VARCHAR"/>
+        <result column="QICKC" property="qickc" jdbcType="NUMERIC"/>
+        <result column="SHOUML" property="shouml" jdbcType="NUMERIC"/>
+        <result column="FADY" property="fady" jdbcType="NUMERIC"/>
+        <result column="GONGRY" property="gongry" jdbcType="NUMERIC"/>
+        <result column="QITH" property="qith" jdbcType="NUMERIC"/>
+        <result column="SUNH" property="sunh" jdbcType="NUMERIC"/>
+        <result column="DIAOCL" property="diaocl" jdbcType="NUMERIC"/>
+        <result column="PANYK" property="panyk" jdbcType="NUMERIC"/>
+        <result column="KUC" property="kuc" jdbcType="NUMERIC"/>
+        <result column="DIANCXXB_ID" property="diancxxb_id" jdbcType="NUMERIC"/>
+        <result column="SHUIFCTZ" property="shuifctz" jdbcType="NUMERIC"/>
+        <result column="JITCS" property="jitcs" jdbcType="NUMERIC"/>
+        <result column="RUNXCS" property="runxcs" jdbcType="NUMERIC"/>
+    </resultMap>
+
+    <insert id="createData" parameterType="yueshchjbb">
+        INSERT INTO yueshchjb
+        (id, diancxxb_id, riq, fenx, qickc, shouml, fady, gongry, qith, sunh, diaocl, panyk, kuc, shuifctz, jitcs, runxcs)
+        VALUES
+            (#{id,jdbcType=NUMERIC}, #{diancxxb_id,jdbcType=NUMERIC}, #{riq,jdbcType=VARCHAR}, #{fenx,jdbcType=VARCHAR},
+                                     #{qickc,jdbcType=NUMERIC}, #{shouml,jdbcType=NUMERIC}, #{fady,jdbcType=NUMERIC},
+                                     #{gongry,jdbcType=NUMERIC}, #{qith,jdbcType=NUMERIC},
+                                     #{sunh,jdbcType=NUMERIC}, #{diaocl,jdbcType=NUMERIC}, #{panyk,jdbcType=NUMERIC},
+             #{kuc,jdbcType=NUMERIC}, #{shuifctz,jdbcType=NUMERIC},
+             #{jitcs,jdbcType=NUMERIC}, #{runxcs,jdbcType=NUMERIC})
+    </insert>
+
+    <update id="updateData" parameterType="yueshchjbb">
+        update yueshchjb
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="diancxxb_id != null">DIANCXXB_ID=#{diancxxb_id},</if>
+            <if test="riq != null">RIQ=#{riq},</if>
+            <if test="fenx != null">FENX=#{fenx},</if>
+            <if test="qickc != null">QICKC=#{qickc},</if>
+            <if test="shouml != null">SHOUML=#{shouml},</if>
+            <if test="fady != null">FADY=#{fady},</if>
+            <if test="gongry != null">GONGRY=#{gongry},</if>
+            <if test="qith != null">QITH=#{qith},</if>
+            <if test="sunh != null">SUNH=#{sunh},</if>
+            <if test="diaocl != null">DIAOCL=#{diaocl},</if>
+            <if test="panyk != null">PANYK=#{panyk},</if>
+            <if test="kuc != null">KUC=#{kuc},</if>
+            <if test="shuifctz != null">SHUIFCTZ=#{shuifctz},</if>
+            <if test="jitcs != null">JITCS=#{jitcs},</if>
+            <if test="runxcs != null">RUNXCS=#{runxcs},</if>
+        </trim>
+        where ID=#{id}
+    </update>
+    <update id="updateDataL" parameterType="yueshchjbb">
+        update yueshchjb
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="diancxxb_id != null">DIANCXXB_ID=#{diancxxb_id},</if>
+            <if test="riq != null">RIQ=#{riq},</if>
+            <if test="fenx != null">FENX=#{fenx},</if>
+            <if test="qickc != null">QICKC=#{qickc},</if>
+            <if test="shouml != null">SHOUML=#{shouml},</if>
+            <if test="fady != null">FADY=#{fady},</if>
+            <if test="gongry != null">GONGRY=#{gongry},</if>
+            <if test="qith != null">QITH=#{qith},</if>
+            <if test="sunh != null">SUNH=#{sunh},</if>
+            <if test="diaocl != null">DIAOCL=#{diaocl},</if>
+            <if test="panyk != null">PANYK=#{panyk},</if>
+            <if test="kuc != null">KUC=#{kuc},</if>
+            <if test="shuifctz != null">SHUIFCTZ=#{shuifctz},</if>
+            <if test="jitcs != null">JITCS=#{jitcs},</if>
+            <if test="runxcs != null">RUNXCS=#{runxcs},</if>
+        </trim>
+        where ID=#{id}
+    </update>
+    <delete id="DelData">
+        DELETE FROM yueshchjb
+        WHERE substr(riq, 0, 7) = substr('${riq}', 0, 7) AND diancxxb_id = ${diancxxb_id}
+    </delete>
+
+    <select id="getData" resultMap="BaseResultMap">
+        SELECT
+        ID,
+        RIQ,
+        FENX,
+        QICKC,
+        SHOUML,
+        FADY,
+        GONGRY,
+        QITH,
+        SUNH,
+        DIAOCL,
+        PANYK,
+        KUC,
+        DIANCXXB_ID,
+        SHUIFCTZ,
+        ZHUANGT,
+        JITCS,
+        RUNXCS
+        FROM YUESHCHJB
+        WHERE 1=1
+        <if test="riq != null">
+            and riq = '${riq}'
+        </if>
+        <if test="diancxxb_id != null">
+            and diancxxb_id = #{diancxxb_id}
+        </if>
+        order by fenx
+    </select>
+
+    <select id="getShouml" resultType="java.util.Map">
+        SELECT
+            sum(jingz) AS shouml,
+            sum(biaoz)    biaoz,
+            sum(laimsl)   laimsl,
+            sum(yuns)     yuns,
+            sum(ructzl)   ructzl,
+            sum(yingd)    yingd,
+            sum(kuid)     kuid
+        FROM yueslb ys, yuetjkjb yj
+        WHERE ys.yuetjkjb_id = yj.id
+              AND yj.riq = #{riq}
+              AND yj.diancxxb_id = #{diancxxb_id}
+              AND fenx = '本月'
+        GROUP BY fenx
+    </select>
+
+    <select id="getMeihl" resultType="java.util.Map">
+        select nvl(round(sum(mh.fadhy),2),0) as fadhy,nvl(round(sum(mh.gongrhy),2),0) as gongrhy,nvl(round(sum(mh.qity +
+        mh.feiscy),2),0) as qity
+        from rl_rul_meihyb mh where 11=11
+        <if test="riq1 != null">
+            and substr(mh.rulrq,0,7) =substr(#{riq1},0,7)
+        </if>
+
+        and mh.diancxxb_id = #{diancxxb_id}
+    </select>
+
+    <select id="getShuifc" resultType="java.util.Map">
+        select dianc.mingc, rucsf.mt rucsf, rulsf.mt rulsf
+        from (select c.diancxxb_id,
+        round_new(decode(sum((c.maoz-c.piz-c.zongkd)),
+        0,
+        0,
+        sum(h.mt * (c.maoz-c.piz-c.zongkd)) / sum((c.maoz-c.piz-c.zongkd))),
+        1) mt
+        FROM rl_ys_chepb c
+        left join rl_ys_chepb_qc q on c.id=q.chepb_id
+        left join (select * from gx_chep_caizhbmb where zhuanhlb_id=1) gx1 on c.samcode=gx1.yuanbm
+        left join (select * from gx_chep_caizhbmb where zhuanhlb_id=2) gx2 on gx1.mubbm=gx2.yuanbm
+        left join rl_hy_huaydb h on gx2.mubbm=h.huaybm
+        where h.danjlx='入厂化验'
+        <if test="riq1 != null">
+            and substr(q.qingcsj,0,10) <![CDATA[>= ]]> #{riq1}
+        </if>
+        <if test="riq2 != null">
+            and substr(q.qingcsj,0,10) <![CDATA[<= ]]> #{riq2}
+        </if>
+        group by c.diancxxb_id) rucsf,
+        (select m.diancxxb_id,
+        round_new(decode(sum(m.fadhy + m.gongrhy + m.qity + m.feiscy),0,0,
+        sum(r.mt *(m.fadhy + m.gongrhy + m.qity + m.feiscy)),
+        sum(m.fadhy + m.gongrhy + m.qity + m.feiscy)),1) mt
+        from rl_rul_meihyb m, rl_hy_huaydb r
+        where m.huayd_id=r.huayd_id
+        and r.danjlx='入炉化验'
+        <if test="riq1 != null">
+            and m.rulrq <![CDATA[>= ]]> #{riq1}
+        </if>
+        <if test="riq2 != null">
+            and m.rulrq <![CDATA[<= ]]> #{riq2}
+        </if>
+        group by m.diancxxb_id) rulsf,
+        vwdianc dianc
+        where dianc.id = rucsf.diancxxb_id
+         and dianc.id = rulsf.diancxxb_id
+        and dianc.id = #{diancxxb_id}
+
+    </select>
+
+    <select id="getQickc" resultType="java.util.Map">
+        SELECT kuc
+        FROM yueshchjb
+        WHERE
+            riq = to_char(Add_Months(to_date(#{riq}, 'yyyy-MM'), -1), 'yyyy-MM')
+            AND fenx = '本月'
+            AND diancxxb_id = #{diancxxb_id}
+    </select>
+
+    <select id="getShoumlv" resultType="java.util.Map">
+        SELECT zhi
+        FROM xitxxb
+        WHERE mingc = '月报耗用收煤量定义' AND zhuangt = 1 AND leib = '月报' AND diancxxb_id = #{diancxxb_id}
+    </select>
+
+    <select id="getRunxcs" resultType="java.util.Map">
+        select decode(count(id), 0, 0, sum(kuc) / count(id))*0.5/100 pingjkc
+        from shouhcrbb
+        where diancxxb_id = #{diancxxb_id}
+        <if test="riq1 != null">
+            and riq <![CDATA[>= ]]> to_date(#{riq1},'yyyy-MM-dd')
+        </if>
+        <if test="riq2 != null">
+            and riq <![CDATA[<= ]]> to_date(#{riq2},'yyyy-MM-dd')
+        </if>
+    </select>
+
+
+    <select id="getLeij" resultType="java.util.Map">
+        SELECT
+            qickc,
+            shouml,
+            fady,
+            gongry,
+            qith,
+            sunh,
+            diaocl,
+            panyk,
+            kuc,
+            shuifctz,
+            jitcs,
+            runxcs
+        FROM yueshchjb
+        WHERE riq = to_char(Add_Months(to_date(#{riq}, 'yyyy-MM'), -1), 'yyyy-MM')
+              AND fenx = '累计'
+              AND diancxxb_id = #{diancxxb_id}
+    </select>
+    <select id="getQickcLeij" resultType="java.util.Map">
+        SELECT kuc
+        FROM yueshchjb
+        WHERE riq = #{lriq}
+              AND fenx = '本月'
+              AND diancxxb_id = #{diancxxb_id}
+    </select>
+    <select id="getXitxx_item" resultType="java.util.Map">
+        SELECT zhi
+        FROM xitxxb
+        WHERE leib = #{leib} AND mingc = #{mingc} AND diancxxb_id = #{diancxxb_id} AND beiz = '使用'
+    </select>
+
+    <select id="getisNotReady" resultType="java.util.Map">
+        SELECT *
+        FROM yueslb ys, yuetjkjb yj
+        WHERE ys.yuetjkjb_id = yj.id
+              AND yj.riq = #{riq}
+              AND yj.diancxxb_id = #{diancxxb_id}
+    </select>
+</mapper>

@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiren.fuelmis.dc.dao.rulgl.XianggwhDao">
+<!-- 班组 -->
+	<select id="getHaoy" resultType="java.util.Map" parameterType="String">
+	<!-- 	select
+		h.id id, h.haoyl haoyl,sb.shijd_id shijd_id,cj.ced_id ced_id,h.haoyrq haoyrq,hy.huaybm huaybm
+		from rl_rul_rulhyyszb h
+		left join gx_shijd_banz sb on h.shijd_id=sb.shijd_id
+		left join gx_ced_jiz cj on cj.ced_id=h.ced_id
+		,RL_HY_HUAYDB hy where hy.huaybm like CONCAT(#{0},'%') and h.haoyrq=#{1} -->
+		select
+			h.id id, h.haoyl haoyl,sb.shijd_id shijd_id,cj.ced_id ced_id,h.haoyrq haoyrq,h.huoqml huoqml
+			from rl_rul_rulhyyszb h
+			left join gx_shijd_banz  sb on h.shijd_id=sb.shijd_id
+			left join gx_ced_jiz     cj on  cj.ced_id=h.ced_id
+			where h.haoyrq=#{0} and  h.DIANCXXB_ID=#{1}
+	</select>
+	<select id="getMeihy" resultType="java.util.Map" parameterType="String">
+		select
+			r.ID id, 
+			r.RULRQ HAOYRQ,
+			r.DIANCXXB_ID DIANCXXB_ID,
+			r.RULBZB_ID RULBZB_ID,
+			r.JIZFZB_ID JIZFZB_ID,
+			r.FADHY FADHY,
+			r.GONGRHY GONGRHY,
+			r.QITY QITY,
+			r.FEISCY FEISCY,
+			r.LURY LURY,
+			r.LURSJ LURSJ,
+			r.ZHIYR ZHIYR,
+			h.HUAYBM HUAYBM,
+			r.huayd_id huayd_id,
+			r.SHENHZT SHENHZT
+			
+		from RL_RUL_MEIHYB r ,rl_rul_banzb bz , rl_hy_huaydb h   
+		where r.RULRQ=#{0} and r.DIANCXXB_ID=#{1}
+			   and r.huayd_id = h.huayd_id(+)
+			   and r.rulbzb_id = bz.id(+)
+			 order by bz.xuh
+	</select>
+	<select id="getBanzXuh" resultType="String">
+		select xuh from RL_RUL_BANZB 
+		where id=#{0}
+	</select>
+	<select id="getHuaybm" resultType="java.util.Map" parameterType="String">
+		select
+			HUAYBM
+			from RL_HY_HUAYDB
+			where DIANC_ID=#{0} and HUAYBM=#{1}
+			order by HUAYBM
+	</select>
+	<!-- 查询班组id和名称 -->
+	<select id="getBanzList" resultType="java.util.Map">
+		select
+		ID,MINGC,XUH
+		from rl_rul_banzb order by XUH
+		
+	</select>
+	<!-- 查询机组id和名称 -->
+	<select id="getJizList" resultType="java.util.Map">
+		select
+		ID,MINGC
+		from rl_rul_jizb order by XUH
+	</select>
+	<select id="getHuaybmList" resultType="java.util.Map">
+		select
+			HUAYD_ID,HUAYBM
+		from RL_HY_HUAYDB 
+		where HUAYSJ between #{0} and #{1} and DANJLX='入炉化验'
+		order by HUAYBM 
+		
+	</select>
+	<select id="getHaoyCount" resultType="java.lang.Integer">
+		select
+		count(*)
+		from rl_rul_rulhyyszb where haoyrq = #{0}
+	</select>
+	<insert id="insertMeihy">
+		INSERT
+		INTO rl_rul_meihyb
+		(ID,         RULRQ   ,DIANCXXB_ID       ,RULBZB_ID  ,JIZFZB_ID       ,FADHY     ,GONGRHY   ,QITY      ,FEISCY     ,LURY,       LURSJ  ,ZHIYR,SHENHZT,HUAYD_ID)
+		VALUES
+		('${id}','${HAOYRQ}','${DIANCXXB_ID}','${RULBZB_ID}','${JIZFZB_ID}','${FADHY}','${GONGRHY}','${QITY}','${FEISCY}','${LURY}',to_char(sysdate,'yyyy-mm-dd hh24:mi:ss'),'${ZHIYR}','0',0)
+	</insert>
+	<delete id="delMeiHy">
+		delete from rl_rul_meihyb where ID=#{0}
+	</delete>
+	<insert id="insertHuayd">
+		INSERT
+		INTO RL_HY_HUAYDB
+		(HUAYD_ID,HUAYBM,DANJLX)
+		VALUES
+		('${id}','${HUAYBM}','${DANJLX}')
+	</insert>
+	<update id="updateMeihy" flushCache="true">
+		update rl_rul_meihyb set
+		RULRQ='${HAOYRQ}',
+		DIANCXXB_ID='${DIANCXXB_ID}',
+		RULBZB_ID='${RULBZB_ID}',
+		JIZFZB_ID='${JIZFZB_ID}',
+		FADHY='${FADHY}',
+		GONGRHY='${GONGRHY}',
+		QITY='${QITY}',
+		FEISCY='${FEISCY}',
+		LURY='${LURY}',
+		LURSJ='${LURSJ}',
+		ZHIYR='${ZHIYR}',
+		HUAYD_ID=${HUAYD_ID},
+		SHENHZT='${SHENHZT}'
+		WHERE id = ${ID}
+	</update>
+	<insert id="insertHuayID">
+		INSERT
+		INTO RL_HY_HUAYDB
+		(huayd_id)
+		VALUES
+		(#{0})
+	</insert>
+	
+	<select id="getMeihyAll" resultType="java.util.Map">
+		select * from fuelmis.rul_sis_view@ZHFUELMIS
+		 where riq = '${Date}'
+    </select>
+    
+    <insert id="MeihyAdd">
+    <if test="BANZ== '00:00-08:00'">
+		insert into RL_RUL_MEIHYB (ID,RULRQ,RULBZB_ID,FADHY,diancxxb_id,jizfzb_id) VALUES
+		(${ID}, to_char(to_date('${RIQ}','yyyy-MM-dd'),'yyyy-MM-dd'),(select id from RL_RUL_BANZB where MINGC='0:00-3:00'),nvl(${MEIL},0),515,14452408331220)
+	</if>
+	<if test="BANZ =='08:00-14:00'">	
+		insert into RL_RUL_MEIHYB (ID,RULRQ,RULBZB_ID,FADHY,diancxxb_id,jizfzb_id) VALUES
+		(${ID}, to_char(to_date('${RIQ}','yyyy-MM-dd'),'yyyy-MM-dd'),(select id from RL_RUL_BANZB where MINGC='8:00-14:00'),nvl(${MEIL},0),515,14452408331220)
+	</if>
+	<if test="BANZ !='00:00-08:00' and BANZ!='08:00-14:00'">
+		insert into RL_RUL_MEIHYB (ID,RULRQ,RULBZB_ID,FADHY,diancxxb_id,jizfzb_id) VALUES
+		(${ID}, to_char(to_date('${RIQ}','yyyy-MM-dd'),'yyyy-MM-dd'),(select id from RL_RUL_BANZB where MINGC='${BANZ}'),nvl(${MEIL},0),515,14452408331220)
+	</if>
+	</insert>
+	
+	<delete id="DelMeihy">
+		delete from rl_rul_meihyb where ID=#{0}
+	</delete>
+	<select id="getMeihysis" resultType="java.util.Map">
+		select m.id,b.MINGC banz,j.MINGC jiz,m.FADHY meil,m.gongrhy gongrhy ,m.QITY qity from rl_rul_meihyb m
+		inner join RL_RUL_BANZB b on m.RULBZB_ID=b.ID
+		inner join RL_RUL_JIZB j on m.JIZFZB_ID=j.id
+		where substr(m.rulrq,0,10)=#{0}
+		order by m.RULBZB_ID
+	</select>
+</mapper>

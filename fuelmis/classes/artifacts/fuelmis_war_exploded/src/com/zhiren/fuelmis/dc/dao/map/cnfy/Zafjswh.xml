@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiren.fuelmis.dc.dao.cnfy.ZafjswhDao" >
+	<select id="getZafjsdata"  resultType="java.util.HashMap">
+		select  bxd.id as id,
+              rownum,
+               bxd.bianh as bianh, 
+               to_char(bxd.riq,'yyyy-mm-dd') as zhidrq, 
+               ry.quanc as jingbr, 
+               bxd.zongje as zongje, 
+               decode(bxd.ZHUANGT, 1, '已提交', '未提交') as ZHUANGT 
+           from rl_cnfy_zaffybxd bxd, renyxxb ry
+           where bxd.renyxxb_id = ry.id (+) 
+          and to_char(bxd.riq,'yyyy-mm') = '${_parameter}'
+           order by bxd.bianh desc
+	</select>
+	 <select id="getZaffybxdId"  resultType="long">
+		SELECT RL_CNFY_ZAFFYBXD_SQU.NEXTVAL FROM DUAL
+	</select>
+	<select id="getHetBianh"  resultType="java.util.HashMap">
+		SELECT ID, BIANH FROM RL_CNFY_HETB
+	</select>
+	<select id="getHetZaf"  resultType="java.util.HashMap">
+		select rl_cnfy_changnfyxm_id as id, cf.mingc as mingc
+		  from rl_cnfy_hetzfb zaf, rl_cnfy_changnfyxm cf
+		 where cf.id = zaf.rl_cnfy_changnfyxm_id and rl_cnfy_hetb_id = ${_parameter}
+	</select>
+	
+	<insert id="saveZafDjb" >
+		INSERT INTO rl_cnfy_zafhtfydjb(id,
+									  zafhtb_id,
+									  changnfyxmb_id,
+									  danj,
+									  beiz,
+									  qisrq,
+									  jiesrq,
+									  shul,
+									  jine,
+									  zaffybxd_id
+				) values(
+					XL_CHANGNZF_ID.NEXTVAL,
+					${HETBIANH},
+					${FEIYXM},
+					${DANJ},
+					'${beiz}',
+					to_date('${KAISSJ}','yyyy-mm-dd'),
+					to_date('${JIESSJ}','yyyy-mm-dd'),
+					${SHUL},
+					${JINE},
+					${ZAFFYBXDID}
+				)
+	</insert>
+	<delete id="delZaffybxdById" parameterType="java.lang.String" flushCache="true">  
+         DELETE FROM RL_CNFY_ZAFFYBXD WHERE id =#{id}
+    </delete>
+    <delete id="delZaffydjbById" parameterType="java.lang.String" flushCache="true">  
+         DELETE FROM RL_CNFY_ZAFHTFYDJB WHERE ZAFFYBXD_ID =#{id}
+    </delete>
+    <select id="getZongjeById"  resultType="double">
+		SELECT sum(JINE) as zongje FROM rl_cnfy_zafhtfydjb where ZAFFYBXD_ID =#{id}
+	</select>
+	<select id="getUserAndDeptById"  resultType="java.util.HashMap">
+		select ry.quanc,ry.bum from renyxxb ry,(select renyxxb_id from RL_CNFY_ZAFFYBXD where id = #{id})zf where ry.id = zf.renyxxb_id
+	</select>
+    <insert id="saveZaffybxd" >
+		INSERT INTO rl_cnfy_zaffybxd( id,
+									  bianh,
+									  riq,
+									  zuz,
+									  zongje,
+									  beiz,
+									  renyxxb_id,
+									  zhuangt
+				) values(
+					${id},
+					'${bianh}',
+					to_date('${riq}','yyyy-mm-dd'),
+					'515',
+					${zongje},
+					'',
+					${reyxxb_id},
+					0
+				)
+	</insert>
+	<update id="updateZaffybxd" flushCache="true">
+		update rl_cnfy_zaffybxd set   riq =to_date('${riq}','yyyy-mm-dd'),
+									  zongje = #{zongje},
+									  renyxxb_id = #{reyxxb_id}
+									  where id = #{id}
+		
+	</update>
+	<select id="getBxddata"  resultType="java.util.HashMap">
+		SELECT id,jine*100 as jine,beiz FROM rl_cnfy_zafhtfydjb where ZAFFYBXD_ID =#{id}
+	</select>
+	<select id="getZongJine"  resultType="java.math.BigDecimal">
+		SELECT round(sum(jine),2)as zongjine FROM rl_cnfy_zafhtfydjb where ZAFFYBXD_ID =#{id}
+	</select>
+	
+	<select id="getZafyById"  resultType="java.util.HashMap">
+		SELECT MINGC,DANW FROM rl_cnfy_changnfyxm where ID =#{id}
+	</select>
+	<select id="getHetBianhById"  resultType="java.lang.String">
+		SELECT BIANH FROM rl_cnfy_hetb where ID =#{id}
+	</select>
+	<select id="getdanj"  resultType="java.lang.String">
+		select feiyje from RL_CNFY_HETZFB where RL_CNFY_CHANGNFYXM_ID =#{feiyxmid} and RL_CNFY_HETB_ID =#{hetid}
+	</select>
+	
+	<select id="getZafhtfydjbById" resultType="java.util.HashMap">
+		SELECT  id,
+  				zafhtb_id,
+ 	 			changnfyxmb_id,
+ 	 			to_char(qisrq,'yyyy-mm-dd') as qisrq,
+ 	 			to_char(jiesrq,'yyyy-mm-dd') as jiesrq,
+  				danj,
+  				shul,
+				jine
+ 			FROM rl_cnfy_zafhtfydjb  where id =#{id}
+	</select>
+	<update id ="updateZafDjb" flushCache="true">
+			update rl_cnfy_zafhtfydjb set   zafhtb_id= ${HETBIANH},
+											changnfyxmb_id = ${FEIYXM},
+											qisrq = to_date('${KAISSJ}','yyyy-mm-dd'),
+											jiesrq = to_date('${JIESSJ}','yyyy-mm-dd'),
+											danj = ${DANJ},
+											shul = ${SHUL},
+											jine = ${JINE},
+											beiz = '${beiz}'
+			where id = ${ZAFFYDJBID}
+	</update>
+	
+</mapper>

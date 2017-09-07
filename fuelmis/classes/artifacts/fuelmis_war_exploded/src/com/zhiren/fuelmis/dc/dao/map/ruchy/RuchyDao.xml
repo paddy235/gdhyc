@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.zhiren.fuelmis.dc.dao.ruchy.RuchyDao">	
+	<select id="selectChepbId" resultType="java.lang.String">
+		select id from rl_ys_chepb 
+		where SAMCODE=( select	distinct cy_zy.yuanbm from GX_CHEP_caizhbmb cy_zy 
+				left join GX_CHEP_caizhbmb zy_hy 
+				on cy_zy.mubbm=zy_hy.yuanbm where cy_zy.zhuanhlb_id = 1 and zy_hy.mubbm=#{1}
+	      ) 
+	     and diancxxb_id=#{0}
+	</select>
+	
+	<select id="getMeiyjcjg" resultType="java.util.LinkedHashMap">
+select distinct
+      h.huayd_id id,
+      d.quanc diancqc,
+      h.huaysj huayrq,
+      c.pinz meiz,
+      h.huaybm yangpbm,
+      h.mad mad,
+      h.ad ad,
+      h.vdaf vd,
+      h.std st_d,
+      h.qgrd qgrd 
+      from rl_ys_chepb c
+          left join rl_ys_chepb_qc q
+            on c.id = q.chepb_id
+          left join (select * from gx_chep_caizhbmb where zhuanhlb_id = 1) gx1
+            on c.samcode = gx1.yuanbm
+          left join (select * from gx_chep_caizhbmb where zhuanhlb_id = 2) gx2
+            on gx1.mubbm = gx2.yuanbm
+          left join rl_hy_huaydb h
+            on gx2.mubbm = h.huaybm
+          left join diancxxb d on d.id=c.diancxxb_id 
+			where h.dianc_id=${diancid} 
+				and h.huaysj between '${qisrq}' and   '${zhongzrq}'
+				and h.danjlx='入厂化验'
+			order by h.huaysj
+	</select>
+	<select id="getFahInfo" resultType="java.util.Map">
+		select distinct c.samcode,
+		         c.meikmc AS meikmc,
+		         c.pinz AS meizmc,
+		         c.faz AS faz,
+		         che.meil meil,
+		         '-' AS caiyr,
+		         '-' AS zhiyr,
+		         substr(q.qingcsj, 0, 10) AS caiyrq,
+		         c.samcode as chec,
+		         che.ches ches,
+		         che.bg || '-' || che.sm AS cheh
+		    from rl_ys_chepb c
+		  left join rl_ys_chepb_qc q on c.id=q.chepb_id
+		  left join (select * from gx_chep_caizhbmb where zhuanhlb_id=1) gx1 on c.samcode=gx1.yuanbm
+		  left join (select * from gx_chep_caizhbmb where zhuanhlb_id=2) gx2 on gx1.mubbm=gx2.yuanbm
+		  left join rl_hy_huaydb h on gx2.mubbm=h.huaybm
+		  left join       (SELECT count(id) ches, samcode, MAX(cheph) bg, MIN(cheph) sm, sum(maoz-piz-zongkd) meil
+		            from rl_ys_chepb
+		           GROUP BY samcode) che on c.samcode=che.samcode
+		   WHERE 
+		       gx2.mubbm =#{1}
+		       and c.diancxxb_id =#{0}
+	</select>
+	<insert id="insertHuayd">
+		insert into RL_HY_HUAYDB(
+			HUAYD_ID,HUAYY      ,
+			AAR   ,AD   ,AAD   ,
+			VDAF    ,VAD   ,VAR,
+			MT  ,MAD   ,
+			STAD   ,STD   ,SDAF   ,STAR,
+			QBAD   ,QNET_AR   ,QGRAD    ,QGRAD_DAF   ,QGRD   ,
+			HAD   ,HDAF  ,HAR,
+			FCAD   ,
+			BEIZ   ,CAOZSJ   ,CAOZRY       ,HUAYSJ   ,ZHUANGT,DIANC_ID,DANJLX,HUAYBM )
+		VALUES(
+			${ID}   ,'${HUAYY}',
+			${AAR},${AD},${AAD},
+			${VDAF},${VAD},round_new(${VAD}* (100 - ${MT}) / (100 - ${MAD}),2),
+			${MT},${MAD},
+			${STAD},${STD},${SDAF},round_new(${STD}*(100-${MT})/100,2),
+			${QBAD},${QNETAR_MJ},	${QGRAD},${QGRADDAF},	${QGRD},
+			${HAD},${HDAF},${HAD}*(100-${MT})/(100-${MAD}),
+			${FCAD},
+			'${BEIZ}','${SHENHSJ}','${SHENHR}','${HUAYRQ}',0     ,'${dcId}'    ,'入厂化验','${HUAYBM}'
+		)
+	</insert>
+	<insert id="insertGX">
+		insert into gx_chep_huayd(id,huayd_id,chepb_id) values (#{0},#{2},#{1})
+	</insert>
+	<select id="getHuaydID"  resultType="java.lang.String">
+		select huayd_id  from rl_hy_huaydb where huaybm=#{0}
+	</select>
+	<update id="updateHuayd">
+		update  RL_HY_HUAYDB set
+			HUAYY='${HUAYY}',
+			AAR =${AAR},AD=${AD},AAD=${AAD},	
+			VDAF=${VDAF},VAD=${VAD},VAR=round_new(${VAD}* (100 - ${MT}) / (100 - ${MAD}),2),
+			MT=${MT},MAD=${MAD},
+			STAD=${STAD},STD=${STD},SDAF=${SDAF},STAR=round_new(${STD}*(100-${MT})/100,2),			
+			QBAD=${QBAD},QGRAD=${QGRAD},QGRAD_DAF=${QGRADDAF},QGRD=${QGRD},QNET_AR=${QNETAR_MJ},
+			HAD=${HAD},HAR=${HAD}*(100-${MT})/(100-${MAD}),
+			FCAD=${FCAD},
+			HUAYSJ='${HUAYRQ}',
+			BEIZ='${BEIZ}',
+			ZHUANGT=0,
+			DIANC_ID='${dcId}',
+			DANJLX='入厂化验',
+			HUAYBM='${HUAYBM}'
+			WHERE HUAYD_ID = ${HUAYD_ID}
+	</update>
+	<select id="getHuaybm" resultType="java.lang.String">
+		select mubbm from gx_chep_caizhbmb where zhuanhlb_id = 2 and yuanbm=#{0}	
+	</select>
+</mapper>

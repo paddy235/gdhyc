@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiren.fuelmis.dc.dao.ruchy.SanfsllrDao">
+	<select id="getGongysList" resultType="java.util.Map">
+		select distinct GONGYSB_ID id,gongysmc mingc
+			from rl_ys_chepb where id in (select chepb_id from rl_ys_chepb_qc where substr(qingcsj,0,10)=#{0})
+	</select>
+
+	<select id="getChep" resultType="java.util.Map">
+		select distinct c.id id, 
+			cheph, 
+			maoz, 
+			piz, 
+			maoz-piz-zongkd jingz, 
+			sanfsl sanfl,
+			maoz-piz-zongkd-sanfsl chae, 
+			meikmc meikdw, 
+			gongysmc,
+			pinz, 
+			'' yunsdw,
+			zhongcsj,
+			qingcsj
+		from rl_ys_chepb c left join rl_ys_chepb_qc q on c.id=q.chepb_id 
+		where substr(zhongcsj,0,10) ='${riq}' 
+		<if test="GONGYSB_ID!=-1">
+			and GONGYSB_ID=${GONGYSB_ID}
+		</if>
+		order by cheph ,zhongcsj
+	</select>
+	<update id="updateChep">
+		update rl_ys_chepb set sanfsl=${SANFL} where id=${ID}
+	</update>
+</mapper>

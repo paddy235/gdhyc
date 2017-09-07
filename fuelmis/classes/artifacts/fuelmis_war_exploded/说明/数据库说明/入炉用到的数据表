@@ -1,0 +1,4 @@
+select * from rl_rul_banzb ;--入炉班组表
+select * from rl_rul_jizb; --入炉机组表
+select * from rl_hy_huaydb h where h.leix = '入炉化验'; --入炉化验报告表
+select  * from rl_rul_meihyb;--入炉耗用量表，有入炉班组、机组的id，和化验报告的id

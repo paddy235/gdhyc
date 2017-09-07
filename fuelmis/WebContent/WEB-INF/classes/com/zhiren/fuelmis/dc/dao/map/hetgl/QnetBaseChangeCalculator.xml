@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiren.fuelmis.dc.dao.hetgl.QnetBaseChangeCalculatorDao" >
+
+	<resultMap id="BaseResultMap" type="priceQalityRange">
+		<id column="ID"              property="id" jdbcType="NUMERIC" />
+		<result column="PO_SUB_ID"    	 property="po_sub_id" jdbcType="NUMERIC" />		
+		<result column="PRICE_COMPONENT_ID" 	 	 property="price_component_id" jdbcType="NUMERIC" />
+		<result column="QUALITY_ITEM_ID" property="quality_item_id" jdbcType="NUMERIC"/>		
+		<result column="RANGE_MIN" property="range_min" jdbcType="NUMERIC"/>
+		<result column="RANGE_MAX" property="range_max" jdbcType="NUMERIC"/>
+		<result column="UNITPRICE" property="unitprice" jdbcType="NUMERIC"/>
+		<result column="STATUS"   	 property="status" jdbcType="NUMERIC" />
+		<result column="DIANCXXB_ID" property="diancxxb_id" jdbcType="NUMERIC"/>
+		<result column="CREATED_BY_USERID"    	 property="created_by_userid" jdbcType="NUMERIC" />
+		<result column="CREATED_BY_USERACC"    property="created_by_useracc" jdbcType="VARCHAR" />
+		<result column="CREATED_BY_USERNAME"    property="created_by_username" jdbcType="VARCHAR" />
+		<result column="CREATION_DATE"     property="creation_date" jdbcType="VARCHAR" />
+		<result column="LAST_UPDATED_BY_USERID"    	 property="last_updated_by_userid" jdbcType="NUMERIC" />
+		<result column="LAST_UPDATED_BY_USERACC"    property="last_updated_by_useracc" jdbcType="VARCHAR" />
+		<result column="LAST_UPDATED_BY_USERNAME"    property="last_updated_by_username" jdbcType="VARCHAR" />
+		<result column="LAST_UPDATE_DATE"    property="last_update_date" jdbcType="VARCHAR" />	
+	</resultMap>
+	
+	<select id="getItemID" resultType="java.lang.String">
+		select price_item_id  
+			FROM rl_ht_price_scheme
+		WHERE id = #{po_price_scheme_id}
+	</select>
+
+	<select id="getTemplateData" resultMap="BaseResultMap">		  
+		select * from rl_ht_price_qalityrange
+	  		where price_component_id = #{componentid}
+	</select>
+	
+</mapper>

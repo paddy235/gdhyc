@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiren.fuelmis.dc.dao.kucgl.PandcxDao" >
+	<select id="getReport" resultType="java.util.LinkedHashMap">
+		select DC.MINGC DIANCXXB_ID,P.RIQ RIQ,P.ZHANGMKC,P.SHIPKC,P.CHANGSL,P.SHUIFCTZL,P.YINGKD,
+		P.FUJMC
+    	from PAND_GDJT P, DIANCXXB DC
+    	where P.DIANCXXB_ID = DC.ID and substr(P.RIQ,0,4)='${riq}'
+    	<if test=' dianc != "" and dianc !=null '>
+    		and DC.ID = ${dianc}
+    	</if>
+    	
+    	order by P.RIQ desc
+	</select>
+	<select id="getPand" resultType="java.util.Map">
+		select id,CHANGSL,DIANCXXB_ID,FUJMC,FUJZT,RIQ,SHIPKC,SHUIFCTZL,YINGKD,ZHANGMKC,ZHUANGT from PAND_GDJT
+		where substr(riq,0,4)='${riq}'
+	</select>
+</mapper>

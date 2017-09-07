@@ -1,0 +1,302 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiren.fuelmis.dc.dao.kucgl.chukgl.ChuksjdrDao">
+	<delete id="deleteChukd">
+	delete from rl_kc_chukdb where id in (
+		select distinct inv_out_id id from rl_kc_chukdb_sub where id in(
+			select id from RL_KC_CHURKDB_DELETE where shifdr=0 and yewlx in (
+				select id from gy_dm_churkywlxdmb g
+				where g.leixdm = -1 
+			)
+		)
+	)
+	</delete>
+	<delete id="deleteChukdSubByNothing">
+	delete from rl_kc_chukdb_sub where id in(
+			select id from RL_KC_CHURKDB_DELETE where shifdr=0 and yewlx in (
+				select id from gy_dm_churkywlxdmb g
+				where g.leixdm = -1 
+			)
+		)
+	</delete>
+	<delete id="deleteKucmxhzb">
+	delete from rl_kc_churkmxhzb where id in(
+			select id from RL_KC_CHURKDB_DELETE where shifdr=0 and yewlx in (
+				select id from gy_dm_churkywlxdmb g
+				where g.leixdm = -1 
+			)
+		)
+	</delete>
+	<update id="updateChurkdbDelete">
+			update RL_KC_CHURKDB_DELETE set shifdr='1' where yewlx  in( select id from gy_dm_churkywlxdmb g where g.leixdm = -1  )  and shifdr=0
+	</update>
+	<select id="getChukdbhs" resultType="java.lang.String">
+		select distinct rukdbh from
+		rl_kc_churkdb where shifdr=0 and yewlx in (select id from gy_dm_churkywlxdmb g
+		where g.leixdm = -1 ) and zhuangt = 1
+	</select>
+	<select id="getChukdID" resultType="java.lang.String">
+		select id from rl_kc_chukdb
+		where code=#{0}
+	</select>
+	<update id="updateChukd">
+		update rl_kc_chukdb set
+		(code,
+		transaction_date,
+		last_updated_by_username,
+		last_update_date,
+		org_id,
+		INV_PERIOD,
+		FINANCE_DATE,
+		PERIOD_ID,
+		PERIOD_DATE
+		)
+		=(
+		select
+		max(k.rukdbh),
+		max(k.yewrq),
+		'系统自动导入',
+		to_char(sysdate,'yyyy-mm-ddhh24:mi:ss'),
+		max(k.zuz),
+		max(k.kuaijrq),
+		to_char(sysdate,'yyyy-mm-ddhh24:mi:ss'),
+		max(k.kuaijrq_id),
+		max(k.kuaijrq)
+		from rl_kc_churkdb k where
+		k.rukdbh=code
+		)
+		where id=#{0}
+	</update>
+	<delete id="deleteChukdSub">
+		delete from rl_kc_chukdb_sub where INV_OUT_ID=#{0}
+	</delete>
+	<insert id="insertChukd">
+		insert into rl_kc_chukdb
+		(id,
+		code,
+		INV_PERIOD,
+		transaction_date,
+		created_by_username,
+		creation_date,
+		org_id,
+		FINANCE_DATE,
+		PERIOD_ID,
+		PERIOD_DATE
+		)
+		(select #{0},
+		#{1},
+		max(kuaijrq),
+		max(yewrq),
+		'系统创建',
+		to_char(sysdate, 'yyyy-mm-dd hh24:mi:ss'),
+		max(zuz),
+		to_char(sysdate,'yyyy-mm-dd hh24:mi:ss'),
+		max(kuaijrq_id),
+		max(kuaijrq)
+		from rl_kc_churkdb k
+		where rukdbh = #{1}
+		)
+	</insert>
+	<insert id="insertChukdSub">
+		insert into rl_kc_chukdb_sub(
+		id, inv_out_id,line,
+		zuz,huoz, kuczz, kucwz, kucwl,
+		yewlx, jiz_id, banz_id,
+		chuksl,danj,jine,
+		mt, mad, aad, aar, ad, vad, vdaf, stad, std, had,
+		qbad, qgrad, qnetar,
+		qnetar_k, hdaf
+		)(
+		select
+		k.id,(select id from
+		rl_kc_chukdb where code=#{0}),k.hangh,
+		k.zuz,k.huoz,k.kuczz,k.kucwz,k.kucwl,
+		k.yewlx,k.jiz_id,k.banz_id,
+		nvl(k.yanssl,0)+nvl(k.ruksl,0),round(k.jine/(nvl(k.yanssl,0)+nvl(k.ruksl,0)),2),k.jine,
+		h.mt,h.mad,h.aad,h.aar,h.ad,h.vad,h.vdaf,h.stad,h.std,h.had,h.qbad,h.qgrad,h.qnet_ar,round(h.qnet_ar*4.182/1000,2)
+		qnetar_k, h.hdaf
+		from rl_kc_churkdb k left join rl_kc_huaybgb h on
+		k.rukdbh=h.rukdh
+		where k.rukdbh=#{0}
+		)
+	</insert>
+	<delete id="deteteKucmxhzb">
+		delete from rl_kc_churkmxhzb where
+		document_number=#{0}
+	</delete>
+	<insert id="insertKucmxhzb">
+		insert into rl_kc_churkmxhzb(
+		id, zuz, huoz,
+		kuczz,kucwz, kucwl, PERIOD_ID,PERIOD_DATE,
+		document_line_id, document_number,
+		inv_transaction_type_id,
+		transaction_date,
+		inv_operation,
+		quantity,
+		price, amount,
+		quantity_flag, money_flag,
+		way_mode,
+		created_by_username,
+		creation_date,
+		mt, mad, aad,aar, ad, vad,
+		vdaf, stad, std, had, qnetar,
+		qnetar_j
+		)
+		(
+		select
+		s.id,s.zuz, s.huoz,s.kuczz, s.kucwz, s.kucwl,
+		m.PERIOD_ID,m.PERIOD_DATE,
+		s.id,m.code,s.yewlx,
+		m.transaction_date,'-1',s.chuksl,s.danj,s.jine,
+		d.jisl,d.jije,'汽车',
+		'系统导入',
+		to_char(sysdate,'yyyy-mm-dd hh24:mi:ss'),
+		s.mt,s.mad,s.aad,s.aar,s.ad,s.vad,s.vdaf,s.stad,s.std,s.had,s.qnetar,s.qnetar_k
+		from rl_kc_chukdb m
+		inner join rl_kc_chukdb_sub s on m.id=s.inv_out_id
+		left join gy_dm_churkywlxdmb d on d.id=s.yewlx
+		where m.code=#{0}
+		)
+	</insert>
+	<select id="getKucmxList" resultType="java.util.Map">
+	select
+	s.id id,
+		s.zuz, s.huoz, s.kuczz,
+		s.kucwz,s.kucwl, m.PERIOD_ID,m.PERIOD_DATE,
+		s.id document_line_id,m.code,s.yewlx,
+		m.transaction_date,'-1',s.chuksl,s.danj,s.jine,
+		d.jisl,d.jije,'汽车',
+		'系统导入',
+		to_char(sysdate,'yyyy-mm-dd hh24:mi:ss'),
+		s.mt,s.mad,s.aad,s.aar,s.ad,s.vad,s.vdaf,s.stad,s.std,s.had,s.qnetar,s.qnetar_k
+		from rl_kc_chukdb m
+		inner join rl_kc_chukdb_sub s on m.id=s.inv_out_id
+		left join gy_dm_churkywlxdmb d on d.id=s.yewlx
+		where m.code=#{0}
+	</select>
+	<update id="updateKucmxhzb">
+		update rl_kc_churkmxhzb set 
+		zuz='${ZUZ}', huoz='${HUOZ}', kuczz='${KUCZZ}',
+		kucwz='${KUCWZ}',kucwl='${KUCWL}',PERIOD_ID='${PERIOD_ID}',PERIOD_DATE='${PERIOD_DATE}',
+		document_line_id='${DOCUMENT_LINE_ID}', document_number='${CODE}',
+		inv_transaction_type_id='${YEWLX}',
+		transaction_date='${TRANSACTION_DATE}',
+		inv_operation='-1',
+		quantity='${CHUKSL}',
+		price='${DANJ}', amount='${JINE}',
+		quantity_flag='${JISL}',
+		money_flag='${JIJE}',
+		way_mode='汽车',
+		last_updated_by_username='系统导入',
+		last_update_date=TO_CHAR(SYSDATE,'YYYY-MM-DD HH24:MI:SS'),
+		mt='${MT}', mad='${MAD}',
+		aad='${AAD}',aar='${AAR}', ad='${AD}', vad='${VAD}',
+		vdaf='${VDAF}', stad='${STAD}', std='${STD}', had='${HAD}', qnetar='${QNETAR}', qnetar_j='${QNETAR_K}'
+		where id='${ID}'
+		
+	</update>
+	<!-- ======================================================================================================== -->
+	<update id="updateChurkd">
+		update rl_kc_churkdb set shifdr=1 where rukdbh=#{0}
+	</update>
+<!-- 	<delete id="deleteChukdj">
+		delete from rl_kc_chukdjb where
+		yewrq=to_char(sysdate,'yyyy-mm-dd')
+	</delete> -->
+	<select id="getChukdjCondition" resultType="java.util.Map">
+		select level,
+		k.kaisrq,
+		k.id kuaijq_id,
+		to_char(to_date(k.kaisrq, 'yyyy-mm-dd') + level - 1, 'yyyy-mm-dd') as jiesrq_zangu,
+		to_char(to_date(k.kaisrq, 'yyyy-mm-dd') - 1 + level - 1,
+		'yyyy-mm-dd') as chukrq_zangu
+		from (select k.id, k.kuaijrq,k.kaisrq
+		from rl_kc_kuaijrqb k
+		inner join gx_kuaijq_zuz gx
+		on k.id = gx.kuaijq_id
+		and gx.kuczz_id =  #{0}
+		and gx.zhuangt = '启用') k
+		connect by level <![CDATA[<]]>=
+		sysdate - to_date(k.kaisrq, 'yyyy-mm-dd') + 1
+	</select>
+	<select id="getKuczzIDs" resultType="java.lang.String">
+		select id from rl_kc_kuczzb
+	</select>
+	<insert id="insertChukdj">
+		insert into RL_KC_CHUKDJB (
+		id, zuz, huoz, kucwl, kucwz, kuczz, yewrq, chukdj )
+		( select seq_chukdjb_id.nextval, zuz,huoz,kucwl,kucwz,kuczz,'${JIESRQ_ZANGU}',
+		decode((qic_shul+jies_sl+zang_sl-chuksl),0,0,round((qic_jine+jies_je+ zang_je-chukje )/ (qic_shul + jies_sl + zang_sl - chuksl),4) ) as chukdj
+
+		from
+		(select mt.zuz, mt.huoz, mt.kuczz, mt.kucwz, mt.kucwl,
+			(mt.initial_quantity) as qic_shul,
+			(mt.initial_amount) as qic_jine,
+			nvl(js.jies_sl,0) jies_sl,nvl(js.jies_je,0) jies_je,
+			nvl(zang_sl,0) zang_sl,nvl(zang_je,0) zang_je,
+			nvl(chuksl,0) chuksl,nvl(chukje,0) chukje
+		from rl_kc_month_total mt,
+		(select zuz, huoz, kuczz, kucwz, kucwl,
+			sum(decode(mx.inv_operation,1, decode(mx.balance_flag,0,0,decode(QUANTITY_FLAG, 0, 0, nvl(QUANTITY, 0))) ,0)) as jies_sl,
+			sum(decode(mx.inv_operation,1, decode(mx.balance_flag,0,0,decode(MONEY_FLAG, 0, 0, nvl(AMOUNT, 0))) ,0)) as jies_je
+		from RL_KC_CHURKMXHZB mx
+		where PERIOD_ID = '${KUAIJQ_ID}'
+			and ((TRANSACTION_DATE<![CDATA[<]]> '${JIESRQ_ZANGU}' and  kucwz!=14490385545035)
+				or (TRANSACTION_DATE<![CDATA[<=]]> '${JIESRQ_ZANGU}' and  kucwz=14490385545035))
+			and INV_OPERATION = 1
+			and mx.kuczz='${KUCZZ}'
+		group by zuz, huoz, kuczz, kucwz, kucwl) js,
+		(select zuz, huoz, kuczz, kucwz, kucwl,
+				sum(decode(QUANTITY_FLAG, 0, 0, nvl(QUANTITY, 0))) as zang_sl,
+              	sum(decode(MONEY_FLAG, 0, 0, nvl(AMOUNT, 0))) as zang_je
+		from RL_KC_CHURKMXHZB mx
+		where INV_OPERATION = 1 
+			and nvl(BALANCE_FLAG, 0) = 0
+			and ((TRANSACTION_DATE<![CDATA[<]]> '${JIESRQ_ZANGU}' and  kucwz!=14490385545035)
+				or (TRANSACTION_DATE<![CDATA[<=]]> '${JIESRQ_ZANGU}' and  kucwz=14490385545035))
+			and mx.kuczz='${KUCZZ}'
+		group by zuz, huoz, kuczz, kucwz, kucwl ) zangu,
+		(select mx.zuz, mx.huoz, mx.kuczz, mx.kucwz, mx.kucwl,
+			sum(decode(mx.inv_operation,-1,decode(QUANTITY_FLAG, 0, 0, nvl(QUANTITY, 0)),0)) as chuksl,
+			sum(decode(mx.inv_operation,-1,decode(MONEY_FLAG, 0, 0, nvl(QUANTITY, 0)*nvl(ckdj.CHUKDJ,0) ),0)) as chukje
+		from RL_KC_CHURKMXHZB mx ,rl_kc_chukdjb ckdj
+		where mx.zuz = ckdj.zuz(+)
+			and mx.huoz = ckdj.huoz(+)
+			and mx.kuczz = ckdj.kuczz(+)
+			and mx.kucwz = ckdj.kucwz(+)
+			and mx.kucwl = ckdj.kucwl(+)
+			and INV_OPERATION = -1
+			AND mx.transaction_date = ckdj.yewrq(+)
+			and TRANSACTION_DATE <![CDATA[<]]> '${CHUKRQ_ZANGU}'
+			and INV_OPERATION = -1
+			and PERIOD_ID = '${KUAIJQ_ID}'
+			and mx.kuczz='${KUCZZ}'
+		group by mx.zuz, mx.huoz, mx.kuczz, mx.kucwz, mx.kucwl) chuk
+		where mt.zuz = js.zuz(+)		
+		and mt.huoz = js.huoz(+)
+		and mt.kuczz = js.kuczz(+)
+		and mt.kucwz = js.kucwz(+)
+		and mt.kucwl = js.kucwl(+)
+		and mt.zuz = zangu.zuz(+)
+		and mt.huoz = zangu.huoz(+)
+		and mt.kuczz = zangu.kuczz(+)
+		and mt.kucwz = zangu.kucwz(+)
+		and mt.kucwl = zangu.kucwl(+)
+		and mt.zuz = chuk.zuz(+)
+		and mt.huoz = chuk.huoz(+)
+		and mt.kuczz = chuk.kuczz(+)
+		and mt.kucwz = chuk.kucwz(+)
+		and mt.kucwl = chuk.kucwl(+)
+		and mt.period_id = '${KUAIJQ_ID}'
+		)
+
+		)
+	</insert>
+	<delete id="deleteChukdj">
+	delete from rl_kc_chukdjb where yewrq='${JIESRQ_ZANGU}'
+	</delete>
+<select id="getKucmxhzbID" resultType="java.lang.String">
+		select id from rl_kc_churkmxhzb where DOCUMENT_NUMBER=#{0}
+	</select>
+	
+</mapper>

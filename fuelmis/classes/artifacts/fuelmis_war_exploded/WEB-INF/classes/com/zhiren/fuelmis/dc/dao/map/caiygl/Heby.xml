@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiren.fuelmis.dc.dao.caiygl.heby.HebyDao" >	
+	<select id="getSamcodeList"  resultType="java.util.LinkedHashMap">
+    select distinct samcode name,samcode value
+      from rl_ys_chepb 
+      where id in (select chepb_id from rl_ys_chepb_qc 
+    where substr(qingcsj,0,10)= #{0}
+       )
+      order by samcode
+	</select>
+	<select id="getList" resultType="java.util.LinkedHashMap">
+		select distinct 
+		    max(c.chec) CHEC,
+		    c.gongysmc GONGYSMC,
+            c.pinz PINZ,
+            SUBSTR(q.zhongcsj, 0, 10) FAHRQ,
+            SUBSTR(q.qingcsj, 0, 10) DAOHRQ,
+            c.samcode SAMCODE,
+            count(c.samcode) CHES,
+            sum(c.piaoz) PIAOZ,
+            max(c.isconverged) ISCONVERGED
+		    from rl_ys_chepb c
+		          left join rl_ys_chepb_qc q
+		            on c.id = q.chepb_id
+		     where
+		     <!-- h.huayd_id not in( select huayd_id from  rl_hy_huaydb where h.zhuangt <![CDATA[ <> ]]> 0 and danjlx='入厂化验')and -->
+		        SUBSTR(q.qingcsj, 0, 10) = #{0}
+		     group by c.gongysmc,
+		              c.pinz,
+		              SUBSTR(q.zhongcsj, 0, 10),
+		              SUBSTR(q.qingcsj, 0, 10),
+		              c.samcode
+		     order by c.gongysmc
+	</select>
+	<update id="updateList">
+		update rl_ys_chepb set SAMCODE='${SAMCODE}',isconverged='1',PINZ='${PINZ}',pinzb_id=(select distinct id from pinzb where mingc='${PINZ}') where CHEC='${CHEC}'
+	</update>
+	<update id="updateCancelList">
+		update rl_ys_chepb set SAMCODE=CHEC,ISCONVERGED='0' where samcode='${SAMCODE}'
+	</update>
+</mapper>

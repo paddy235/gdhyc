@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiren.fuelmis.dc.dao.rib.RanmzhrbbDao" >
+     <select id="getShouhc" resultType="java.util.Map">
+          select decode(
+                         grouping(decode(hj.meikmc,null,lj.meikmc,hj.meikmc)),0,
+                         decode(hj.meikmc,null,lj.meikmc,hj.meikmc),'合计' )meikmc,
+                 sum(hj.ches) ches_hj, sum(lj.ches) ches_lj,
+                 sum(hj.shul) kfsl_hj,sum(lj.shul) kfsl_lj,0 kfsl_jh,0 kfsl_wcl,
+                 sum(hj.shul) gh_hj,sum(lj.shul) gh_lj,
+                 sum(hj.yuns) yuns_hj,sum(lj.yuns) yuns_lj,
+                 sum(hj.kuid) kuid_hj,sum(lj.kuid) kuid_lj,
+                 0 sunh_hj,0 sunh_lj,0 kuisl_hj, 0 kuisl_lj
+          from
+               (select m.mingc meikmc,count(c.id) ches,
+                       sum(c.maoz-c.piz-c.koud) shul,
+                       sum(c.yuns) yuns,
+                       sum(c.kuid) kuid
+                from rl_ys_chepb c
+                     inner join rl_ys_chepb_qc q on c.id=q.chepb_id
+                     inner join meikxxb m on m.id=c.meikxxb_id
+                where substr(q.zhongcsj,0,10) ='${jiezriq}'
+                group by m.mingc) hj
+               full join
+               (select m.mingc meikmc,count(c.id) ches,
+                       sum(c.maoz-c.piz-c.koud) shul,
+                       sum(c.yuns) yuns,
+                       sum(c.kuid) kuid
+                from rl_ys_chepb c
+                     inner join rl_ys_chepb_qc q on c.id=q.chepb_id
+                     inner join meikxxb m on m.id=c.meikxxb_id
+                     inner join yuebsjpzb p
+                          on substr(q.zhongcsj,0,10) between p.yuebksrq and p.yuebjzrq
+                where '${jiezriq}'  between p.yuebksrq and p.yuebjzrq
+                      and  substr(q.zhongcsj,0,10) between p.yuebksrq and '${jiezriq}'
+                group by m.mingc) lj
+                    on hj.meikmc=lj.meikmc
+          group by rollup (decode(hj.meikmc,null,lj.meikmc,hj.meikmc) )
+     </select>
+     <select id="getShouhcDetail" resultType="java.util.Map">
+          select zrkc,rucsl, risml_1,risml_2,(risml_1+risml_2) risml_hj,
+               risml_1_lj,risml_2_lj,(risml_1_lj+risml_2_lj) risml_lj,yuns,kuid,
+                                             0 changh,panyk,drkc
+          from
+               (select panyk,kuc drkc from SHOUHCRBB  where  riq=date'2017-07-02'),
+               (select kuc zrkc from SHOUHCRBB  where  riq=date'2017-07-02'-1),
+               (select sum(c.maoz-c.piz-c.koud) rucsl,sum(c.yuns) yuns,sum(c.kuid) kuid from rl_ys_chepb c inner join rl_ys_chepb_qc q
+                         on c.id=q.chepb_id where substr(q.zhongcsj,0,10)='2017-07-02'),
+               (select nvl(sum(fadhy+gongrhy+qity+feiscy),0) risml_1 from rl_rul_meihyb
+               where jizfzb_id=14452408331220
+                     and substr(rulrq,0,10)='2017-07-02'),
+               (select sum(fadhy+gongrhy+qity+feiscy) risml_2 from rl_rul_meihyb
+               where jizfzb_id=14452408331221
+                     and substr(rulrq,0,10)='2017-07-02'),
+               (select nvl(sum(fadhy+gongrhy+qity+feiscy),0) risml_1_lj from rl_rul_meihyb
+               where jizfzb_id=14452408331220
+                     and substr(rulrq,0,10) between substr('2017-07-02',0,8)||'01' and '2017-07-02'),
+               (select sum(fadhy+gongrhy+qity+feiscy) risml_2_lj from rl_rul_meihyb
+               where jizfzb_id=14452408331221
+                     and substr(rulrq,0,10) between substr('2017-07-02',0,8)||'01' and '2017-07-02' )
+     </select>
+</mapper>

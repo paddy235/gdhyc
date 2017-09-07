@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiren.fuelmis.dc.dao.yuebgl.yuebwh.HaochjDao">
+	<select id="getAll" resultType="java.util.Map">
+		SELECT
+		ID,FENX,QICKC,SHOUML,FADY,GONGRY,QITH,SUNH,DIAOCL,PANYK,SHUIFCTZ,JITCS,KUC,RUNXCS,ZHUANGT
+		FROM YUESHCHJB
+		WHERE RIQ=#{riq} AND DIANCXXB_ID=#{dianc} ORDER BY FENX
+	</select>
+	<select id="getLastMonthLeij" resultType="java.util.Map">
+        select   nvl((select h.kuc from YUESHCHJB h
+        where to_date(riq,'yyyy-mm') =add_months(to_date(substr('${riq}',0,4)||'-12','yyyy-mm'),-12)
+              and fenx='本月')
+        ,0) QICKC,t.* from
+            (select
+                 nvl(round_new(sum(shouml),2),0) shouml,
+                 nvl(round_new(sum(fady),2),0) fady,
+                 nvl(round_new(sum(gongry),2),0) gongry,
+                 nvl(round_new(sum(qith),2),0) qith,
+                 nvl(round_new(sum(sunh),2),0) sunh,
+                 nvl(round_new(sum(diaocl),2),0) diaocl,
+                 nvl(round_new(sum(panyk),2),0) panyk,
+                 nvl(round_new(sum(shuifctz),2),0) shuifctz,
+                 nvl(round_new(sum(jitcs),2),0) jitcs,
+                 nvl(round_new(sum(runxcs),2),0) runxcs
+             from YUESHCHJB
+             where  to_date(riq,'yyyy-mm') BETWEEN trunc(to_date('${riq}','yyyy-mm'),'yyyy') and ADD_MONTHS (to_date('${riq}','yyyy-mm'),-1)
+                    and fenx='本月') t
+    </select>
+</mapper>

@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiren.fuelmis.dc.dao.diaoygl.DiaoybbDao" >	
+	<select id="getRanlrcgjhd"  resultType="java.util.LinkedHashMap">
+
+  select 
+          dm.jihdh, 
+          dm.riq,
+          p.mingc meiz, 
+          g.mingc gongf, 
+          ds.shul, 
+          ds.qnet_ar, 
+          ds.st_ar, 
+          ds.v_ar, 
+          ds.a_ar, 
+          ds.zongcs, 
+          ds.banzcs
+       from RL_GYS_diaodjh_main dm
+  left join rl_gys_diaodjh_sub ds
+    on dm.id = ds.main_id
+  left join pinzb p
+    on ds.meiz_id = p.id
+  left join gongysb g
+    on dm.gongysb_id = g.id
+ where riq= #{0}
+          union all
+select max(dm.jihdh)  jihdh,
+       max(dm.riq) riq,
+       '合计' gongf,
+       '合计' meiz,
+       sum(ds.shul) shul,
+       sum(ds.qnet_ar) qnet_ar,
+       sum(ds.st_ar) qnet_ar,
+       sum(ds.v_ar) qnet_ar,
+       sum(ds.a_ar) qnet_ar,
+       sum(ds.zongcs) qnet_ar,
+       sum(ds.banzcs) qnet_ar
+  from RL_GYS_diaodjh_main dm
+  left join rl_gys_diaodjh_sub ds
+    on dm.id = ds.main_id
+  left join pinzb p
+    on ds.meiz_id = p.id
+  left join gongysb g
+    on dm.gongysb_id = g.id
+ where riq= #{0}
+ 
+
+	</select>
+		<select id="getDuizd"  resultType="java.util.LinkedHashMap">
+	select*from (select dm.jihdh jihdh_j,
+       substr(dm.riq,0,10) riq_j,
+       p.mingc    meiz_j,
+       g.mingc    gongf_j,
+       ds.shul shul_j,
+       ds.qnet_ar qnet_ar_j,
+       ds.st_ar st_ar_j,
+       ds.v_ar v_ar_j,
+       ds.a_ar a_ar_j,
+       ds.zongcs zongcs_j,
+       ds.banzcs banzcs_j
+  from RL_GYS_diaodjh_main dm
+  left join rl_gys_diaodjh_sub ds
+    on dm.id = ds.main_id
+  left join pinzb p
+    on ds.meiz_id = p.id
+  left join gongysb g
+    on dm.gongysb_id = g.id where substr(dm.riq,0,10)=#{0} ) j
+    
+full join
+(select '实供煤' jihdh_s,
+      substr(q.qingcsj,0,10) riq_s,
+       c.pinz    meiz_s,
+       c.gongysmc gongf_s,
+       sum(c.maoz-c.piz-c.zongkd) shul_s,
+       sum(h.qnet_ar) qnet_ar_s,
+       sum(h.star) st_ar_s,
+       sum(h.var) v_ar_s,
+       sum(h.aar) a_ar_s,
+       count(c.samcode) zongcs_s,
+       0 banzcs_s
+      from rl_ys_chepb c
+  left join rl_ys_chepb_qc q
+  on c.id = q.chepb_id
+  left join (select * from gx_chep_caizhbmb where zhuanhlb_id = 1) gx1
+  on c.samcode = gx1.yuanbm
+  left join (select * from gx_chep_caizhbmb where zhuanhlb_id = 2) gx2
+  on gx1.mubbm = gx2.yuanbm
+  left join rl_hy_huaydb h
+  on gx2.mubbm = h.huaybm 
+  where substr(q.qingcsj,0,10)=#{0}
+  group by  substr(q.qingcsj,0,10),c.pinz ,c.gongysmc) s
+  
+   on j.riq_j=s.riq_s
+  and j.meiz_j=s.meiz_s
+   and j.gongf_j=s.gongf_s 
+   order by  riq_j 
+  
+	</select>
+</mapper>

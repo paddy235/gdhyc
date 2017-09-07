@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiren.fuelmis.dc.dao.xitgl.ZiyxxDao" >
+	<resultMap id="BaseResultMap" type="ziyxx" >
+		<id column="ID" property="id" jdbcType="NUMERIC" />
+		<result column="XUH" property="xuh" jdbcType="NUMERIC" />
+		<result column="MINGC" property="name" jdbcType="VARCHAR" />
+		<result column="WENJWZ" property="wenjwz" jdbcType="VARCHAR" />
+		<result column="JIB" property="jib" jdbcType="NUMERIC" />
+		<result column="FUID" property="fuid" jdbcType="NUMERIC" />
+		<result column="ZHUANGT" property="zhuangt" jdbcType="NUMERIC" />
+		<result column="OPEN" property="open" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<sql id="Base_Column_List" >
+    	ID, XUH, MINGC, WENJWZ, JIB, FUID,ZHUANGT
+	</sql>
+	
+	<select id="getParent" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+    	from ZIYXXB where FUID = -1 and ZHUANGT = 0 
+    	<if test=' renyxxb_id!=null and renyxxb_id!="" '>
+    	    and ID in (select ZIYXXB_ID from QUANXXXB where RENYXXB_ID = #{renyxxb_id})
+    	</if>
+    	union
+    	select
+		<include refid="Base_Column_List" />
+    	from ZIYXXB where ID = 0 and ZHUANGT = 0 
+    	order by XUH asc
+	</select>
+	
+	<select id="getChildren" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+    	from ZIYXXB where ZHUANGT = 0 and FUID = #{id,jdbcType=NUMERIC}
+    	<if test=' renyxxb_id!=null and renyxxb_id!="" '>
+    	    and ID in (select ZIYXXB_ID from QUANXXXB where RENYXXB_ID = #{renyxxb_id})
+    	</if>
+		order by XUH asc
+	</select>
+	
+	<select id="getZiyxx" resultMap="BaseResultMap">
+	    select -1 ID,1 XUH, '资源' MINGC,'#' WENJWZ,1 JIB,0 FUID,0 ZHUANGT,'true' OPEN from ZIYXXB
+	    union 
+		select
+		<include refid="Base_Column_List" />,'false' OPEN 
+    	from ZIYXXB where ZHUANGT = 0 and mingc <![CDATA[<>]]> '首页' order by ID asc
+	</select>
+	
+	<select id="getOne" resultMap="BaseResultMap">
+	    select
+		<include refid="Base_Column_List" />
+    	from ZIYXXB where ZHUANGT = 0 and ID = #{id}
+	</select>
+	
+	<insert id="insertZiyxx" parameterType="ziyxx">
+	    insert into ZIYXXB (ID,XUH,MINGC,WENJWZ,JIB,FUID,ZHUANGT) values 
+	    ((select nvl(max(ID)+1,#{fuid}||'01') from ZIYXXB where FUID = #{fuid}),
+	    (select nvl(max(XUH)+1,1) from ZIYXXB where FUID = #{fuid}),
+	    #{name},#{wenjwz},(select  nvl((MAX(JIB)+1),1) from ZIYXXB where ID = #{fuid}),#{fuid},#{zhuangt})
+	</insert>
+
+	<update id="updateZiyxx" parameterType="ziyxx">
+	    update ZIYXXB 
+		<trim prefix="SET" suffixOverrides=",">
+			<if test="name != null">MINGC=#{name},</if>
+			<if test="wenjwz != null">WENJWZ=#{wenjwz},</if>
+			<if test="zhuangt != null">ZHUANGT=#{zhuangt},</if>
+		</trim>
+		where ID=#{id}
+	</update>
+	
+	<delete id="deleteZiyxx" parameterType="java.util.Map">
+	    delete from ZIYXXB where ID=#{id}
+	</delete>
+</mapper>

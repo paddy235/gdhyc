@@ -1,0 +1,584 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiren.fuelmis.dc.dao.jiesgl.MeikjsDao">
+    <insert id="insertGXChurkdbZafjsb">
+        INSERT INTO gx_churkdb_zafjsb (id, chepb_id, churkdb_id, zafjsb_id)
+            SELECT
+                seq_gx_churkdb_zafjsb.nextval,
+                k.chepb_id,
+                k.id,
+                ${zafjsb_id}
+            FROM vm_kucmx k
+            WHERE k.rukdbh IN (${rukdh})
+    </insert>
+    <update id="saveJiesd_hyc">
+        BEGIN
+        <if test="caozlx==0">
+            insert into RL_JS_YUEJSDB (
+            <foreach collection="jiesd.keys" item="k" index="i" separator=",">
+                <if test="k!='zhibList'">${k}</if>
+            </foreach>
+            )VALUES(
+            <foreach collection="jiesd.keys" item="k" index="i" separator=",">
+                <if test="k!='zhibList'">'${jiesd[k]}'</if>
+            </foreach>
+            );
+            <foreach collection="jiesd.zhibList" item="zhib" index="i" >
+                insert into RL_JS_JIESZBSJB (
+                <foreach collection="zhib.keys" item="k" index="i" separator=",">
+                    ${k}
+                </foreach>
+                ) VALUES (
+                <foreach collection="zhib.keys" item="k" index="i" separator=",">
+                    '${zhib[k]}'
+                </foreach>
+                );
+            </foreach>
+        </if>
+        <if test="caozlx==1">
+            update RL_JS_YUEJSDB set
+            <foreach collection="jiesd.keys" item="k" index="i" separator=",">
+                <if test="k!='zhibList'">${k}='${jiesd[k]}'</if>
+            </foreach>
+            where id=${jiesd["ID"]};
+            <foreach collection="jiesd.zhibList" item="zhib" index="i">
+                update RL_JS_JIESZBSJB set
+                <foreach collection="zhib.keys" item="k" index="i" separator=",">
+                    <if test="k!='zhibList'">${k}='${zhib[k]}'</if>
+                </foreach>
+                where id=${zhib["ID"]};
+            </foreach>
+        </if>
+        end;
+    </update>
+    <delete id="deleteJiesdbByJiesbh">
+        DELETE FROM rl_js_yuejsdb
+        WHERE jiesbh = #{Jiesbh}
+    </delete>
+    <delete id="deleteJieszbsjbByJiesbh">
+        DELETE FROM RL_JS_JIESZBSJB
+        WHERE jiesdbh = #{jiesbh}
+    </delete>
+    <select id="getjiesd" resultType="java.util.Map">
+     SELECT id ,
+            nvl(jiesbh,0) jiesbh,
+            nvl(caozrq,0) caozrq,
+            nvl(gongysb_id,0) gongysb_id,
+            nvl(faz_id,0) faz_id,
+            nvl(pinzb_id,0) pinzb_id,
+            nvl(zhongcsj,0) zhongcsj,
+            nvl(qingcsj,0) qingcsj,
+            nvl(diancxxb_id,0) diancxxb_id,
+            nvl(piaoz,0) piaoz,
+            nvl(ches,0) ches,
+            nvl(daibch,0) daibch,
+            nvl(jiesrz,0) jiesrz,
+            nvl(jieslf,0) jieslf,
+            nvl(jiessl,0) jiessl,
+            nvl(rezzk,0) rezzk,
+            nvl(liufzk,0) liufzk,
+            nvl(jiesjg,0) jiesjg,
+            nvl(jiesje,0) jiesje,
+            nvl(jihkjb_id,0) jihkjb_id,
+            nvl(yingd,0) yingd,
+            nvl(kuid,0) kuid,
+            nvl(jingz,0) jingz,
+            nvl(hetjg,0) hetjg,
+            nvl(changrljbr,0) changrljbr,
+            nvl(changrljsrq,0) changrljsrq,
+            nvl(beiz,'') beiz,
+            nvl(zhuangt,0) zhuangt,
+            nvl(liuc_id,0) liuc_id,
+            nvl(meikje,0) meikje,
+            nvl(shuik,0) shuik,
+            nvl(shijd,0) shijd,
+            nvl(hetbh,0) hetbh,
+            nvl(jieslx,0) jieslx,
+            nvl(shangccwzt,0) shangccwzt,
+            nvl(fahksrq,0) fahksrq,
+            nvl(fahjzrq,0) fahjzrq,
+            nvl(yansksrq,0) yansksrq,
+            nvl(yansjzrq,0) yansjzrq,
+            nvl(shoukdw,0) shoukdw,
+            nvl(kaihyh,0) kaihyh,
+            nvl(zhangh,0) zhangh,
+            nvl(fapbh,0) fapbh,
+            nvl(yzfxm,0) yzfxm,
+            nvl(pinz,0) pinz,
+            nvl(gongysmc,0) gongysmc,
+            nvl(meikxxb_id,0) meikxxb_id,
+            nvl(meikmc,0) meikmc,
+            nvl(diancmc,0) diancmc,
+            nvl(fazmc,0) fazmc,
+            nvl(pinzmc,0) pinzmc,
+            nvl(yansbh,0) yansbh,
+            nvl(buhsdj,0) buhsdj,
+            nvl(bukk,0) bukk,
+            nvl(jiakhj,0) jiakhj,
+            nvl(shuil,0) shuil,
+            nvl(meikhj,0) meikhj,
+            nvl(yunf,0) yunf,
+            nvl(yunzf,0) yunzf,
+            nvl(kuangqyf,0) kuangqyf,
+            nvl(kuangqzf,0) kuangqzf,
+            nvl(bukqyf,0) bukqyf,
+            nvl(yunfbhs,0) yunfbhs,
+            nvl(shuil1,0) shuil1,
+            nvl(shuik1,0) shuik1,
+            nvl(yunzfhj,0) yunzfhj,
+            nvl(jufyf,0) jufyf,
+            nvl(jufzf,0) jufzf,
+            nvl(guohsl,0) guohsl,
+            nvl(ZONGHJ,0) ZONGHJ,
+            nvl(jiesslcy,0) jiesslcy,
+            nvl(( select sum(zj.zhejbz) as zhibzdj from rl_js_jieszbsjb zj where zj.jiesdbh = rl_js_yuejsdb.jiesbh) ,0)  zhibzdj
+        FROM rl_js_yuejsdb
+        WHERE jiesbh = #{Jiesbh}
+    </select>
+    <delete id="deleteJiesdByJiesdbh">
+        DELETE FROM rl_js_yuejsdb
+        WHERE jiesbh = #{jiesbh}
+    </delete>
+    <delete id="deleteJieszbsjbByJiesdbh">
+        DELETE FROM rl_js_jieszbsjb
+        WHERE jiesdbh = #{jiesbh}
+    </delete>
+    <select id="gethetmx" resultType="java.util.Map">
+        SELECT
+            ht.hetl,
+            dc.quanc AS danw,
+            gys.quanc,
+            gys.kaihyh,
+            gys.zhangh,
+            gys.id   AS gysid,
+            dc.id    AS diancid
+        FROM
+            (SELECT *
+             FROM rl_ht_hetb
+             WHERE id = (SELECT hetb_id
+                         FROM rl_ht_caigddb c INNER JOIN rl_ht_caigddb_sub s ON c.id = s.caigddb_id
+                         WHERE s.id = #{hetbh})) ht,
+            gongysb gys, diancxxb dc
+        WHERE ht.gongf = gys.id AND ht.diancxxb_id = dc.id
+    </select>
+    <select id="getJieszbsjbByJiesbh" resultType="java.util.Map">
+        SELECT *
+        FROM RL_JS_JIESZBSJB
+        WHERE jiesdbh = #{jiesbh}
+    </select>
+    <update id="udpateChurkdb">
+        UPDATE rl_kc_churkdb
+        SET RL_JS_YUEJSDB_ID = ${jiesdid}
+        WHERE RUKDBH IN (${addition})
+    </update>
+    <update id="udpateChepb">
+        UPDATE RL_YS_CHEPB
+        SET RL_JS_YUEJSDB_ID = ${jiesdid}
+        WHERE id IN (SELECT yuandj_id
+                     FROM GX_CHURKDB_YUNSDJ
+                     WHERE RUKDBH IN (${addition}))
+    </update>
+
+    <update id="udpateChepbByJiesdid">
+        UPDATE RL_YS_CHEPB
+        SET RL_JS_YUEJSDB_ID = NULL
+        WHERE RL_JS_YUEJSDB_ID = #{id}
+    </update>
+    <update id="udpateChurkdbByJiesdid">
+        UPDATE rl_kc_churkdb
+        SET RL_JS_YUEJSDB_ID = NULL
+        WHERE RL_JS_YUEJSDB_ID = #{id}
+    </update>
+    <select id="getJiesdidByJiesdbh" resultType="java.lang.String">
+        SELECT id
+        FROM rl_js_yuejsdb
+        WHERE jiesbh = #{jiesdbh}
+    </select>
+    <select id="getJiesdbh" resultType="java.util.Map">
+        SELECT DISTINCT
+            (jiesbh) AS id,
+            jiesbh   AS mingc
+        FROM rl_js_yuejsdb
+        WHERE jiesbh IS NOT NULL AND zhuangt = 0
+              OR zhuangt IS NULL
+        ORDER BY jiesbh
+    </select>
+    <delete id="deleteZafjs">
+        DELETE FROM rl_js_zafjsb
+        WHERE id IN (${ids})
+    </delete>
+    <delete id="deteteGXChurkdbZafjsb">
+        DELETE FROM gx_churkdb_zafjsb
+        WHERE zafjsb_id IN (${ids})
+    </delete>
+    <insert id="zafJies">
+        INSERT INTO rl_js_zafjsb (id, xuh, xiangm, jifzl, danj, yingjje, shijje, beiz)
+            SELECT
+                '${zafjsb_id}'                    id,
+                '1'                               xuh,
+                '-'                               xiangm,
+                round(sum(yanssl), 2)             jifzl,
+                round(sum(jine) / sum(yanssl), 2) danj,
+                round(sum(jine), 2)               yingjje,
+                round(sum(jine), 2)               shijje,
+                '-'                               beiz
+            FROM RL_KC_CHURKDB
+            WHERE RUKDBH IN (${rukdh})
+    </insert>
+    <select id="getZafjswhList" resultType="java.util.Map">
+        SELECT
+            id,
+            xuh,
+            xiangm,
+            round(jifzl, 2),
+            round(danj, 2),
+            round(yingjje, 2),
+            round(shijje, 2),
+            beiz
+        FROM rl_js_zafjsb
+    </select>
+    <insert id="insertZafjs">
+        INSERT INTO rl_js_zafjsb (id, xuh, xiangm, jifzl, danj, yingjje, shijje, beiz)
+        VALUES ('${ID}', '${XUH}', '${XIANGM}', '${JIFZL}', '${DANJ}', '${YINGJJE}', '${SHIJJE}', '${BEIZ}')
+    </insert>
+    <insert id="saveJieszbsjb_hyc">
+        INSERT INTO RL_JS_JIESZBSJB (id, hetbz, gongf, changf, jies, yingk, zhejbz, zhejje, jiesdbh, leib) VALUES
+            (SEQ_YUEJSDB.NEXTVAL, #{HETBZ}, #{GONGF}, #{CHANGF}, #{JIES}, #{YINGK}, #{ZHEJBZ}, #{ZHEJJE}, #{JIESDBH},
+             #{LEIB})
+    </insert>
+    <select id="getYewlxList" resultType="java.util.Map">
+        SELECT
+            -1   value,
+            '全部' name
+        FROM dual
+        UNION ALL
+        SELECT
+            id     value,
+            leixmc name
+        FROM gy_dm_churkywlxdmb
+    </select>
+    <select id="getZafjsList" resultType="java.util.Map">
+        select distinct RUKDBH id ,RUKDBH rukdh,c.meikmc meikdw,c.pinz pinz,substr(q.qingcsj,0,10) daohrq,
+        count(rukdbh) ches,sum(c.SANFSL) sanfsl,sum(c.MAOZ) maoz,sum(c.piz) piz,sum(c.maoz-c.piz-c.zongkd) jingz
+        from vm_kucmx k inner join RL_YS_CHEPB c on k.CHEPB_ID=c.ID inner join RL_YS_CHEPB_QC q on c.id=q.CHEPB_ID
+        where k.YEWLX=1
+        and substr(q.qingcsj,0,10) BETWEEN '${sDate}' and '${eDate}'
+        <if test="GONGYSB_ID!=-1">
+            and c.GONGYSB_ID=${GONGYSB_ID}
+        </if>
+        <if test="PINZB_ID!=-1">
+            and c.pinzb_id=${PINZB_ID}
+        </if>
+        <if test="PINZB_ID!=-1">
+            and c.diancxxb_id=${DIANCXXB_ID}
+        </if>
+        <if test="YEWLX!=-1">
+            and k.YEWLX=${YEWLX}
+        </if>
+        group by rukdbh,meikmc,pinz,substr(q.qingcsj,0,10)
+        order by meikmc,rukdbh
+    </select>
+    <select id="getYuejsdList" resultType="java.util.Map">
+        select JS.CAOZRQ,
+        JS.JIESBH,
+        G.MINGC GONGYSB_ID,
+        JS.CHES,
+        JS.JIESSL,
+        JS.JIESRZ,
+        JS.JIESLF,
+        JS.JIESJG,
+        JS.JIESJE,
+        p.mingc pinz
+        from RL_JS_YUEJSDB JS, GONGYSB G,pinzb p
+        where JS.GONGYSB_ID = G.ID
+        and js.pinzb_id=p.id
+        and JS.ID in
+        (select distinct yuejsdb_id
+        from GX_RIJSD_YUEJSD
+        where rijsdb_id in
+        (select id
+        from rl_js_rijsdb
+        where qingcsj between '${sDate}' and '${eDate}'
+        ))
+        <if test="GONGYSB_ID!=-1">
+            and js.GONGYSB_ID=${GONGYSB_ID}
+        </if>
+        <if test="PINZB_ID!=-1">
+            and js.pinzb_id=${PINZB_ID}
+        </if>
+        order by jiesbh asc
+
+    </select>
+    <select id="getjsdList" resultType="java.util.Map">
+         SELECT C.GONGYSB_ID,
+           C.GONGYSMC,
+           C.MEIKXXB_ID,
+           C.MEIKMC,
+           C.PINZB_ID,
+           c.pinz,
+           count(*) as ches,
+           to_char(Trunc(TO_DATE(qingcsj, 'yyyy-mm-dd hh24:mi:ss')),'yyyy-mm-dd') AS DAOHRQ,
+           SUM(C.SANFSL) AS SANFSL,
+           SUM(C.MAOZ) MAOZ,
+           SUM(C.PIZ) PIZ,
+           SUM(C.ZONGKD) ZONGKD,
+           SUM(C.MAOZ - C.PIZ - C.ZONGKD) AS JINGZ,
+           HYBM.CAIYBM,
+           HYBM.HUAYBM,
+           max(AAR) AAR,
+           max(AD) AD,
+           max(VDAF) VDAF,
+           max(MT) MT,
+           max(STAD) STAD,
+           max(AAD) AAD,
+           max(MAD) MAD,
+           max(QBAD) QBAD,
+           max(HAD) HAD,
+           max(VAD) VAD,
+           max(FCAD) FCAD,
+           max(STD) STD,
+           max(QGRAD) QGRAD,
+           max(HDAF) HDAF,
+           max(QGRAD_DAF) QGRAD_DAF,
+           max(SDAF) SDAF,
+           max(VAR) VAR,
+           max(HAR) HAR,
+           max(QGRD) QGRD,
+           max(STAR) STAR,
+           decode(max(hy.zhuangt),0,'未化验',1,'一审通过',2,'二审通过') as huayzt,
+           max(QNET_AR) QNET_AR,
+           KC.RUKDBH,
+           SUM(KC.JINE) RK_JINE
+      FROM RL_YS_CHEPB     C,
+           (select * from RL_YS_CHEPB_QC where  to_char(Trunc(TO_DATE(qingcsj, 'yyyy-mm-dd hh24:mi:ss')),'yyyy-mm-dd') >='${sDate}'
+              and to_char(Trunc(TO_DATE(qingcsj, 'yyyy-mm-dd hh24:mi:ss')),'yyyy-mm-dd') <![CDATA[<= ]]>'${eDate}') QC,
+           RL_HY_HUAYDB    HY,
+           VM_CAIZHBM      HYBM,
+           VM_KUCMX        KC
+     WHERE C.ID = QC.CHEPB_ID
+       AND C.SAMCODE = HYBM.CAIYBM
+       AND HYBM.HUAYBM = HY.HUAYBM
+       AND C.ID = KC.CHEPB_ID
+       and kc.RUKDBH is not null
+       and  kc.RL_JS_YUEJSDB_ID is null
+      <if test="GONGYSB_ID!=-1">
+           and C.GONGYSB_ID=${GONGYSB_ID}
+       </if>
+       <if test="PINZB_ID!=-1">
+           and C.PINZB_ID=${PINZB_ID}
+       </if>
+       <if test="MEIKID!=-1">
+           and C.MEIKXXB_ID=${MEIKID}
+       </if>
+     GROUP BY C.GONGYSB_ID, c.pinz,
+              C.GONGYSMC,
+              C.MEIKXXB_ID,
+              C.MEIKMC,
+              C.PINZB_ID,
+              to_char(Trunc(TO_DATE(qingcsj, 'yyyy-mm-dd hh24:mi:ss')),
+                   'yyyy-mm-dd'),
+              HYBM.CAIYBM,
+              HYBM.HUAYBM,
+              KC.RUKDBH
+              order by DAOHRQ,C.GONGYSMC
+    </select>
+    <select id="getHetbhList" resultType="java.util.Map">
+        select su.id, c.bianh||'('||mk.mingc||su.startdate||'~'||su.enddate||')' as mingc
+		  from rl_ht_caigddb c, rl_ht_caigddb_sub su,meikxxb mk
+		 where c.id = su.caigddb_id
+		   and su.meikxxb_id = mk.id
+		   
+        <if test="GONGYSB_ID!=-1">
+            and c.gongys_id=${GONGYSB_ID}
+        </if>
+           order by su.enddate desc 
+    </select>
+    <select id="getYuejs" resultType="java.util.Map">
+        select
+        to_char(sysdate,'yyyy-MM-dd') caozrq,
+        js.GONGYSB_ID,
+        max(g.mingc) gongysmc,
+        wm_concat(js.id) rijsd_id,
+        JS.FAZ_ID,
+        JS.PINZB_ID,
+        (select mingc from pinzb where id=JS.PINZB_ID) pinz,
+        JS.JIHKJB_ID,
+
+        wm_concat(js.zhongcsj) zhongcsj,
+        wm_concat(js.qingcsj) qingcsj,
+        515 diancxxb_id,
+        sum(js.CHES) CHES,
+        sum(js.PIAOZ) PIAOZ,
+        sum(js.JINGZ) JINGZ,
+        sum(js.yingd) YINGD,
+        sum(js.kuid) KUID,
+        max(js.hetbh) HETBH,
+        MIN(JS.HETJG) HETJG,
+        MIN(SUBSTR(js.daibch,0,7))||'-'||max(SUBSTR(js.daibch,9,7)) DAIBCH ,
+
+        round(sum(js.JIESSL),0) JIESSL,
+
+        round(sum(js.JIESSL * js.JIESRZ) / sum(js.JIESSL), 3) JIESRZ,
+        /* round(sum(js.jiessl*js.rezzk)/sum(js.jiessl),2) REZZK,*/
+        round(sum(js.jiessl*js.LIUFZK)/sum(js.jiessl),2) LIUFZK,
+        round(sum(js.JIESSL * js.JIESLF) / sum(js.JIESSL), 2) JIESLF,
+
+        round(sum(js.jiesjg * js.jiessl) / sum(js.jiessl), 2) JIESJG,
+        round(round(sum(js.jiesjg * js.jiessl) / sum(js.jiessl), 2)*round(sum(js.jiessl),0), 2) JIESJE,
+        '${sDate}'||':'||'${eDate}' SHIJD,
+        min(js.qingcsj) FAHKSRQ,
+        max(js.qingcsj) FAHJZRQ,
+        min(js.qingcsj) YANSKSRQ,
+        max(js.qingcsj) YANSJZRQ,
+        max(g.quanc) SHOUKDW,
+        max(g.kaihyh) kaihyh,
+        max(g.zhangh) zhangh,
+        '煤款结算' jieslx
+        from RL_JS_RIJSDB JS ,gongysb g
+        where
+        js.gongysb_id=g.id and
+        substr(QINGCSJ,0,10) between '${sDate}' and '${eDate}'
+        and JS.ID not in (select RIJSDB_ID from GX_RIJSD_YUEJSD)
+        <if test="GONGYSB_ID!=-1">
+            and js.GONGYSB_ID=${GONGYSB_ID}
+        </if>
+        <if test="PINZB_ID!=-1">
+            and js.pinzb_id=${PINZB_ID}
+        </if>
+        group by js.GONGYSB_ID, JS.FAZ_ID, JS.PINZB_ID, JS.JIHKJB_ID
+    </select>
+    <insert id="insertYuejsd">
+        INSERT INTO rl_js_yuejsdb (id,
+                                   jiesbh, caozrq,
+                                   gongysb_id, faz_id, pinzb_id, diancxxb_id, jihkjb_id,
+                                   pinz, gongysmc, meikxxb_id, meikmc,
+                                   /*zhongcsj,qingcsj, */
+
+                                   piaoz, ches, daibch, yingd, kuid, jingz,
+
+                                   jiesrz, jieslf, jiessl, rezzk, liufzk, jiesjg, jiesje,
+
+
+                                   hetbh, hetjg,
+
+                                   changrljbr, changrljsrq, beiz,
+
+                                   meikje, shuik, shijd,
+
+                                   jieslx,
+
+                                   fahksrq, fahjzrq, yansksrq, yansjzrq,
+                                   shoukdw, kaihyh, zhangh
+
+        ) VALUES (
+            '${ID}',
+            '${JIESBH}', TO_CHAR(SYSDATE, 'YYYY-MM-DD'),
+            '${GONGYSB_ID}', '${FAZ_ID}', '${PINZB_ID}', '${DIANCXXB_ID}', '${JIHKJB_ID}',
+            '${PINZ}', '${GONGYSMC}', '${MEIKXXB_ID}', '${MEIKMC}',
+                                                       /*'${ZHONGCSJ}','${QINGCSJ}', */
+
+                                                       '${PIAOZ}', '${CHES}', '${DAIBCH}', '${YINGD}', '${KUID}',
+                                                       '${JINGZ}',
+
+                                                       '${JIESRZ}', '${JIESLF}', '${JIESSL}', '${REZZK}',
+                                                                                              round(${LIUFZK}, 2),
+                                                                                              '${JIESJG}', '${JIESJE}',
+
+
+                                                                                              '${HETBH}', '${HETJG}',
+
+                                                                                              '${CHANGRLJBR}',
+                                                                                              to_char(sysdate,
+                                                                                                      'yyyy-MM-dd'),
+                                                                                              '根据本企业资金管理制度权限履行会审及审批程序，会审部门及审批人写明意见、签名及日期。',
+
+                                                                                              round(${MEIKJE}, 2),
+            round(${SHUIK}, 2), '${SHIJD}',
+
+            '${JIESLX}',
+
+            '${FAHKSRQ}', '${FAHJZRQ}', '${YANSKSRQ}', '${YANSJZRQ}',
+            '${SHOUKDW}', '${KAIHYH}', '${ZHANGH}'
+        )
+    </insert>
+    <select id="getPinzList" resultType="java.util.Map">
+        SELECT ID pinzb_id,MINGC FROM PINZB
+    </select>
+    <select id="getJiestz" resultType="java.util.Map">
+        SELECT distinct m.mingc meiz, substr(js.qingcsj ,0,10) rucrq, G.MINGC GONGYS,
+        JS.CAOZRQ JIESRQ,
+        JS.CAOZRQ RUZRQ,
+        JS.JIESBH BIANM,
+        JS.PIAOZ,
+        JS.JINGZ,
+        JS.JIESSL,
+        ROUND(JS.JIESRZ * 1000 / 4.1816, 0) YANSRL,
+        ROUND(JS.JIESRZ * 1000 / 4.1816, 0) JIESRL,
+        ROUND(JS.JIESJG,2) HANSDJ,
+        ROUND(JS.JIESJG / 1.17 * JS.JINGZ, 2) BUHSMK,
+        ROUND(JS.JIESJG * 0.17 * JS.JINGZ, 2) SHUIK,
+        ROUND(JS.JIESJE, 2) HANSMK,
+        ROUND(JS.JIESJE, 2) ZONGJE,
+        ROUND(JS.REZZK * JS.JINGZ, 2) RELZJE,
+        ROUND(JS.LIUFZK * JS.JINGZ, 2) LIUFZJE
+        FROM rl_js_rijsdb js,
+        GONGYSB G,pinzb m<!--,
+		       (SELECT hetbh
+		          FROM rl_ht_hetb
+		         WHERE id in
+		               (select C.hetb_id
+		                  from RL_HT_CAIGDDB C
+		                 where C.ID in
+		                       (select distinct yuandj_id
+		                          from gx_churkdb_yunsdj
+		                         WHERE yuandjlx = 2
+		                           and rukdbh in
+		                               (select distinct rukdbh
+		                                  from gx_churkdb_yunsdj
+		                                 WHERE yuandjlx = 1
+		                                   and yuandj_id in
+		                                       (SELECT chepb_id
+		                                          FROM GX_jiesdb_chepb
+		                                         where jiesdb_id in
+		                                               (SELECT id
+		                                                  FROM rl_js_rijsdb
+		                                                 where qingcsj <![CDATA[>= ]]>'${sDate}'
+		                                                   and qingcsj <![CDATA[<= ]]>'${eDate}')))))) ht-->
+        WHERE JS.GONGYSB_ID = G.ID and
+        m.id=js.PINZB_ID
+        <if test='gongys !=-1'>
+            and G.ID =${gongys}
+        </if>
+        <!--	 <if test='HETBH !="-1"'>
+                and ht.hetbh = '${HETBH}'
+            </if>-->
+        and substr(js.qingcsj,0,10) between '${sDate}' and '${eDate}'
+        order by substr(js.qingcsj ,0,10)
+    </select>
+    <!-- 获取合同号 -->
+    <select id="getHetong" resultType="java.util.Map">
+        SELECT hetbh
+        FROM rl_ht_hetb
+        WHERE id in
+        (select C.hetb_id
+        from RL_HT_CAIGDDB C
+        where C.ID in
+        (select distinct yuandj_id
+        from gx_churkdb_yunsdj
+        WHERE yuandjlx = 2
+        and rukdbh in
+        (select distinct rukdbh
+        from gx_churkdb_yunsdj
+        WHERE yuandjlx = 1
+        and yuandj_id in
+        (SELECT chepb_id
+        FROM GX_jiesdb_chepb
+        where jiesdb_id in
+        (SELECT id FROM rl_js_rijsdb where substr(qingcsj,0,10) <![CDATA[>= ]]>'${sDate}' and substr(qingcsj,0,10)
+        <![CDATA[<= ]]>'${eDate}')))))
+        <if test='gongys !=-1'>
+            and gongf=${gongys}
+        </if>
+        order by hetbh
+    </select>
+</mapper>

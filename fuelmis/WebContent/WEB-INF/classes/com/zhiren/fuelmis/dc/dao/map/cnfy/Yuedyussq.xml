@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiren.fuelmis.dc.dao.cnfy.YuedYussqDao" >
+	<select id="getYussqData"  resultType="java.util.HashMap">
+				   SELECT  ROWNUM,
+						   YY.ID AS ID,
+						   YY.ZHUANGT AS ZHUANGT,
+						   YY.SHUOM AS SHUOM,
+						   YY.YUSED AS YUSED,
+						   CF.MINGC AS FEIYMC  
+						   FROM RL_CNFY_YUEDYS YY,DIANCXXB DC,RL_CNFY_CHANGNFYXM CF
+					 		WHERE YY.DIANCXXB_ID = DC.ID 
+					 		AND YY.CHANGNFYXM_ID = CF.ID AND YY.DIANCXXB_ID = #{diancid}  
+					 		AND YY.RIQ = #{riq}
+	</select>
+	<select id="getFeiyMingc"  resultType="java.util.HashMap">
+		SELECT CF.ID AS ID,CF.MINGC AS MINGC FROM RL_CNFY_CHANGNFYXM CF WHERE shiyzt = 1
+	</select>
+	<select id="getYuedyusById"  resultType="java.util.HashMap">
+			SELECT  ID,
+					RIQ,
+					DIANCXXB_ID,
+					SHUOM,
+					YUSED,
+					CHANGNFYXM_ID
+					FROM RL_CNFY_YUEDYS WHERE ID = #{id}
+	</select>
+	<insert id="addYuedysData"  useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO RL_CNFY_YUEDYS(ID,DIANCXXB_ID,RIQ,CHANGNFYXM_ID,YUSED,SHUOM)
+				VALUES(XL_CHANGNZF_ID.NEXTVAL,
+				${DIANCID},
+				'${RIQ}',
+				'${FEIYMC}',
+				 ${YUSED},
+				'${SHUOM}')
+	</insert>
+	<select id="getsubmitdatas"  resultType="java.util.HashMap">
+		SELECT ID AS YUEDYS_ID,DIANCXXB_ID AS DIANC_ID,RIQ,
+		 CHANGNFYXM_ID, YUSED,SHUOM FROM RL_CNFY_YUEDYS 
+		 WHERE DIANCXXB_ID =#{diancid} AND RIQ =#{riq}
+	</select>
+	<delete id="delYuedyusById" parameterType="java.lang.String" flushCache="true">  
+         DELETE FROM RL_CNFY_YUEDYS WHERE ID =#{id}
+    </delete>
+    <update id="updateState" flushCache="true">  
+       UPDATE RL_CNFY_YUEDYS SET ZHUANGT = #{zhuangt}  WHERE DIANCXXB_ID= #{diancid} AND RIQ = #{riq}
+    </update>
+    <update id="updateYuedys" flushCache="true">
+       UPDATE RL_CNFY_YUEDYS SET CHANGNFYXM_ID = #{changnfyxm_id}, YUSED = #{yused},ZHUANGT=2 where id = #{id}
+    </update>
+    <update id="updateYudysyId" flushCache="true">  
+        update RL_CNFY_YUEDYS set  SHUOM = #{SHUOM},
+						   YUSED = #{YUSED},
+						   CHANGNFYXM_ID = #{FEIYMC} WHERE ID = #{ID}
+    </update>
+    <select id="getZhuangt"  resultType="java.lang.String">
+		SELECT DISTINCT(ZHUANGT) AS ZHUANGT FROM RL_CNFY_YUEDYS WHERE DIANCXXB_ID = #{diancid} AND RIQ = #{riq}
+	</select>
+    
+    
+</mapper>

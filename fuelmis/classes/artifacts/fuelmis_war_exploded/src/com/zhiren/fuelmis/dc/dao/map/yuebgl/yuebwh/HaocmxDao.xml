@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiren.fuelmis.dc.dao.yuebgl.yuebwh.HaocmxDao">
+    <select id="getAll" resultType="java.util.Map">
+
+        SELECT *
+        FROM (SELECT
+        -1           ID,
+        '-' AS       GONGYSB_ID,
+        '-'          JIHKJB_ID,
+        '-'          PINZB_ID,
+        '-'          YUNSFSB_ID,
+        FENX || '合计' FENX,
+        QICKC,
+        SHOUML,
+        FADY,
+        GONGRY,
+        QITH,
+        SUNH,
+        DIAOCL,
+        PANYK,
+        SHUIFCTZ,
+        JITCS,
+        KUC,
+        1            ZHUANGT,0 yuetjkjb_id
+        FROM YUESHCHJB
+        WHERE substr(RIQ, 0, 7) = '${riq}'
+        AND DIANCXXB_ID IN (${dianc})
+        ORDER BY FENX)
+        UNION ALL
+        SELECT *
+        FROM (SELECT
+        YH.ID,
+        GONGYSB.MINGC AS GONGYSB_ID,
+        JIHKJB.MINGC  AS JIHKJB_ID,
+        PINZB.MINGC   AS PINZB_ID,
+        YUNSFSB.MINGC AS YUNSFSB_ID,
+        FENX,
+        QICKC,
+        SHOUML,
+        FADY,
+        GONGRY,
+        QITH,
+        SUNH,
+        DIAOCL,
+        PANYK,
+        SHUIFCTZ,
+        JITCS,
+        KUC,
+        YH.ZHUANGT,
+        tj.id yuetjkjb_id
+        FROM (SELECT
+        TJ.ID,
+        TJ.GONGYSB_ID,
+        TJ.JIHKJB_ID,
+        TJ.PINZB_ID,
+        TJ.YUNSFSB_ID,
+        CASE
+        WHEN T.SHOUML > 0 OR T.KUC > 0
+        THEN
+        1
+        ELSE
+        0
+        END PAIX,
+        T.ZHUANGT
+        FROM YUETJKJB TJ, YUEHCB T
+        WHERE TJ.ID = T.YUETJKJB_ID
+        AND TJ.DIANCXXB_ID = ${dianc}
+        AND substr(TJ.RIQ, 0, 7) = '${riq}'
+        AND T.FENX = '本月') TJ,
+        YUEHCB YH,
+        MEIKXXB GONGYSB,
+        JIHKJB,
+        PINZB,
+        YUNSFSB
+        WHERE TJ.ID = YH.YUETJKJB_ID
+        AND TJ.GONGYSB_ID = GONGYSB.ID
+        AND TJ.JIHKJB_ID = JIHKJB.ID
+        AND TJ.PINZB_ID = PINZB.ID
+        AND TJ.YUNSFSB_ID = YUNSFSB.ID
+        ORDER BY TJ.PAIX DESC, GONGYSB_ID, JIHKJB_ID, PINZB_ID, YUNSFSB_ID, FENX) S
+    </select>
+    <update id="updateHaocmx">
+        UPDATE yuehcb SET
+        qickc= '${QICKC}',
+        fady= '${FADY}',
+        gongry= '${GONGRY}',
+        qith= '${QITH}',
+        sunh= '${SUNH}',
+        diaocl= '${DIAOCL}',
+        panyk= '${PANYK}',
+        shuifctz= '${SHUIFCTZ}',
+        <!-- jitcs= '${JITCS}', -->
+        kuc= '${KUC}'
+        WHERE id='${ID}'
+    </update>
+    <update id="updateHaocmxL">
+        UPDATE yuehcb SET
+        qickc= '${QICKCX}',
+        fady= '${FADYX}',
+        gongry= '${GONGRYX}',
+        qith= '${QITHX}',
+        sunh= '${SUNHX}',
+        diaocl= '${DIAOCLX}',
+        panyk= '${PANYKX}',
+        shuifctz= '${SHUIFCTZX}',
+        <!-- jitcs= '${JITCSX}', -->
+        kuc= '${KUC}'
+        WHERE id='${ID}'
+    </update>
+    <select id="getLastMonthLeij" resultType="java.util.Map">
+        select
+            t.*,
+            nvl((
+
+                    select h.kuc from yuehcb h
+                        inner join yuetjkjb t on h.yuetjkjb_id=t.id
+                    where (t.gongysb_id,t.jihkjb_id,t.pinzb_id,t.yunsfsb_id, t.diancxxb_id,to_date(t.riq,'yyyy-mm'))
+                          = (select gongysb_id,jihkjb_iD,pinzb_id,yunsfsb_id,diancxxb_id,
+                                 add_months(to_date(substr(riq,0,4)||'-12','yyyy-mm'),-12)
+                             from yuetjkjb where id=${yuetjkjb_id} )
+                          and h.fenx='本月'
+
+                ),0) qickc
+        from
+            (select
+                 --nvl(round_new(sum(qickc),2),0) as qickc,
+                 nvl(round_new(sum(shouml),2),0) shouml,
+                 nvl(round_new(sum(fady),2),0) fady,
+                 nvl(round_new(sum(gongry),2),0) gongry,
+                 nvl(round_new(sum(qith),2),0) qith,
+                 nvl(round_new(sum(sunh),2),0) sunh,
+                 nvl(round_new(sum(diaocl),2),0) diaocl,
+                 nvl(round_new(sum(panyk),2),0) panyk,
+                 nvl(round_new(sum(kuc),2),0) kuc,
+                 nvl(round_new(sum(shuifctz),2),0) shuifctz,
+                 nvl(round_new(sum(jitcs),2),0) jitcs
+             from yuehcb y,yuetjkjb yt,(select gongysb_id,jihkjb_iD,pinzb_id,yunsfsb_id,diancxxb_id,riq from yuetjkjb where id= ${yuetjkjb_id} )yt2
+             where y.yuetjkjb_id=yt.id
+                   and yt.gongysb_id=yt2.gongysb_id
+                   and yt.jihkjb_id=yt2.jihkjb_id
+                   and yt.pinzb_id=yt2.pinzb_id
+                   and yt.yunsfsb_id=yt2.yunsfsb_id
+                   and yt.diancxxb_id=yt2.diancxxb_id
+                   and to_date(yt.riq,'yyyy-mm') BETWEEN trunc(to_date(yt2.riq,'yyyy-mm'),'yyyy') and ADD_MONTHS (to_date(yt2.riq,'yyyy-mm'),-1)
+                   and y.fenx='本月' ) t
+    </select>
+</mapper>

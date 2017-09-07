@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiren.fuelmis.dc.dao.jih.upload.UploadDao" >
+	<select id="selectYuedcaigjh"  resultType="java.util.HashMap">
+		select ID,DIANCXXB_ID,to_char(RIQ,'yyyy-mm-dd') RIQ,GONGYSB_ID,MEIKXXB_ID,PINZB_ID,FAZ_ID,
+		JIH_SL,JIH_REZ,JIH_LIUF,JIH_HFF,JIH_MEIJ,JIH_MEIJBHS,JIH_YUNJ,JIH_YUNJBHS,JIH_ZAF,
+		JIH_ZAFBHS,JIH_DAOCJ,JIH_DAOCJBHS,JIH_DAOCBMDJ,JIH_DAOCBMDJBHS,ZHUANGT,JIHKJB_ID from yuedjh_caig where to_char(riq,'yyyy-mm-dd')='${riq}'	
+	</select>
+	<select id="selectYuedRanlzf"  resultType="java.util.HashMap">
+		select DIANCXXB_ID,to_char(RIQ,'yyyy-mm-dd') RIQ,to_char(TBRQ,'yyyy-mm-dd') TBRQ,ZAFMC,YUCJE,YUCSM,ZHUANGT,LIUCZTB_ID from yuedjh_zaf where to_char(riq,'yyyy-mm-dd')='${riq}'		
+	</select>
+	<select id="selectYuedjhzb"  resultType="java.util.HashMap">
+		select DIANCXXB_ID,to_char(RIQ,'yyyy-mm-dd') RIQ,FADL,GONGDMH,FADCYDL,FADBML,GONGRL,GONGRMH,GONGRBML,BIAOMLHJ,SHANGYMKC,SHANGYMKCDJ,SHANGYMKCRZ,YUEMKCJHZ,YUEMKCRZ,HAOYYML,RLZHBMDJ,ZHUANGT,RANYL,RANYDJ,YOUZBML,YOUZBMDJ,MEIZBML,MEIZBMDJ,RUCRLRZC,LIUCZTB_ID from yuedjh_zhib where to_char(riq,'yyyy-mm-dd')='${riq}'			
+	</select>
+	<select id="selectNiandcaigjh"  resultType="java.util.HashMap">
+	select ID,
+       DIANCXXB_ID,
+       to_char(RIQ, 'yyyy') RIQ,
+       GONGYSB_ID,
+       HET_SL,
+       HET_REZ,
+       HET_MEIJ,
+       HET_YUNJ,
+       JIH_SL,
+       JIH_REZ,
+       JIH_MEIJ,
+       JIH_MEIJBHS,
+       JIH_YUNJ,
+       JIH_YUNJBHS,
+       JIH_ZAF,
+       JIH_ZAFBHS,
+       JIH_QIT,
+       JIH_QITBHS,
+       JIH_DAOCJ,
+       JIH_DAOCBMDJ,
+       ZHUANGT,
+       JIHKJB_ID,
+       SANJ_ZT
+  from niandjh_caig where to_char(riq,'yyyy')='${nianf}'	
+	</select>
+	<select id="selectNiandRanlzf"  resultType="java.util.HashMap">
+		select DIANCXXB_ID,to_char(RIQ, 'yyyy') RIQ,ZAFMC,YUCJE,YUCSM,SHIJWCJE,YUJWCJE,YUJWCSM,ZHUANGT from niandjh_zaf where to_char(riq,'yyyy')='${nianf}'			
+	</select>
+	<select id="selectNiandjhzb"  resultType="java.util.HashMap">
+	select DIANCXXB_ID,
+       to_char(RIQ, 'yyyy') RIQ,
+       FADL,
+       GONGDMH,
+       FADCYDL,
+       FADBML,
+       GONGRL,
+       GONGRMH,
+       GONGRBML,
+       RUCRLRZC,
+       MEIZBML,
+       MEIZBMDJ,
+       RANYDJ,
+       YOUZBMDJ,
+       QITFY,
+       RLZHBMDJ,
+       ZHUANGT
+  from niandjh_zhib
+ where to_char(riq, 'yyyy') = '${nianf}'
+	</select>
+	<select id="gatColNames" resultType="java.lang.String">
+		select distinct COLUMN_NAME
+	    from ALL_TAB_COLUMNS 
+	    where TABLE_NAME = #{0}
+	</select>
+</mapper>

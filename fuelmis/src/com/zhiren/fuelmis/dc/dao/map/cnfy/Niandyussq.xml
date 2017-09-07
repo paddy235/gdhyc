@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiren.fuelmis.dc.dao.cnfy.NiandYussqDao" >
+	<select id="getNiandYussqData"  resultType="java.util.HashMap">
+			SELECT  ROWNUM,
+					NY.ID AS ID,
+					NY.ZHUANGT AS ZHUANGT,
+					NY.SHUOM AS SHUOM,
+					NY.YUSED AS YUSED,
+					CF.MINGC AS FEIYMC  
+					FROM RL_CNFY_NIANDYS NY,DIANCXXB DC,RL_CNFY_CHANGNFYXM CF
+					WHERE NY.DIANCXXB_ID = DC.ID 
+					AND NY.CHANGNFYXM_ID = CF.ID 
+					AND NY.DIANCXXB_ID = #{diancid} 
+					AND NY.NIANF =  #{nianf}
+	</select>
+	<insert id="addNiandysData"  useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO RL_CNFY_NIANDYS(ID,DIANCXXB_ID,NIANF,CHANGNFYXM_ID,YUSED,SHUOM)
+				VALUES(XL_CHANGNZF_ID.NEXTVAL,
+				${DIANCID},
+				'${NIANF}',
+				'${FEIYMC}',
+				 ${YUSED},
+				'${SHUOM}')
+	</insert>
+	<delete id="delNiandyusById" parameterType="java.lang.String" flushCache="true">  
+         DELETE FROM RL_CNFY_NIANDYS WHERE ID =#{id}
+    </delete>
+    <select id="getNinadyusById"  resultType="java.util.HashMap">
+			SELECT  ID,
+					NIANF,
+					DIANCXXB_ID,
+					SHUOM,
+					YUSED,
+					CHANGNFYXM_ID
+					FROM RL_CNFY_NIANDYS WHERE ID = #{id}
+	</select>
+	
+	<select id="getsubmitdatas"  resultType="java.util.HashMap">
+		SELECT NY.ID AS NIANDYS_ID ,NY.DIANCXXB_ID AS DIANC_ID ,NY.CHANGNFYXM_ID AS FEIY_ID,NY.NIANF AS NIANF,NY.YUSED AS YUSED , NY.SHUOM AS SHUOM ,DX.MINGC AS DIANCMC
+			FROM RL_CNFY_NIANDYS NY,DIANCXXB DX  WHERE NY.DIANCXXB_ID = DX.ID 
+			AND NY.DIANCXXB_ID = #{diancid} AND NY.NIANF = #{nianf}
+	</select>
+    <update id="updateNiandysyId" flushCache="true">  
+        update RL_CNFY_NIANDYS set  SHUOM = #{SHUOM},
+						   YUSED = #{YUSED},
+						   CHANGNFYXM_ID = #{FEIYMC} WHERE ID = #{ID}
+    </update>
+    <update id="updateNiandys" flushCache="true">
+       UPDATE RL_CNFY_NIANDYS SET CHANGNFYXM_ID = #{changnfyxm_id}, YUSED = #{yused},ZHUANGT=2 WHERE ID = #{id}
+    </update>
+    <update id="updateState" flushCache="true">  
+       UPDATE RL_CNFY_NIANDYS SET ZHUANGT = #{zhuangt} WHERE DIANCXXB_ID= #{diancid} AND NIANF = #{nianf}
+    </update>
+    <select id="getZhuangt"  resultType="java.lang.String">
+		SELECT DISTINCT(ZHUANGT) AS ZHUANGT FROM RL_CNFY_NIANDYS WHERE DIANCXXB_ID =#{diancid} AND NIANF = #{nianf}
+	</select>
+    
+</mapper>

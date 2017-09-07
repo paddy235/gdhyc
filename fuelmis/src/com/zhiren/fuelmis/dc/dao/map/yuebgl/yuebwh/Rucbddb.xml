@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiren.fuelmis.dc.dao.yuebgl.yuebwh.RucbddbDao">
+    <insert id="insertMeihy">
+        INSERT
+        INTO yuebddbwcsjb
+        (ID,riq,diancxxb_id   ,BENYWCZ       ,DUIBDWBYWCZ ,JITXFDBMBZ   )
+        VALUES
+        ('${ID}','${RIQ}',515,'${BENYWCZ}','${DUIBDWBYWCZ}','${JITXFDBMBZ}')
+    </insert>
+    <delete id="delMeiHy">
+        delete from yuebddbwcsjb where id=${id}
+    </delete>
+    <update id="updateMeihy" flushCache="true">
+        update yuebddbwcsjb set
+        RIQ='${RIQ}',
+        DIANCXXB_ID=515,
+            BENYWCZ='${BENYWCZ}',
+
+            DUIBDWBYWCZ='${DUIBDWBYWCZ}',
+        JITXFDBMBZ='${JITXFDBMBZ}'
+        WHERE ID = ${ID}
+    </update>
+</mapper>

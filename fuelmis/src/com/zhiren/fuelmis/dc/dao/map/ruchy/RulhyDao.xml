@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.zhiren.fuelmis.dc.dao.ruchy.RulhyDao">
+	<select id="getIspip" resultType="String">
+		select nvl(m.SHENHZT,0) as ispip from RL_RUL_MEIHYB m
+		left join rl_hy_huaydb h  on m.huayd_id=h.huayd_id
+		where h.huaybm=#{0} and DANJLX='入炉化验'
+	</select>
+	<select id="getHuaydID" resultType="String">
+		select huayd_id  from RL_RUL_MEIHYB 
+		where rulrq=#{0} and banzxx=#{1}
+	</select>
+	<delete id="deleteRulhy">
+		delete from rl_hy_huaydb where huaybm=#{0} and DANJLX='入炉化验'
+	</delete>
+	<update id="updateRulhy">
+		update  RL_HY_HUAYDB set
+			HUAYY='${HUAYY}',
+			AAR =${AAR},
+			AD=${AD},
+			VDAF=${VDAF},
+			MT=${MT},
+			STAD=${STAD},
+			AAD=${AAD},
+			MAD=${MAD},
+			QBAD=${QBAD},
+			HAD=${HAD},
+			VAD=${VAD},
+			FCAD=${FCAD},
+			STD=${STD},
+			QGRAD=${QGRAD},
+			HDAF=${HDAF},
+			QGRAD_DAF=${QGRADDAF},
+			SDAF=${SDAF},
+			QGRD=${QGRD},
+			QNET_AR=${QNETAR_MJ},
+			VAR=${VAR},
+			HAR=${HAR},
+			HUAYSJ='${HUAYRQ}',
+			BEIZ='${BEIZ}',
+			ZHUANGT=0,
+			DIANC_ID='${dcId}',
+			DANJLX='入炉化验',
+			HUAYBM='${HUAYBM}'
+			WHERE HUAYD_ID = ${HUAYD_ID}
+		)
+	</update>
+	<update id="updateZhuant">
+		update  RL_RUL_MEIHYB set
+		SHENHZT=#{0}
+		where HUAYD_ID=#{1}
+	</update>
+	<insert id="insertGX">
+		insert into gx_chep_huayd(id,huayd_id,chepb_id) values (#{0},#{2},#{1})
+	</insert>
+	<insert id="insertRulhy">
+	insert into  RL_HY_HUAYDB (
+			HUAYD_ID,
+			HUAYY,
+			AAR,
+			AD,
+			VDAF,
+			MT,
+			STAD,
+			AAD,
+			MAD,
+			QBAD,
+			HAD,
+			VAD,
+			FCAD,
+			STD,
+			QGRAD,
+			HDAF,
+			QGRAD_DAF,
+			SDAF,
+			QGRD,
+			QNET_AR,
+			VAR,
+			HAR,
+			HUAYSJ,
+			ZHUANGT,
+			DIANC_ID,
+			DANJLX,
+			HUAYBM
+			) 
+		values (	
+			${HUAYD_ID},	
+			'${HUAYY}',
+			${AAR},
+			${AD},
+			${VDAF},
+			${MT},
+			${STAD},
+			${AAD},
+			${MAD},
+			${QBAD},
+			${HAD},
+			${VAD},
+			${FCAD},
+			${STD},
+			${QGRAD},
+			${HDAF},
+			${QGRAD_DAF},
+			${SDAF},
+			${QGRD},
+			${QNETAR_MJ},
+			${VAR},
+			${HAR},
+			'${HUAYRQ}',
+			0,
+			'${dcId}',
+			'入炉化验',
+			'${HUAYBH}')
+	</insert>
+	<update id="addHuaydID">
+		update 
+			RL_RUL_MEIHYB 
+		set 
+			HUAYD_ID=#{0},
+			SHENHZT='1'
+		where 
+			RULRQ=#{1} and
+			RULBZB_ID=(
+				select ID 
+					from RL_RUL_BANZB 
+				where MINGC=#{2} )
+	</update>
+</mapper>

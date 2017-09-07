@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiren.fuelmis.dc.dao.jih.YudjhcxDao" >
+	
+	<select id="getTabelData"  resultType="java.util.HashMap">
+		SELECT DECODE(GROUPING(DC.QUANC), 1, '总计', DC.QUANC) QUANC,
+				 round(  NVL(SUM(ZB.JHFDL), 0),0) as sum_JHFDL,
+				 round(   NVL(SUM(ZB.JHGRL), 0),0) as sum_JHGRL,
+				 round( NVL(SUM(ZB.YJHML), 0),0) as sum_YJHML,
+				       round( NVL(SUM(ZB.YMKC), 0),0)  as sum_YMKC,
+				       round( NVL(SUM(ZB.MUBKC), 0),0) as sum_MUBKC,
+				       round( NVL(SUM(CG.CGL), 0),0) as sum_CGL
+				  FROM (SELECT YZ.DIANCXXB_ID,
+				               YZ.FADL        AS JHFDL,
+				               YZ.GONGRL      AS JHGRL,
+				               YZ.HAOYYML     AS YJHML,
+				               YZ.SHANGYMKC   AS YMKC,
+				               YZ.YUEMKCJHZ   AS MUBKC
+				          FROM YUEDJH_ZHIB YZ
+				   <!--      WHERE YZ.RIQ = #{} ) ZB, --> 
+				   WHERE YZ.RIQ = to_date(#{riq},'yyyy-mm-dd')  ) ZB,
+				       (SELECT SUM(YD.JIH_SL) AS CGL, YD.DIANCXXB_ID
+				          FROM YUEDJH_CAIG YD
+				   <!--      WHERE YD.RIQ =  #{} --> 
+				   		WHERE YD.RIQ =  to_date(#{riq},'yyyy-mm-dd')
+				         GROUP BY YD.DIANCXXB_ID) CG,
+				       DIANCXXB DC
+				 WHERE DC.ID = ZB.DIANCXXB_ID(+)
+				   AND DC.ID = CG.DIANCXXB_ID(+)
+				<!--   AND DC.JIB = 3 and DC.ID in ("+ this.getTreeid()	 ) -->
+				 AND DC.JIB = 3 and DC.ID =  #{id} 
+				 GROUP BY ROLLUP(DC.QUANC, DC.XUH)
+				HAVING NOT GROUPING(DC.QUANC) + GROUPING(DC.XUH) = 1
+				 ORDER BY GROUPING(DC.QUANC) DESC, DC.XUH
+	</select>
+</mapper>

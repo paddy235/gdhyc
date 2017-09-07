@@ -1,0 +1,52 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>带语音录入的搜索框特效 - 站长素材</title>
+
+
+
+<link rel="stylesheet" type="text/css" href="data/cache/style_8_common.css?v0f" />
+<link rel="stylesheet" type="text/css" href="data/cache/style_8_forum_index.css?v0f" />
+
+<script src="static/js/common.js?v0f" type="text/javascript"></script>
+<script src="static/js/forum.js?v0f" type="text/javascript"></script>
+
+
+
+<meta http-equiv="X-UA-Compatible" content="IE=8" >
+<meta http-equiv="X-UA-Compatible" content="IE=9" >
+<meta http-equiv="X-UA-Compatible" content="IE=edge" >
+
+</head>
+<body id="nv_forum" class="pg_index" onkeydown="if(event.keyCode==27) return false;">
+<div class="top_head wp">
+
+  <div id="hd">
+    <div class="wp">
+      <div class="hdc cl">
+
+        <div id="scbar_logo_r" class="y scbar_narrow cl">
+          <form id="scbar_form" method="post" autocomplete="off" onsubmit="searchFocus($('scbar_txt'))" action="http://sc.chinaz.com" target="_blank">
+            <table cellspacing="0" cellpadding="0">
+              <tr>
+                <td class="scbar_txt_td"><div id="search_input_show" onClick="showMenu({'ctrlid':'search_input_show','ctrlclass':'as','evt':'click','fade':1})">
+                    <input type="text" name="srchtxt" id="scbar_txt" autocomplete="off" x-webkit-speech speech />
+                  </div></td>
+                <td class="scbar_type_td"><a href="javascript:;" id="scbar_type" class="showmenu xg1 xs2" onclick="showMenu(this.id)" hidefocus="true">搜索</a></td>
+                <td class="scbar_btn_td"><button type="submit" name="searchsubmit" id="scbar_btn" class="pn pnc" value="true"><strong class="xi2 xs2"> </strong></button></td>
+               
+              </tr>
+            </table>
+          </form>
+        </div>
+        <script type="text/javascript">
+initSearchmenu('scbar', 'http://sc.chinaz.com');
+</script>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+</body>

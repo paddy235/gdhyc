@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiren.fuelmis.dc.dao.yansgl.ShulhjblDao">
+	<select id="getHenjblAll" resultType="java.util.Map">
+		select *
+  		  from rl_ys_chepb_logs c, rl_ys_chepb_qc_logs h
+           where c.id = h.chepb_id
+            and c.samcode = '${pich}'
+            <if test="cheh!='' and cheh != null ">
+            	and c.cheph= '${cheh}'
+            </if>
+	</select>
+</mapper>

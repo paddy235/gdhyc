@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiren.fuelmis.dc.dao.cnfy.FeiyxmflDao" >
+	<select id="getAllData"  resultType="java.util.HashMap">
+			select fl.id as id,
+				rownum,
+				fl.bianm as bianm,
+				fl.mingc as mingc,
+				fl.shuom as shuom,
+				kj.mingc as kjmingc,
+				decode(fl.zhuangt,1,'启用','未启用') as zhuangt 
+				from RL_CNFY_FEIYXMFL fl,RL_CNFY_FENLKJ kj 
+				where fl.fenlkj_id = kj.id 
+				<!-- order by fl.bianm -->
+				order by rownum
+	</select>
+	<select id="getFenlkj"  resultType="java.util.HashMap">
+			select id,mingc from RL_CNFY_FENLKJ where zhuangt = 1
+	</select>
+	<select id="getMaxBianm"  resultType="java.lang.String">
+			select max(bianm) from RL_CNFY_FEIYXMFL
+	</select>
+	<insert id="addFeiyxmflData"  useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO RL_CNFY_FEIYXMFL(ID,
+								bianm,
+								mingc,
+								shuom,
+								fenlkj_id,
+								zhuangt)
+								VALUES(XL_CHANGNZF_ID.NEXTVAL,
+								'${BIANM}',
+								'${MINGC}',
+								'${SHUOM}',
+								 ${FENLKJ},
+								 1)
+	</insert>
+	<select id="getFeiyxmflById"  resultType="java.util.HashMap">
+			select    id,
+					  fenlkj_id,
+					  mingc,
+					  shuom
+  				 from RL_CNFY_FEIYXMFL where id = #{id}
+	</select>
+	<update id="updateFeiyxmfl" flushCache="true">  
+        UPDATE RL_CNFY_FEIYXMFL SET  SHUOM = '${SHUOM}',
+						   MINGC = '${MINGC}',
+						   FENLKJ_ID = ${FENLKJ} WHERE ID = ${ID}
+    </update>
+    <select id="getState"  resultType="java.lang.Integer">
+			select zhuangt from RL_CNFY_FEIYXMFL where id = #{id}
+	</select>
+    <update id="changeState" flushCache="true">  
+        UPDATE RL_CNFY_FEIYXMFL SET  ZHUANGT = #{zhuangt} WHERE ID = #{id}
+    </update>
+</mapper>

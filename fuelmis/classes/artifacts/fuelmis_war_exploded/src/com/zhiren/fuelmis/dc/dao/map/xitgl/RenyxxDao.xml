@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiren.fuelmis.dc.dao.xitgl.RenyxxDao">
+	<resultMap id="BaseResultMap" type="renyxx">
+		<id column="ID" property="id" jdbcType="NUMERIC" />
+		<result column="MINGC" property="mingc" jdbcType="VARCHAR" />
+		<result column="MIM" property="mim" jdbcType="VARCHAR" />
+		<result column="QUANC" property="quanc" jdbcType="VARCHAR" />
+		<result column="DIANCXXB_ID" property="diancxxb_id" jdbcType="VARCHAR" />
+		<result column="BUM" property="bum" jdbcType="VARCHAR" />
+		<result column="ZHIW" property="zhiw" jdbcType="VARCHAR" />
+		<result column="XINGB" property="xingb" jdbcType="VARCHAR" />
+		<result column="LIANXDZ" property="lianxdz" jdbcType="VARCHAR" />
+		<result column="YOUZBM" property="youzbm" jdbcType="VARCHAR" />
+		<result column="CHUANZ" property="chuanz" jdbcType="VARCHAR" />
+		<result column="YIDDH" property="yiddh" jdbcType="VARCHAR" />
+		<result column="GUDDH" property="guddh" jdbcType="VARCHAR" />
+		<result column="EMAIL" property="email" jdbcType="VARCHAR" />
+		<result column="ZHUANGT" property="zhuangt" jdbcType="NUMERIC" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID, MINGC, MIM, QUANC, DIANCXXB_ID, BUM, ZHIW, XINGB, LIANXDZ, YOUZBM, CHUANZ, YIDDH, GUDDH, EMAIL, ZHUANGT
+	</sql>
+	<select id="getRenyxx" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from RENYXXB where upper(MINGC)=upper(#{mingc,jdbcType=VARCHAR})
+	</select>
+
+	<select id="getAll" resultMap="BaseResultMap">
+		select <include refid="Base_Column_List" /> from RENYXXB
+	</select>
+
+	<select id="getCount" resultType="java.lang.Integer">
+		select count(1) from RENYXXB
+	</select>
+	
+	<insert id="insertRenyxx" parameterType="java.util.Map">
+	    insert into RENYXXB(ID,MINGC,MIM,QUANC,DIANCXXB_ID,BUM,ZHIW,XINGB,LIANXDZ,YOUZBM,CHUANZ,YIDDH,GUDDH,EMAIL,ZHUANGT)
+	    values (${id},'${mingc}','${mim}','${quanc}',${diancxxb_id},'${bum}','${zhiw}','${xingb}','${lianxdz}',
+	    '${youzbm}','${chuanz}','${yiddh}','${guddh}','${email}',${zhuangt})
+	</insert>
+	
+	<select id="getOne" resultMap="BaseResultMap">
+	    select <include refid="Base_Column_List" /> from RENYXXB where ID = #{id}
+	</select>
+	
+	<update id="updateRenyxx" parameterType="java.util.Map">
+	    update Renyxxb 
+	    <trim prefix="SET" suffixOverrides=",">
+			<if test="mingc != null">MINGC=#{mingc},</if>
+			<if test="mim != null">MIM=#{mim},</if>
+			<if test="quanc != null">QUANC=#{quanc},</if>
+			<if test="bum != null">BUM=#{bum},</if>
+			<if test="zhiw != null">ZHIW=#{zhiw},</if>
+			<if test="xingb != null">XINGB=#{xingb},</if>
+			<if test="lianxdz != null">LIANXDZ=#{lianxdz},</if>
+			<if test="youzbm != null">YOUZBM=#{youzbm},</if>
+			<if test="chuanz != null">CHUANZ=#{chuanz},</if>
+			<if test="yiddh != null">YIDDH=#{yiddh},</if>
+			<if test="guddh != null">GUDDH=#{guddh},</if>
+			<if test="email != null">EMAIL=#{email},</if>
+			<if test="zhuangt != null">ZHUANGT=#{zhuangt},</if>
+			<if test="last_editer != null">last_editer=#{last_editer},</if>
+			<if test="last_editer_ip != null">last_editer_ip=#{last_editer_ip},</if>
+			<if test="last_editer_mac != null">last_editer_mac=#{last_editer_mac},</if>
+			<if test="last_edit_date != null">last_edit_date=#{last_edit_date},</if>
+		</trim>
+		where ID=#{id}
+	</update>
+	
+	<delete id="deleteRenyxx" parameterType="java.util.Map">
+	    delete from RENYXXB where ID = #{id}
+	</delete>
+	
+	<delete id="deleteQuanx" parameterType="java.util.Map">
+	    delete from QUANXXXB where RENYXXB_ID = #{renyxxb_id}
+	</delete>
+	
+	<insert id="insertQuanx" parameterType="java.util.Map">
+	    insert into QUANXXXB(RENYXXB_ID,ZIYXXB_ID)
+	    <foreach collection="ziy" item="item" index="index" separator=" union ">
+	        select #{renyxxb_id},#{item} from dual
+	    </foreach>
+	</insert>
+	
+	<select id="getQuanx" parameterType="java.lang.Long" resultType="java.lang.String">
+	    select ZIYXXB_ID from QUANXXXB where RENYXXB_ID = #{renyxxb_id}
+	</select>
+</mapper>

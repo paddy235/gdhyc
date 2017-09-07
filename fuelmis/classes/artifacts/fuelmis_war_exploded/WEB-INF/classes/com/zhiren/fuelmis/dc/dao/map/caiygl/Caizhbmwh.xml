@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiren.fuelmis.dc.dao.caiygl.caizhbmwh.CaizhbmwhDao" >	
+	<select id="getBianm"  resultType="java.util.LinkedHashMap">
+	select distinct SUBSTR(q.qingcsj,0,10)  CAIYRQ,c.SAMCODE CAIYBM,g_c.mubbm ZHIYBM,g_z.mubbm HUAYBM ,c.DIANCXXB_ID DIANCID,h.HUAYD_ID HUAYZT
+	from  RL_YS_CHEPB c 
+	left join RL_YS_CHEPB_qc q on q.CHEPB_ID=c.id
+	left join gx_chep_caizhbmb g_c on c.samcode=g_c.YUANBM<!-- 采样编码连接 找到制样编码-->
+	left join gx_chep_caizhbmb g_z on g_c.mubbm=g_z.YUANBM<!-- 制样编码连接 找到化验编码 -->
+	left join rl_hy_huaydb h on h.huaybm=g_z.mubbm <!-- 化验编码连接 找到化验状态 -->
+	where 
+	c.DIANCXXB_ID=#{0}
+	and substr(q.qingcsj,0,10) = #{1} 
+	order by SUBSTR(q.qingcsj,0,10) DESC,c.samcode DESC
+	</select>
+	
+	<select id="getBianmByCaiybm"  resultType="java.util.LinkedHashMap">
+	select distinct z_h.yuanbm ZHIYBM,z_h.mubbm HUAYBM
+	from gx_chep_caizhbmb c_z
+	left join gx_chep_caizhbmb z_h on c_z.mubbm =z_h.yuanbm 
+	where 
+	c_z.DIANCXXB_ID=#{1}
+	and z_h.DIANCXXB_ID=#{1}
+	and c_z.yuanbm=#{0}
+	</select>
+	
+	<update id="updateBianm" flushCache="true">
+		update gx_chep_caizhbmb set
+		YUANBM=#{0},
+		MUBBM=#{1}
+<!-- 		ZHUANMSJ=#{4},
+		ZHUANMRY=#{5}, -->
+		WHERE  YUANBM= #{2} and DIANCXXB_ID=#{3}
+	</update>
+	
+	<update id="updateHuaybmOfHuayd" flushCache="true">
+		update rl_hy_huaydb set
+		HUAYBM=#{0}
+		WHERE  HUAYBM= #{1} and DIANC_ID=#{2}
+	</update>
+	<insert id="insertBianm">
+		INSERT
+		INTO gx_chep_caizhbmb
+		(YUANBM,MUBBM,DIANCXXB_ID,ZHUANHLB_ID,ZHUANMSJ,ZHUANMRY)
+		VALUES
+		(#{0},#{1},#{2},#{3},#{4},#{5})
+	</insert>
+</mapper>

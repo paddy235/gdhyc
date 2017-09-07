@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiren.fuelmis.dc.dao.diaoygl.DiaoyrbDao" >
+	<select id="getFadlInfo"  resultType="java.util.LinkedHashMap">
+			select distinct c.caiybm, z.zhiybm
+			  from (select bianm as caiybm, zhillsb_id
+			          from zhuanmb
+			         where zhillsb_id in
+			               (select zm.zhillsb_id as id
+			                  from zhuanmb zm, zhuanmlb lb, yangpdhb y, zhillsb z, fahb f
+			                 where zm.zhuanmlb_id = lb.id
+			                   and lb.jib = 1
+			                   and y.zhilblsb_id = zm.zhillsb_id
+			                   and f.zhilb_id = z.zhilb_id
+			                   and z.id = zm.zhillsb_id)
+			           and zhuanmlb_id =
+			               (select id from zhuanmlb where mingc = '采样编码')) c,
+			               
+			       (select bianm as zhiybm, zhillsb_id
+			          from zhuanmb
+			         where zhillsb_id in
+			               (select zm.zhillsb_id as id
+			                  from zhuanmb zm, zhuanmlb lb, yangpdhb y, zhillsb z, fahb f
+			                 where zm.zhuanmlb_id = lb.id
+			                   and lb.jib = 3
+			                   and y.zhilblsb_id = zm.zhillsb_id
+			                   and f.zhilb_id = z.zhilb_id
+			                   and z.id = zm.zhillsb_id)
+			           and zhuanmlb_id =
+			               (select id from zhuanmlb where mingc = '制样编码')) z,
+			               
+			       (select distinct f.id, f.diancxxb_id, z.id as zid
+			          from zhillsb z, fahb f, chepb c
+			         where f.zhilb_id = z.zhilb_id
+			           and c.fahb_id = f.id
+			           and to_date(#{date}, 'yyyy-mm-dd') + 1 <![CDATA[> ]]>  c.zhongcsj
+			           and to_date(#{date}, 'yyyy-mm-dd') <![CDATA[<= ]]> c.zhongcsj) s         
+			 where c.zhillsb_id = z.zhillsb_id
+			   and c.zhillsb_id = s.zid
+			   and z.zhillsb_id = s.zid
+			   and s.diancxxb_id = 515
+			 order by caiybm, zhiybm
+	</select>
+	
+	<select id="getXitxxInfo"  resultType="String">
+		select zhi from xitxxb where leib= #{leib} and mingc= #{mingc}   and diancxxb_id =#{diancid}  and beiz='使用'
+	</select>
+	
+	<select id="getZhonglInfo"  resultType="java.util.LinkedHashMap">
+		select nvl(sum(round(laimsl,2)),0) jingz, nvl(sum(round(biaoz,2)),0) biaoz,nvl(sum(round(yuns,2)),0) yuns,
+		nvl(sum(round(yingd,2)),0) yingd,nvl(sum(round(yingd-yingk,2)),0) kuid
+		from fahb where to_char(daohrq,'yyyy-MM-dd') = #{date}
+		<if test="whereCondition == 1 ">
+			and piz>0
+		</if>
+		
+		<if test="whereCondition1 == 1 ">
+			and diancxxb_id = #{diancid}
+		</if>		
+	</select>
+	
+	
+	<select id="getHaoyInfo" resultType="java.util.LinkedHashMap">
+		select nvl(sum(fadhy),0) fady, nvl(sum(gongrhy),0) gongry, nvl(sum(qity),0) qity,nvl(sum(feiscy),0) feiscy from meihyb 
+		where rulrq = #{date}
+		<if test="diancid != null">
+			and diancxxb_id = #{diancid}
+		</if>
+	</select>	
+	
+	<select id="getZuorkcInfo" resultType="String">
+		SELECT KUC FROM SHOUHCRBB 
+		  WHERE DIANCXXB_ID = #{diancid} 
+		        AND RIQ =  LAST_DAY(ADD_MONTHS(to_date(#{date},'yyyy-MM-dd'),-1))
+	</select>	
+	
+	<select id="getShangykcInfo" resultType="String">
+		SELECT KUC
+            FROM YUESHCHJB TJ
+           WHERE TJ.RIQ = FIRST_DAY(ADD_MONTHS(to_date(#{date},'yyyy-MM-dd'),-1))
+             AND TJ.DIANCXXB_ID = #{diancid}
+             AND FENX = '本月'
+	</select>
+	
+	
+	<select id="getShangrkccInfo" resultType="String">
+         SELECT SUM(DANGRGM)+SUM(changwml) - SUM(FADY) - SUM(GONGRY) - SUM(QITY) - SUM(FEISCY) -
+		 	SUM(CUNS)  +SUM(TIAOZL)+  SUM(SHUIFCTZ)+  SUM(PANYK) KCC
+		 FROM SHOUHCRBB WHERE DIANCXXB_ID = #{diancid}
+		 AND RIQ BETWEEN FIRST_DAY((to_date(#{date},'yyyy-MM-dd')) AND to_date(#{date},'yyyy-MM-dd') -1
+	</select>
+	
+
+	<select id="getBukdmlInfo" resultType="String">
+         SELECT SUM(DANGRGM)+SUM(changwml) - SUM(FADY) - SUM(GONGRY) - SUM(QITY) - SUM(FEISCY) -
+			 SUM(CUNS)  +SUM(TIAOZL)+  SUM(SHUIFCTZ)+  SUM(PANYK) KCC
+		 FROM SHOUHCRBB WHERE DIANCXXB_ID = #{diancid}
+		 AND RIQ BETWEEN FIRST_DAY((to_date(#{date},'yyyy-MM-dd')) AND to_date(#{date},'yyyy-MM-dd') -1
+	</select>
+	
+	<select id="getShifyscInfo" resultType="java.util.LinkedHashMap">
+		select id, diancxxb_id, riq, dangrgm, haoyqkdr, kuc, diancscsj, beiz, dangrfdl, tiaozl, shangbkc,
+			diancscwjm, fadl, quemtjts, quemtjrl, jingz, biaoz, yuns, yingd, kuid, fady, gongry, qity, cuns, shuifctz, 
+			panyk, diaoc, feiscy, changwml, bukdml, kedkc, zhaungt, gongrl 
+		from shouhcrbb 
+		where diancxxb_id = #{diancid} and to_char(riq,'yyyy-MM-dd')=#{date}
+	</select>	
+	
+	
+	<update id="updateShouhcrbb" flushCache="true">
+		update shouhcrbb set
+				fadl = #{fadl},
+				GONGRL = #{GONGRL},
+				jingz = #{jingz},		  
+				biaoz = #{biaoz},		  
+				yuns = #{yuns},		  
+				yingd = #{yingd},		  
+				kuid = #{kuid},		  
+				fady = #{fady},		  
+				gongry = #{gongry},		  
+				qity = #{qity},		  
+				cuns = #{cuns},
+				tiaozl = #{tiaozl},
+				shuifctz = #{shuifctz},
+				panyk = #{panyk},
+				dangrgm = #{dangrgm},
+				haoyqkdr = (fady + gongry + qity + cuns + tiaozl + shuifctz+ panyk ),
+				feiscy = #{feiscy},
+				bukdml = #{bukdml},
+				changwml = #{changwml},
+				kedkc = #{kedkc},
+				kuc = #{kuc}
+				where id = #{updateId}
+    </update>
+    
+    <update id="updateShouhcrbb1" flushCache="true">
+		update shouhcrbb set kuc = #{kuc}
+				where riq > #{date}
+				and diancxxb_id = #{diancid}		
+    </update>
+	
+    <update id="updateShouhcrbb2" flushCache="true">
+		update shouhcrbb set kedkc = #{kedkc}
+				where riq > #{date}
+				and diancxxb_id = #{diancid}		
+    </update>
+    
+    <insert id="addShouhcrbb" useGeneratedKeys="true" keyProperty="id">
+		insert into shouhcrbb(id, diancxxb_id, riq, fadl, jingz, biaoz, yuns,
+		yingd, kuid, fady, gongry, qity, cuns, tiaozl, shuifctz, panyk, kuc, dangrgm,
+		haoyqkdr,feiscy,bukdml,changwml,kedkc,GONGRL)
+		values
+		(#{diancxxb_id}, #{riq}, #{fadl}, #{jingz}, #{biaoz}, #{yuns},
+		#{yingd}, #{kuid}, #{fady}, #{gongry}, #{qity}, #{cuns}, #{tiaozl}, #{shuifctz}, #{panyk}, #{kuc}, #{dangrgm},
+		(fady + gongry + qity + cuns + tiaozl + shuifctz+ panyk ),#{feiscy},#{bukdml},#{changwml},#{kedkc},#{GONGRL}
+		)    
+	</insert>	
+	
+	<insert id="addShouhcfkb" useGeneratedKeys="true" keyProperty="id">
+			insert into shouhcfkb
+                (id, diancxxb_id,riq,laimsl, rez, meij, yunj,meijs,yunjs,huocyj,huocyjs,qicyj,qicyjs,meikxxb_id,pinzb_id,gongysb_id,JIHKJB_ID,yunsfsb_id) 
+              values
+              	(#{id},#{diancxxb_id},#{riq},#{laimsl},#{rez},#{meij},#{yunj},#{meijs},#{yunjs},#{huocyj},#{huocyjs},#{qicyj},#{qicyjs},#{meikxxb_id},#{pinzb_id},#{gongysb_id},#{JIHKJB_ID},#{yunsfsb_id}) 	
+	
+	</insert>
+	
+	<insert id="addShouhcfkb1" useGeneratedKeys="true" keyProperty="id">
+			insert into shouhcfkb
+                (id, diancxxb_id,riq,laimsl, rez, meij, yunj,meikxxb_id,pinzb_id,gongysb_id,JIHKJB_ID,yunsfsb_id) 
+              values
+              	(#{id},#{diancxxb_id},#{riq},#{laimsl},#{rez},#{meij},#{yunj},#{meikxxb_id},#{pinzb_id},#{gongysb_id},#{JIHKJB_ID},#{yunsfsb_id}) 	
+	
+	</insert>	
+	
+	<select id="getOLDShouhcfk" resultType="java.util.LinkedHashMap">
+		  SELECT SHC.DIANCXXB_ID,
+		         SHC.REZ, 
+		         SHC.MEIJ, 
+		         SHC.YUNJ, 
+		         SHC.MEIJS, 
+		         SHC.YUNJS, 
+		         SHC.HUOCYJ, 
+		         SHC.HUOCYJS, 
+		         SHC.QICYJ, 
+		         SHC.QICYJS, 
+		         SHC.LAIMSL, 
+		         SHC.MEIKXXB_ID, 
+		         SHC.GONGYSB_ID, 
+		         SHC.JIHKJB_ID, 
+		         SHC.YUNSFSB_ID, 
+		         SHC.PINZB_ID ,
+		    FROM SHOUHCFKB SHC, DIANCXXB DC 
+		    WHERE SHC.DIANCXXB_ID = DC.ID 
+		          and to_char(SHC.RIQ,'yyyy-MM-dd') = #{date} 
+		          and dc.id = #{diancid};
+	</select>
+	
+	
+	<select id="getShouhcfk" resultType="java.util.LinkedHashMap">
+        select meikxxb_id,
+               gongysb_id,
+               pinzb_id,
+               jihkjb_id,
+               yunsfsb_id,
+               diancxxb_id,
+               rez,
+               0           meij,
+               0           yunj,
+               laimsl
+          from (select f.meikxxb_id,
+                       f.gongysb_id,
+                       f.pinzb_id,
+                       f.JIHKJB_ID,
+                       f.yunsfsb_id,
+                       f.diancxxb_id,
+                       decode(sum(decode(nvl(z.qnet_ar, 0), 0, 0, f.laimsl)),
+                              0,
+                              0,
+                              round_new(sum(z.qnet_ar * f.laimsl) /
+                                        sum(decode(nvl(z.qnet_ar, 0),
+                                                   0,
+                                                   0,
+                                                   f.laimsl)),
+                                        2)) rez,
+                       decode(sum(decode(nvl(g.meij, 0), 0, 0, f.laimsl)),
+                              0,
+                              0,
+                              round_new(sum((g.meij + g.meis) * f.laimsl) /
+                                        sum(decode(nvl(g.meij, 0),
+                                                   0,
+                                                   0,
+                                                   f.laimsl)),
+                                        2)) meij,
+                       decode(sum(decode(nvl(g.meij, 0), 0, 0, f.laimsl)),
+                              0,
+                              0,
+                              round_new(sum(f.laimsl *
+                                            decode(g.meij,
+                                                   0,
+                                                   0,
+                                                   (nvl(g.yunf, 0) +
+                                                   nvl(g.yunfs, 0)))) /
+                                        sum(decode(nvl(g.meij, 0),
+                                                   0,
+                                                   0,
+                                                   f.laimsl)),
+                                        2)) yunj,
+                       nvl(sum(round(f.laimsl,2)), 0) laimsl
+                  from fahb f,
+                       zhilb z,
+                       diancxxb d,
+                       (select id, fahb_id, meij, meis, yunf, yunfs
+                          from guslsb
+                         where id in (select max(id) id
+                                        from guslsb g,
+                                             (select fahb_id, max(leix) leix
+                                                from guslsb
+                                               group by fahb_id) g2
+                                       where g.fahb_id = g2.fahb_id
+                                         and g.leix = g2.leix
+                                       group by g.fahb_id)) g
+                 where f.zhilb_id = z.id(+)
+                   and f.id = g.fahb_id(+)
+                   and f.diancxxb_id = d.id
+                   <if test="whereCondition==1">
+                   		and f.piz>0
+                   </if>
+                   <if test="whereCondition1==1">
+                   		and diancxxb_id= #{diancid}
+                   </if>
+                   and to_char(f.daohrq,'yyyy-MM-dd') = #{date}
+                 group by f.diancxxb_id,
+                          f.gongysb_id,
+                          f.meikxxb_id,
+                          f.pinzb_id,
+                          f.JIHKJB_ID,
+                          f.yunsfsb_id)
+	</select>	
+	
+	<delete id="delShouhcfkb"  flushCache="true">  
+         delete from shouhcfkb where diancxxb_id = #{diancid} and to_char(riq,'yyyy-MM-dd') = #{date}
+    </delete>
+	
+
+</mapper>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.zhiren.fuelmis.dc.dao.gongyspg.gongmjhzl.GongmjhzlDao">
+	
+	<select id="getRigmjhList" resultType="java.util.LinkedHashMap">
+		select a.id, riq, b.mingc, a.gongysb_id, a.jihml, a.tiaozl, 
+		a.zhuangt, a.fabrq, a.fabry, a.pingffab_id, a.leib 
+			from rl_gys_rigmjhb a left join gongysb b
+			on a.gongysb_id = b.id
+			where a.riq = #{date}
+		<if test="gongysid != null">
+			and gongysb_id = #{gongysid}
+		</if>
+	</select>
+		
+</mapper>

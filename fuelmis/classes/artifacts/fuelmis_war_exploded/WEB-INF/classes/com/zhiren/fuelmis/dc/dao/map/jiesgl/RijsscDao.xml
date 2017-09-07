@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiren.fuelmis.dc.dao.jiesgl.RijsscDao">
+	<select id="getRijscx" resultType="java.util.Map">
+		select
+		CAIYBM,
+		GONGYSMC ,
+		PINZ,
+		CHES,
+		to_char(daohrq,'yyyy-mm-dd') DAOHRQ,
+		SANFSL,
+		MAOZ ,
+		PIZ ,
+		ZONGKD ,
+		JINGZ ,
+		CAIYBM,
+		HUAYBM ,
+		decode(HUAYZT,null,'未化验',0,'待审核',1,'一审通过',2,'二审通过') HUAYZT,
+		QNET_AR ,
+		RUKDBH ,
+		RK_JINE ,
+		BIANH ,
+		KAISSJ ,
+		JIESSJ ,
+		JIESBH ,
+		RJS_JIESSL ,
+		RJS_JIESRZ ,
+		RJS_JIESLF ,
+		RJS_HANSJE ,
+		RJS_HANSDJ ,
+		RJS_BUHSJE ,
+		RJS_REZZK ,
+		RJS_LIUFZK ,
+		RJS_GONGS ,
+		RJS_HETBH ,
+		YUEJSDBM ,
+		JIESDJ_YJS
+		from vm_all where to_char(daohrq,'yyyy-mm-dd') BETWEEN '${sDate}' and '${eDate}'
+		<if test="gongys!=-1">
+			and gongysb_id ='${gongys}'
+		</if>
+		order by gongysb_id,daohrq
+	</select>
+</mapper>

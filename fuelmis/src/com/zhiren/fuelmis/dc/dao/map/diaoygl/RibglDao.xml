@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiren.fuelmis.dc.dao.diaoygl.RibglDao" >
+    <select id="getRibtbShangc"  resultType="java.util.Map">
+	 SELECT S.ID,
+       TO_CHAR(S.RIQ, 'yyyy-mm-dd') RIQ,
+       S.DIANCXXB_ID,
+       S.DANGRGM,
+       S.HAOYQKDR,
+       S.KUC,
+       S.DANGRFDL,
+       S.TIAOZL,
+       S.FADL,
+       S.JINGZ,
+       S.BIAOZ,
+       S.YUNS,
+       S.YINGD,
+       S.KUID,
+       S.FADY,
+       S.GONGRY,
+       S.QITY,
+       S.CUNS,
+       S.SHUIFCTZ,
+       S.PANYK,
+       S.DIAOC,
+       S.FEISCY,
+       S.CHANGWML,
+       S.BUKDML,
+       S.KEDKC,
+       S.GONGRL,
+       S.shiftj
+  	FROM SHOUHCRBB S 
+  		where riq = TO_DATE(#{riq},'yyyy-MM-dd')
+	</select>
+
+    <select id="getRibgsShangc"  resultType="java.util.Map">
+	  SELECT S.ID,
+       S.DIANCXXB_ID,
+       S.REZ,
+       S.MEIJ,
+       nvl(S.MEIJS,0)MEIJS,
+       S.YUNJ,
+       nvl(S.YUNJS,0)YUNJS,
+       nvl(S.HUOCYJ,0)HUOCYJ,
+       nvl(S.HUOCYJS,0)HUOCYJS,
+       nvl(S.QICYJ,0)QICYJ,
+       nvl(S.QICYJS,0)QICYJS,
+       TO_CHAR(S.RIQ, 'yyyy-mm-dd') RIQ,
+       S.LAIMSL,
+       M.SHANGJGSBM MEIKXXB_ID,
+       G.SHANGJGSBM GONGYSB_ID,
+       P.MINGC PINZB_ID,
+       J.BIANM JIHKJB_ID,S.YUNSFSB_ID
+ 	 FROM SHOUHCFKB S, MEIKXXB M, GONGYSB G, PINZB P, JIHKJB J
+	 WHERE S.MEIKXXB_ID = M.ID
+     AND S.GONGYSB_ID = G.ID
+     AND S.JIHKJB_ID = J.ID
+     AND S.PINZB_ID = P.ID 
+     AND RIQ = TO_DATE(#{riq},'yyyy-MM-dd')
+	</select>
+    <update id="updateZhuangt">
+              update SHOUHCRBB set zhuangt=1 where riq = TO_DATE(#{riq},'yyyy-MM-dd')
+       </update>
+    <update id="updateRibgsZhuangt">
+              update SHOUHCFKB set zhuangt=1 where to_char(riq,'yyyy-MM-dd') = '${sDate}'
+       </update>
+    <select id="getRibgsList" resultType="java.util.Map">
+              	  SELECT S.ID,
+       S.DIANCXXB_ID,
+       S.REZ,
+       S.MEIJ,
+       nvl(S.MEIJS,0)MEIJS,
+       S.YUNJ,
+       nvl(S.YUNJS,0)YUNJS,
+       nvl(S.HUOCYJ,0)HUOCYJ,
+       nvl(S.HUOCYJS,0)HUOCYJS,
+       nvl(S.QICYJ,0)QICYJ,
+       nvl(S.QICYJS,0)QICYJS,
+       TO_CHAR(S.RIQ, 'yyyy-mm-dd') RIQ,
+       S.LAIMSL,
+       M.SHANGJGSBM MEIKXXB_ID,
+       G.SHANGJGSBM GONGYSB_ID,
+       P.MINGC PINZB_ID,
+       J.BIANM JIHKJB_ID,S.YUNSFSB_ID
+ 	 FROM SHOUHCFKB S, MEIKXXB M, GONGYSB G, PINZB P, JIHKJB J
+	 WHERE S.MEIKXXB_ID = M.ID
+     AND S.GONGYSB_ID = G.ID
+     AND S.JIHKJB_ID = J.ID
+     AND S.PINZB_ID = P.ID
+     AND to_char(RIQ,'yyyy-MM-dd') = '${sDate}'
+       </select>
+</mapper>

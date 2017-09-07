@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiren.fuelmis.dc.dao.hetgl.HetmbglDao" >
+	<resultMap id="BaseResultMap" type="fujxx">
+		<id column="ID"              property="id" jdbcType="NUMERIC" />
+		<result column="MINGC"    	 property="mingc" jdbcType="VARCHAR" />		
+		<result column="LUJ" 		 property="luj" jdbcType="VARCHAR" />
+		<result column="YEWLY" 	 	 property="yewly" jdbcType="VARCHAR" />
+		<result column="GUANLID"   	 property="guanlid"  jdbcType="NUMERIC" />
+		<result column="ZHUANGT"   	 property="zhuangt" jdbcType="NUMERIC" />
+		<result column="DAIM"    	 property="daim" jdbcType="VARCHAR" />
+		<result column="YOUXKSRQ"    property="youxksrq" jdbcType="VARCHAR" />
+		<result column="YOUXJSRQ"    property="youxjsrq" jdbcType="VARCHAR" />	
+	</resultMap>
+	
+	
+	
+	<delete id="delFujxx" parameterType="java.util.Map">
+		delete from FUJXX where id = #{id}
+	</delete>
+
+	
+	<select id="getHetmbById" resultMap="BaseResultMap">
+		select * from FUJXX
+		<if test="id != null">
+			where id = #{id}
+		</if>
+	</select>
+
+	<select id="getHetmbList" resultType="java.util.Map">
+		select id, mingc, luj, yewly, guanlid, zhuangt, daim, youxksrq, youxjsrq from FUJXX
+		where yewly = #{YEWLY}
+	</select>
+	
+	
+	<select id="getHetmbsubList" resultType="java.util.Map">
+		select id, mingc, shuom from rl_ht_hetmb_sub
+	</select>
+
+	<select id="getHetmbglCount" resultType="java.lang.Integer">
+		select count(id) from rl_ht_hetb where fujxxid = #{id}
+	</select>
+
+	<delete id="delHetmb" parameterType="java.util.Map">
+		delete fujxx where id = #{id}
+	</delete>
+
+	<update id="updateHetmb" parameterType="fujxx">
+         update FUJXX
+         	<trim prefix="SET" suffixOverrides=",">
+         		<if test="youxksrq != null">YOUXKSRQ=#{youxksrq},</if>
+				<if test="youxjsrq != null">YOUXJSRQ=#{youxjsrq},</if>
+				<if test="daim != null">DAIM=#{daim},</if>
+				<if test="zhuangt != null">ZHUANGT=#{zhuangt}</if>			
+		</trim>     
+           where ID = #{id}
+	</update>
+	
+</mapper>

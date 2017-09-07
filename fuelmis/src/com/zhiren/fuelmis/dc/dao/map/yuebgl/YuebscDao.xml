@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiren.fuelmis.dc.dao.yuebgl.YuebscDao">
+	<select id="getYueb" resultType="java.util.Map">
+		select shuj.id,
+		shuj.mingc,
+		nvl(shuj.zhuangt,0) zhuangt,
+		case zhuangt when 1 then '已上报' when 0 then '未提交' when 2 then '已回退' else '未填写' end color
+		from(
+			select 1 xuh, 'yueslb' id,'数量信息' mingc,min(s.zhuangt) zhuangt from yueslb s, yuetjkjb k
+			where s.yuetjkjb_id = k.id
+			<if test=' dianc != "" and dianc!=null '>
+		 	   and k.diancxxb_id = #{dianc}
+			</if>
+			and k.riq = #{riq}
+			union
+			select 2 xuh,'yuezlb' id,
+			'质量信息' mingc,
+			min(s.zhuangt) zhuangt
+			from yuezlb s, yuetjkjb k
+			where s.yuetjkjb_id = k.id
+			<if test=' dianc != "" and dianc!=null '>
+			    and k.diancxxb_id = #{dianc}
+			</if>
+			and k.riq = #{riq}
+			union
+			select 3 xuh,'yueshchjb' id,
+			'耗存合计' mingc,
+			min(s.zhuangt) zhuangt
+			from yueshchjb s
+			where s.riq = #{riq}
+			<if test=' dianc != "" and dianc!=null '>
+			    and s.diancxxb_id = #{dianc}
+			</if>
+			union
+			select 4 xuh,'yuehcb' id,
+			'耗存情况' mingc,
+			min(s.zhuangt) zhuangt
+			from yuehcb s, yuetjkjb k
+			where s.yuetjkjb_id = k.id
+			<if test=' dianc != "" and dianc!=null '>
+			    and k.diancxxb_id = #{dianc}
+			</if>
+			and k.riq = #{riq}
+			union
+			select 5 xuh,'yuejsbmdj' id,
+			'入厂标煤单价' mingc,
+			min(s.zhuangt) zhuangt
+			from yuejsbmdj s, yuetjkjb k
+			where s.yuetjkjb_id = k.id
+			<if test=' dianc != "" and dianc!=null '>
+			    and k.diancxxb_id = #{dianc}
+			</if>
+			and k.riq = #{riq}
+			union
+			select 6 xuh,'yuezbb' id,
+			'指标情况' mingc,
+			min(s.zhuangt) zhuangt
+			from yuezbb s
+			where s.riq = #{riq}
+			<if test=' dianc != "" and dianc!=null '>
+			    and s.diancxxb_id = #{dianc}
+			</if>
+			union
+			select 7 xuh,'yueshcyb' id,
+			'收耗存（油）' mingc,
+			min(s.zhuangt) zhuangt
+			from yueshcyb s
+			where s.riq = #{riq}
+			<if test=' dianc != "" and dianc!=null '>
+			    and s.diancxxb_id = #{dianc}
+			</if>
+			union
+			select 8 xuh,'zafb' id,
+			'厂内费用' mingc,
+			min(s.zhuangt) zhuangt
+			from zafb s
+			where  s.riq = #{riq}
+			<if test=' dianc != "" and dianc!=null '>
+			    and s.diancxxb_id = #{dianc}
+			</if>
+		) shuj
+		order by xuh
+	</select>
+</mapper>

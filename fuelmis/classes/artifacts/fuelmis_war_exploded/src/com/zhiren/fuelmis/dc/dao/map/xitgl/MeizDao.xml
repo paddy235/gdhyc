@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiren.fuelmis.dc.dao.xitgl.MeizDao" >
+	<resultMap id="BaseResultMap" type="meiz" >
+		<id column="ID" property="id" jdbcType="NUMERIC" />
+		<result column="XUH" property="xuh" jdbcType="NUMERIC" />
+		<result column="BIANM" property="bianm" jdbcType="NUMERIC" />
+		<result column="MINGC" property="mingc" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<select id="getAll" resultMap="BaseResultMap">
+		select M.ID, M.XUH, M.BIANM, M.MINGC from MEIZB M
+	</select>
+	
+	<insert id="insertMeizxx" parameterType="java.util.Map">
+	    insert into MEIZB(ID,XUH,BIANM,MINGC)
+	    values (${id},nvl(${xuh},0),'${bianm}','${mingc}')
+	</insert>
+	
+	<select id="getOne" resultMap="BaseResultMap">
+	  select M.ID, M.XUH, M.BIANM, M.MINGC from MEIZB M
+	   where M.ID = #{id}
+	</select>
+	
+	<update id="updateMeizxx" parameterType="java.util.Map">
+	    update MEIZB
+	    <trim prefix="SET" suffixOverrides=",">
+			<if test="xuh != null">XUH=#{xuh},</if>
+			<if test="mingc != null">MINGC=#{mingc},</if>
+			<if test="bianm != null">BIANM=#{bianm},</if>
+		</trim>
+		where ID=#{id}
+	</update>
+	
+	<delete id="delMeizxx" parameterType="java.util.Map">
+	    delete from MEIZB where ID = #{id}
+	</delete>
+</mapper>

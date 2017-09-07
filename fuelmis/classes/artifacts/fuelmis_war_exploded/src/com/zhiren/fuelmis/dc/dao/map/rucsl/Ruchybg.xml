@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiren.fuelmis.dc.dao.rucsl.RuchybgDao">
+	<select id="getTabelData" resultType="java.util.Map">
+		SELECT meikmc,
+       		   huaysj,
+       		   h.huaybm,
+       		   faz,
+       		   sum(maoz - piz - zongkd) meil,
+       		   count(*) ches,
+       		   gx1.zhuanmsj,
+       		   huayy,
+       		   (min(c.cheph) || '-' || max(c.cheph)) chep,
+		       max(nvl(mt,0)) mt,
+		       max(nvl(mad,0)) mad,
+		       max(nvl(aad,0)) aad,
+		       max(nvl(aar,0)) aar,
+		       max(nvl(ad,0)) ad,
+		       max(nvl(vad,0)) vad,
+		       max(nvl(var,0)) var,
+		       Round_new(max(nvl(Vad,0) * 100 / (100 - nvl(Mad,0))), 2) vd,
+		       max(nvl(vdaf,0)) vdaf,
+		       max(nvl(stad,0)) stad,
+		       max(nvl(star,0)) star,
+		       max(nvl(std,0)) std,
+		       max(nvl(had,0)) had,
+		       max(nvl(qbad,0)) qbad,
+		       max(nvl(qgrad,0)) qgrad,
+		       max(nvl(qgrd,0)) qgrd,
+		       max(nvl(qnet_ar,0)) qnet_ar,
+		       max(round_new((nvl(qnet_ar, 0) / 0.0041816), 2)) qnet_ark
+  		FROM rl_ys_chepb c
+			  left join (SELECT QC.CHEPB_ID,
+			                    TRUNC(TO_DATE(QC.ZHONGCSJ, 'yyyy-mm-dd hh24:mi:ss')) CDATE
+			               FROM RL_YS_CHEPB_QC QC) q
+			    on c.id = q.chepb_id
+			  left join (select * from gx_chep_caizhbmb where zhuanhlb_id = 1) gx1
+			    on c.samcode = gx1.yuanbm
+			  left join (select * from gx_chep_caizhbmb where zhuanhlb_id = 2) gx2
+			    on gx1.mubbm = gx2.yuanbm
+			  left join rl_hy_huaydb h
+			    on gx2.mubbm = h.huaybm
+ 		WHERE h.huaybm = '${huaybh}'
+ 			group by meikmc, faz, huaysj, huayy, gx1.zhuanmsj, h.huaybm
+	</select>
+	<select id="getHuaybh" resultType="java.util.Map">
+		select huaybm from rl_hy_huaydb
+		where 
+			huaysj  <![CDATA[>= ]]> '${sDate}' and 
+			huaysj <![CDATA[<= ]]>'${eDate}' and 
+			danjlx='入厂化验'
+	</select>
+</mapper>

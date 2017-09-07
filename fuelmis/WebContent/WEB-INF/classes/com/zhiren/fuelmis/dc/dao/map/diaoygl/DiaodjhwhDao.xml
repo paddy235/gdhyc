@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiren.fuelmis.dc.dao.diaoygl.DiaodjhwhDao" >	
+	<select id="getDiaodjhList" resultType="java.util.LinkedHashMap">
+		select dm.id,dm.jihdh, dm.riq,g.mingc gongys,p.mingc pinz,ds.shul, decode(dm.zhuangt,0,'未审核',-1,'回退','已审核') zhuangt,r.quanc lurr
+		  from RL_GYS_DIAODJH_MAIN dm
+		  left join RL_GYS_DIAODJH_sub ds
+		    on dm.id = ds.main_id
+		   left join gongysb g on g.id=dm.gongysb_id
+		   left join pinzb p on p.id=ds.meiz_id
+		   left join renyxxb r on r.id=dm.lurr_id
+		 where dm.riq between '${sDate}' and '${eDate}'
+		   and dm.diancxxb_id = '${diancid}'
+		<if test='gongysid !=-1'>
+			and dm.gongysb_id = '${gongysid}'
+		</if>
+	</select>
+	<select id="getDiaodjhMain" resultType="java.util.LinkedHashMap">
+		select * from RL_GYS_DIAODJH_MAIN where id=#{0}
+	</select>
+	<select id="getDiaodjhSub" resultType="java.util.LinkedHashMap">
+		select * from RL_GYS_DIAODJH_SUB where main_id=#{0}
+	</select>
+	<insert id="insertDiaodjh">
+		insert into RL_GYS_DIAODJH_MAIN(id,jihdh,riq,zhuangt,lurr_id,gongysb_id,diancxxb_id) 
+		values('${ID}','${JIHDH}','${RIQ}',0,'${LURR_ID}','${GONGYSB_ID}',515)
+	</insert>
+	<insert id="insetDiaodjhSub">
+		insert into RL_GYS_DIAODJH_SUB(id,main_id,meiz_id,shul,qnet_ar, st_ar, v_ar,a_ar,zongcs,banzcs) 
+		values('${ID}','${MAIN_ID}','${MEIZ_ID}','${SHUL}','${QNET_AR}','${ST_AR}','${V_AR}','${A_AR}','${ZONGCS}','${BANZCS}')
+	</insert>
+	<update id="updateDiaodjh">
+		update RL_GYS_DIAODJH_MAIN set jihdh='${JIHDH}' ,riq='${RIQ}',lurr_id='${LURR_ID}',gongysb_id='${GONGYSB_ID}' ,zhuangt=0 where id='${ID}'
+	</update>
+	<update id="updateDiaodjhSub">
+		update RL_GYS_DIAODJH_SUB set meiz_id='${MEIZ_ID}',shul='${SHUL}',qnet_ar='${QNET_AR}', st_ar='${ST_AR}', v_ar='${V_AR}',a_ar='${A_AR}',zongcs='${ZONGCS}'
+		,banzcs='${BANZCS}' where id='${ID}'
+	</update>
+	<delete id="deleteDiaodjhSub">
+		delete from RL_GYS_DIAODJH_SUB where id=#{0}
+	</delete>
+	<select id="selectSubId" resultType="String">
+		select id from RL_GYS_DIAODJH_SUB where id=#{0}
+	</select>
+	<delete id="deleteDiaodjhMain">
+		delete from RL_GYS_DIAODJH_MAIN where id=#{0}
+	</delete>
+	<select id="getJihdh" resultType="String">
+		select jihdh from RL_GYS_DIAODJH_MAIN where riq=#{0}
+	</select>
+</mapper>

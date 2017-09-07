@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.zhiren.fuelmis.dc.dao.gongyspg.hetbdao.HetbDao">
+	<resultMap id="BaseResultMap" type="hetb">
+		<id column="ID" property="id" jdbcType="NUMERIC" />
+		<result column="GONGYSB_ID" property="gongysb_id" jdbcType="NUMERIC" />
+		<result column="HETL" property="hetl" jdbcType="NUMERIC" />
+		<result column="BEIZ" property="beiz" jdbcType="VARCHAR" />
+		<result column="ZHUANGT" property="zhuangt" jdbcType="NUMERIC" />
+		<result column="LURRY" property="lurry" jdbcType="NUMERIC" />
+		<result column="LURSJ" property="lursj" jdbcType="VARCHAR" />
+		<result column="SHENHRY" property="shenhry" jdbcType="NUMERIC" />
+		<result column="SHENHSJ" property="shenhsj" jdbcType="VARCHAR" />
+		<result column="KAISRQ" property="kaisrq" jdbcType="VARCHAR" />
+		<result column="JIESRQ" property="jiesrq" jdbcType="VARCHAR" />
+		<result column="PINGFFAB_ID" property="pingffab_id" jdbcType="NUMERIC" />
+	</resultMap>
+
+	<insert id="addHetb" parameterType="kaohzb">
+		insert into RL_GYS_HETB
+		  (id, gongysb_id, hetl, beiz, zhuangt, lurry, lursj, shenhry, shenhsj, kaisrq, jiesrq, pingffab_id)
+		values
+		  (#{id,jdbcType=NUMERIC}, #{gongysb_id,jdbcType=NUMERIC}, #{hetl,jdbcType=NUMERIC}, #{beiz,jdbcType=VARCHAR}, #{zhuangt,jdbcType=NUMERIC},
+		  #{lurry,jdbcType=NUMERIC},#{lursj,jdbcType=VARCHAR},#{shenhry,jdbcType=NUMERIC},#{shenhsj,jdbcType=VARCHAR}, #{kaisrq,jdbcType=VARCHAR},
+		  #{jiesrq,jdbcType=VARCHAR},#{pingffab_id,jdbcType=NUMERIC})
+	</insert>
+	<insert id="addhetzb">
+		insert into rl_gys_HETZLB
+		  (id, hetb_id, zhibdm, zhibz)
+		values
+		  (SEQ_Hetb.NEXTVAL, #{hetb_id,jdbcType=NUMERIC}, #{zhibdm,jdbcType=VARCHAR},  
+		  #{zhibz,jdbcType=NUMERIC})
+	</insert>
+	<select id="getId" resultType="java.lang.Long">
+		select 	SEQ_Hetb.NEXTVAL  from dual
+	</select>
+	<select id="getHetZhibByHetId" resultType="java.util.Map">
+		select 	zhibdm,zhibz  from rl_gys_HETZLB where hetb_id = #{id}
+	</select>
+	<sql id="Base_Column_List">
+		ID, GONGYSB_ID, HETL, BEIZ, ZHUANGT, LURRY, LURSJ, SHENHRY, SHENHSJ, KAISRQ, JIESRQ, PINGFFAB_ID
+	</sql>
+	
+	<select id="getHetbById" resultMap="BaseResultMap">
+		select <include refid="Base_Column_List"></include> from RL_GYS_HETB ht
+		<if test="id != null">
+			where id = #{id} 
+		</if>
+	</select>
+	
+	<select id="getZhibdm" resultType="java.util.Map">
+		select max(id) as id,
+       		max(zhibmc) as zhibmc,
+       		zhibdm,
+       		max(zhibdw) as zhibdw,
+       		max(beiz) as beiz,
+       		max(leib) as leib
+		from VWZHIBDYB
+		where leib = 1
+		 group by zhibdm
+		 order by id
+	</select>
+	<select id="getGyshtList" resultType="java.util.LinkedHashMap">
+	   select ht.id,
+       gy.mingc as GONGYSB_ID,
+       fa.mingc as pingffab_id,
+       ht.kaisrq,
+       ht.jiesrq,
+       ht.hetl,
+       <if test="params1 != ''">${params1}</if>
+       ht.lurry,
+      ht.lursj  as lursj,
+       ht.beiz
+  	from rl_gys_hetb ht, gongysb gy,rl_gys_pingffab  fa
+       ,(SELECT HT.ID AS HETB_ID,         HT.HETL AS HETL,
+         HT.GONGYSB_ID
+ 	<if test="params2 != ''">,${params2}</if>      
+	FROM rl_gys_hetb HT
+	 <if test="sdate != null and edate!=null"> 
+	    WHERE ((kaisrq<![CDATA[>= ]]>'${sdate}' and kaisrq<![CDATA[<= ]]>'${edate}') or 
+	            (jiesrq<![CDATA[>= ]]>'${sdate}' and jiesrq<![CDATA[<= ]]>'${edate}') or 
+	            (kaisrq<![CDATA[<= ]]>'${sdate}' and jiesrq<![CDATA[>= ]]>'${edate}'))
+	    ) hetzl
+	 </if>
+	where ht.gongysb_id = gy.id
+	  and ht.id = hetzl.hetb_id(+)
+	  and ht.pingffab_id = fa.id(+)
+	  <if test="sdate != null and edate!=null"> 
+	  and ((kaisrq<![CDATA[>= ]]>'${sdate}' and kaisrq<![CDATA[<= ]]>'${edate}') or 
+	     (jiesrq<![CDATA[>= ]]>'${sdate}' and jiesrq<![CDATA[<= ]]>'${edate}') or 
+	     (kaisrq<![CDATA[<= ]]>'${sdate}' and jiesrq<![CDATA[>= ]]>'${edate}'))</if>
+	</select>
+	
+	<!-- <select id="getHetbList" resultType="java.util.LinkedHashMap">
+		select a.id, b.mingc as gongysb_id,a.kaisrq,a.jiesrq,a.hetl ,c.mingc as pingffab_id ,
+		a.beiz,d.quanc as lurry,a.lursj
+		from RL_GYS_HETB a left join gongysb b
+		on a.gongysb_id = b.id 
+		left join rl_gys_pingffab c
+		on a.pingffab_id = c.id
+		left join renyxxb d
+		on a.lurry = d.id
+		<if test="strdate!=null">
+			where a.lursj <![CDATA[>= ]]> #{strdate}
+		</if>
+		<if test="strdate!=null">
+			and a.lursj <![CDATA[< ]]> #{enddate}
+		</if>
+		<if test="gongysbid!=null">
+			and a.gongysb_id = #{gongysbid}
+		</if>		
+		order by id
+	</select> -->
+	
+	
+	<delete id="delHetb" parameterType="java.util.Map">
+	    delete from RL_GYS_HETB where ID = #{id}
+	</delete>
+	
+	
+	<update id="updateHetb" parameterType="Hetb">	
+	    update RL_GYS_HETB 
+	    <trim prefix="SET" suffixOverrides=",">
+			<if test="gongysb_id != null">GONGYSB_ID=#{gongysb_id},</if>
+			<if test="hetl != null">HETL=#{hetl},</if>
+			<if test="beiz != null">BEIZ=#{beiz},</if>
+			<if test="zhuangt != null">ZHUANGT=#{zhuangt},</if>
+			<if test="lurry != null">LURRY=#{lurry},</if>
+			<if test="lursj != null">LURSJ=#{lursj},</if>
+			<if test="shenhry != null">SHENHRY=#{shenhry},</if>
+			<if test="shenhsj != null">SHENHSJ=#{shenhsj},</if>
+			<if test="kaisrq != null">KAISRQ=#{kaisrq},</if>
+			<if test="jiesrq != null">JIESRQ=#{jiesrq},</if>
+			<if test="pingffab_id != null">PINGFFAB_ID=#{pingffab_id},</if>
+		</trim>
+		where ID=#{id}
+	</update>
+	
+<update id="updateHetzhib">	
+	    update rl_gys_HETZLB set zhibz=#{zhibz}
+		where hetb_id=#{hetb_id} and zhibdm = #{zhibdm}
+	</update>
+	
+	
+</mapper>

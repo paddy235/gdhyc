@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiren.fuelmis.dc.dao.kucgl.KucglCommonDao">
+	<select id="getChurkd" resultType="java.util.Map">
+		select
+		RUKDBH,ZUZ,KUCZZ,KUCWZ,KUCWL,HUOZ,JINE,TIAOZJE,YEWLX,CHURKLX,YEWRQ,KUAIJRQ,JIZRQ,ID,YUNDSL,YANSSL,RUKSL,JIESSL
+		from RL_KC_CHURKDB
+		<if test=' id!=null and id!="" '>
+		    where ID = #{id}
+		</if>
+	</select>
+
+	<insert id="rukjz" parameterType="java.util.Map">
+		insert into 
+		RL_KC_KUCMXB(ID,CHURKDB_ID,ZUZ,KUCZZ,KUCWZ,KUCWL,HUOZ,SHUL,JINE,YEWLX,CHURKLX,YEWRQ,KUAIJRQ,JIZRQ)
+		values(#{id},#{churkdb_id},#{zuz},#{kuczz},#{kucwz},#{kucwl},#{huoz},(#{yundsl}+#{yanssl}+#{ruksl}+#{jiessl}),
+		(#{jine}+#{tiaozje}),#{yewlx},#{churklx},#{yewrq},#{kuaijrq},#{jizrq})
+	</insert>
+	
+	<select id="getKucmx" resultType="java.util.Map">
+	    select 
+	    ID,CHURKDB_ID,ZUZ,KUCZZ,KUCWZ,KUCWL,HUOZ,SHUL,JINE,YEWLX,CHURKLX,YEWRQ,KUAIJRQ,JIZRQ
+	    from RL_KC_KUCMXB
+	    <if test=' id!=null and id!="" '>
+		    where ID = #{id}
+		</if>
+	</select>
+	
+	<select id="getKucmxByParams">
+	    select 
+	    ZUZ,KUCZZ,KUCWZ,KUCWL,HUOZ,sum(SHUL),sum(JINE),KUAIJRQ
+	    from RL_KC_KUCMXB
+	    where KUAIJRQ = #{kuaijrq}
+	    group by ZUZ,KUCZZ,KUCWZ,KUCWL,HUOZ,KUAIJRQ
+	</select>
+	
+	<select id="getKuchz" resultType="java.util.Map">
+		select
+		ID,KUCZZ,KUCWZ,KUCWL,HUOZ,ZUZ,LEIX,SHUL,JINE,KUAIJRQ,CAOZSJ
+		from RL_KC_KUCHZB
+		where KUCZZ = #{kuczz}
+		and KUCWZ = #{kucwz}
+		and KUCWL = #{kucwl}
+		and HUOZ = #{huoz}
+		and ZUZ = #{zuz}
+		and LEIX = '常规'
+	</select>
+	
+	<insert id="insertKuchz" parameterType="java.util.Map">
+		insert into 
+		RL_KC_KUCHZB(ID,KUCZZ,KUCWZ,KUCWL,HUOZ,ZUZ,LEIX,SHUL,JINE,KUAIJRQ,CAOZSJ)
+		values(#{id},#{kuczz},#{kucwz},#{kucwl},#{huoz},#{zuz},'常规',#{shul},#{jine},#{kuaijrq},#{caozsj})
+	</insert>
+	
+	<update id="updateKuchz" parameterType="java.util.Map">
+	    update RL_KC_KUCHZB 
+	    set SHUL = (shul+#{shul}),JINE = (jine+#{jine})
+	    where KUCZZ = #{kuczz}
+		and KUCWZ = #{kucwz}
+		and KUCWL = #{kucwl}
+		and HUOZ = #{huoz}
+		and ZUZ = #{zuz}
+		and LEIX = '常规'
+	</update>
+</mapper>

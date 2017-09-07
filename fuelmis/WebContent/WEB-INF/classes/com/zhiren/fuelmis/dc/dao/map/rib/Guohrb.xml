@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiren.fuelmis.dc.dao.rib.GuohrbDao">
+	<select id="getTabelData" resultType="java.util.LinkedHashMap">
+		select
+		decode(grouping(mingc),1,'总计',mingc) as dianc,
+		decode( grouping(mingc)+grouping(gongysmc),1,'合计',gongysmc)
+		as fahdw,
+		decode(grouping(meikmc)+grouping(gongysmc)+grouping(gongysmc),1,'合计',meikmc)
+		as meikdw,
+		decode(grouping(pinz),1,null,faz) faz,
+		pinz,
+		sum(laimsl) as
+		laimsl,
+		sum(jingz) as jingz,
+		sum(biaoz) as biaoz,
+		sum(maoz) - sum(piz) -
+		sum(koud) - sum(biaoz) +sum(yuns) as yingk,
+		sum(yuns) as yuns,
+		sum(koud) as zongkd,
+		count(samcode) as ches
+		from (
+			select dc.mingc,
+			c.id,
+			c.gongysmc,
+			c.meikmc,
+			c.faz,
+			c.pinz,
+			c.samcode,
+			c.maoz,
+			c.piz,
+			c.koud,
+			(c.maoz- c.piz) as laimsl,
+			(c.maoz - c.piz-c.zongkd) as jingz,
+			c.piaoz
+			as biaoz,
+			c.yingd yingd,
+			c.yuns yuns,
+			c.kuid kuid
+		from rl_ys_chepb c, rl_ys_chepb_qc csj, diancxxb dc
+		where c.id = csj.chepb_id
+			and c.diancxxb_id = dc.id
+			and substr(csj.qingcsj, 0, 10) = '${date}'
+		)
+		group by rollup(mingc,gongysmc, meikmc,pinz), faz
+		having grouping(pinz) +grouping(meikmc) <![CDATA[<>]]>1
+		<!-- order by mingc, gongysmc, meikmc, pinz desc -->
+
+	</select>
+</mapper>

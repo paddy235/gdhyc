@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiren.fuelmis.dc.dao.ruchy.HuayshDao">
+	<select id="getTableData" resultType="java.util.Map">
+		SELECT l.ID,
+		TO_CHAR (l.huaysj, 'yyyy-mm-dd') AS huaysj,
+		TO_CHAR (z.bianm) AS huaybh, l.qnet_ar, l.aar, l.ad, l.vdaf,
+		round_new(l.mt,2)
+		as mt,
+		l.stad, l.aad, l.mad,round_new(100*(l.mt-l.mad)/(100-l.mad),2)
+		as mf, l.qbad,
+		l.had, l.vad, l.fcad, l.std, l.qgrad,
+		l.hdaf,
+		l.qgrad_daf, l.sdaf,l.qgrd, l.t1, l.t2, l.t3, l.t4, huayy, l.lury,
+		l.beiz, l.huaylb
+		FROM zhuanmb z,
+		zhillsb l,
+		caiyb c,
+		(SELECT DISTINCT
+		fh.zhilb_id, fh.meikxxb_id, fh.pinzb_id,
+		SUM (fh.jingz) jingz
+		FROM fahb
+		fh,diancxxb dc
+		WHERE fh.diancxxb_id = dc.id
+		<if test=' diancid!=null and diancid!="" '>
+			and dc.id = 515
+		</if>
+		GROUP BY fh.zhilb_id, fh.meikxxb_id, fh.pinzb_id) f,
+		meikxxb m,
+		pinzb p
+		WHERE z.zhillsb_id = l.ID
+		AND f.zhilb_id = c.zhilb_id
+		AND c.zhilb_id =
+		l.zhilb_id
+		AND f.meikxxb_id = m.ID
+		AND f.pinzb_id = p.ID
+		AND
+		z.zhuanmlb_id = (SELECT ID
+		FROM zhuanmlb
+		WHERE jib = (SELECT NVL (MAX
+		(jib), 0)
+		FROM zhuanmlb))
+		AND (shenhzt = 3 OR shenhzt = 4)
+		ORDER BY z.ID,
+		z.bianm, l.huaylb
+	</select>
+
+	<!-- 一级审核 -->
+	<update id="updateZT" parameterType="java.util.Map">
+		update zhillsb set shenhzt =
+		#{zhuangt}, shenhry = #{shenhry} where id =
+		#{id}
+	</update>
+
+	<select id="getJincpcList" resultType="java.util.Map">
+		select distinct c.zhilb_id,c.bianm from caiyb c,fahb f,zhillsb z
+		where
+		f.zhilb_id = c.zhilb_id and c.zhilb_id = z.zhilb_id and (z.shenhzt = 5
+		or z.shenhzt = 6)
+		and f.daohrq <![CDATA[>=]]>
+		to_date(#{sDate},'yyyy-mm-dd')
+		and f.daohrq <![CDATA[<=]]>
+		to_date(#{eDate},'yyyy-mm-dd')
+		and f.diancxxb_id = #{diancid}
+		order by
+		c.bianm
+	</select>
+
+	<select id="getTableData2" resultType="java.util.Map">
+		select distinct 
+		l.id,
+		l.zhilb_id as zhilid,
+		m.mingc meikdw,
+		cz.mingc faz,
+		p.mingc as pinz,
+		TO_CHAR (l.huaysj,'yyyy-MM-dd') huaysj,
+		l.huaylb,
+		zm.bianm as huaybh,
+		f.ches as ches,
+		f.jingz as shul,
+		l.bil,
+		round_new(l.qnet_ar/4.1816*1000,0)rezk,
+		l.qnet_ar,
+		l.aar,
+		l.ad,
+		l.vdaf,
+		l.mt,
+		l.stad,
+		l.aad,
+		l.mad,
+		round_new(100*(l.mt-l.mad)/(100-l.mad),2) as mf,
+		l.qbad,
+		l.had,
+		l.vad,
+		l.fcad,
+		l.std,
+		l.qgrad,
+		l.qgrd,
+		l.hdaf,
+		l.qgrad_daf,
+		l.sdaf,
+		l.t1,
+		l.t2,
+		l.t3,
+		l.t4,
+		l.huayy,
+		l.lury,
+		l.beiz
+		from zhilb z,
+		zhillsb l,
+		caiyb c,
+		(select *
+		from zhuanmb
+		where zhuanmlb_id =
+		(select id
+		from zhuanmlb
+		where jib = (select nvl(max(jib), 0) from zhuanmlb))) zm,
+		(select sum(laimsl) as jingz,sum(f.ches) as ches, meikxxb_id, zhilb_id,
+		pinzb_id,faz_id
+		from fahb f, diancxxb dc
+		where f.diancxxb_id = dc.id
+		and dc.id = 515
+		group by pinzb_id, zhilb_id, meikxxb_id,faz_id) f,
+		meikxxb m,
+		pinzb p, chezxxb cz
+		where f.zhilb_id = z.id(+)
+		and c.zhilb_id = f.zhilb_id
+		and f.meikxxb_id = m.id
+		and f.zhilb_id = l.zhilb_id
+		and f.pinzb_id = p.id
+		and f.faz_id=cz.id
+		and zm.zhillsb_id = l.id
+		and (l.shenhzt = 5 or l.shenhzt = 6)
+		and l.zhilb_id = #{zhilb_id} order by l.zhilb_id
+	</select>
+	
+	<!-- 二级审核 -->
+	<update id="updateZT2" parameterType="java.util.Map">
+		update zhillsb set shenhzt = 
+		#{zhuangt}, shenhryej = #{shenhryej} where zhilb_id = 
+		#{id}
+	</update>
+</mapper>

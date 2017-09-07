@@ -1,0 +1,16 @@
+-- 数量导入逻辑
+1、读取jk_truckenter表中datastatus =0的数据导入到chepbtmp中
+2、读取chepbtmp表中shujzt = 0 的数据导入到rl_ys_chepb 与 rl_ys_chepb_qc 表中
+
+select * from jk_truckenter j where j.datastatus = 0; ---  数量接口表
+select * from jk_assaycode; -- 接口转码表
+select * from jk_rc_huaybgb; --接口入厂化验报告表
+
+
+select * from chepbtmp c where c.shujzt = 0; -- 数量临时表
+select * from rl_ys_chepb; --入厂车皮表
+select * from rl_ys_chepb_qc; -- 入厂车皮过衡时间表
+
+select * from gx_chep_caizhbmb; --采制化三级编码转码表
+select * from rl_hy_huaydb where leix = '入厂化验'; --化验报告表
+

@@ -1,0 +1,292 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiren.fuelmis.dc.dao.jih.YuedcaigjhDao" >
+	<select id="getTabelData"  resultType="java.util.HashMap">
+			SELECT MK,
+			       GONGYS, 
+			       JIHKJ, 
+			       DAOHL, 
+			       REZ, 
+			       CHEBJ, 
+			       YUNF, 
+			       ZAF, 
+			       (CHEBJ + YUNF + ZAF) DAOCJ, 
+			       DECODE(REZ, 0, 0, ROUND((CHEBJ + YUNF + ZAF) * 29.2712 / REZ, 2)) DAOCBMJ, 
+			       DECODE(REZ,0,0,ROUND((ROUND(CHEBJ / 1.17, 2) + ROUND(YUNF / 1.11, 2) + ZAFBHS) *29.2712 / REZ,2)) DAOCBMJBHS, 
+			       YUCJE,
+			       RLZHBMDJ 
+			  FROM (SELECT JH.MK, 
+			               JH.GONGYS, 
+			               JH.JIHKJ, 
+			               JH.DAOHL, 
+			               JH.REZ, 
+			               JH.CHEBJ, 
+			               JH.YUNF, 
+			               JH.ZAF, 
+			               JH.ZAFBHS, 
+			               ZF.YUCJE,
+							ZB.RLZHBMDJ 
+			          FROM (SELECT GROUPING(DC.MINGC) A, 
+			                       DC.XUH B, 
+			                       GROUPING(GS.MINGC) C, 
+			                       DECODE(GROUPING(DC.MINGC), 1, '公司合计', DC.MINGC) MK, 
+			                       DECODE(GROUPING(DC.MINGC),1,'',DECODE(GROUPING(GS.MINGC), 1, '合计', GS.MINGC)) GONGYS, 
+			                       J.MINGC JIHKJ, 
+			                       NVL(SUM(CG.DAOHL), 0) AS DAOHL, 
+			                       NVL(ROUND(DECODE(SUM(CG.DAOHL),0,0,SUM(CG.REZ * CG.DAOHL) / SUM(CG.DAOHL)),3),0) AS REZ, 
+			                       NVL(ROUND(DECODE(SUM(CG.DAOHL),0,0,SUM(CG.CHEBJ * CG.DAOHL) /SUM(CG.DAOHL)),2),0) CHEBJ, 
+			                       NVL(ROUND(DECODE(SUM(CG.DAOHL),0,0,SUM(CG.YUNF * CG.DAOHL) /SUM(CG.DAOHL)),2),0) YUNF, 
+			                       NVL(ROUND(DECODE(SUM(CG.DAOHL),0,0,SUM(CG.ZAF * CG.DAOHL) / SUM(CG.DAOHL)),2),0) ZAF, 
+			                       NVL(ROUND(DECODE(SUM(CG.DAOHL),0,0,SUM(CG.ZAFBHS * CG.DAOHL) /SUM(CG.DAOHL)),2),0) ZAFBHS 
+			                  FROM (SELECT NC.DIANCXXB_ID  AS DIANCXXB_ID, 
+			                               NC.GONGYSB_ID   AS GONGYSB_ID, 
+			                               NC.JIHKJB_ID    AS JIHKJB_ID, 
+			                               NC.JIH_SL       AS DAOHL, 
+			                               NC.JIH_REZ      AS REZ, 
+			                               NC.JIH_MEIJ     AS CHEBJ, 
+			                               NC.JIH_YUNJ     AS YUNF, 
+			                               NC.JIH_ZAF      AS ZAF, 
+			                               NC.JIH_ZAFBHS   AS ZAFBHS, 
+			                               NC.JIH_DAOCJ    AS DAOCJ, 
+			                               NC.JIH_DAOCBMDJ AS DAOCBMJ 
+			                          FROM YUEDJH_CAIG NC 
+			                         WHERE NC.RIQ = to_date('${riq}','yyyy-mm-dd')) CG, 
+			                       GONGYSB GS, 
+			                       JIHKJB J, 
+			                       DIANCXXB DC 
+			                 WHERE CG.GONGYSB_ID = GS.ID 
+			                   AND CG.JIHKJB_ID = J.ID 
+			                   AND CG.DIANCXXB_ID(+) = DC.ID 
+			                   AND DC.JIB = 3 and (DC.ID in (#{id}) ) 
+			                 GROUP BY ROLLUP((DC.MINGC, DC.XUH), GS.MINGC, J.MINGC) 
+			                HAVING(GROUPING(J.MINGC) = 0 OR GROUPING(GS.MINGC) = 1)) JH, 
+			               (SELECT DECODE(GROUPING(DC.MINGC), 1, '公司合计', DC.MINGC) MK, 
+			                       NVL(ROUND(DECODE(SUM(Round(ZB.FADL*(1-ZB.FADCYDL/100)*ZB.GONGDMH/100,0)+Round(ZB.GONGRL*ZB.GONGRMH*10,0)),0,0,SUM( (Round(ZB.FADL*(1-ZB.FADCYDL/100)*ZB.GONGDMH/100,0)+Round(ZB.GONGRL*ZB.GONGRMH*10,0)) * ZB.RLZHBMDJ) /SUM(Round(ZB.FADL*(1-ZB.FADCYDL/100)*ZB.GONGDMH/100,0)+Round(ZB.GONGRL*ZB.GONGRMH*10,0))),2),0) RLZHBMDJ 
+			                  FROM YUEDJH_ZHIB ZB, DIANCXXB DC 
+			                 WHERE ZB.RIQ = to_date('${riq}','yyyy-mm-dd') 
+			                   AND ZB.DIANCXXB_ID(+) = DC.ID 
+			                   AND DC.JIB = 3 and (DC.ID in (#{id}) ) 
+			                 GROUP BY ROLLUP((DC.MINGC, DC.XUH))) ZB,
+							(SELECT DECODE(GROUPING(DC.MINGC), 1, '公司合计', DC.MINGC) MK,  
+				                    NVL(SUM(YUCJE),0) YUCJE  
+				               FROM YUEDJH_ZAF ZB, DIANCXXB DC  
+				              WHERE ZB.RIQ = to_date('${riq}','yyyy-mm-dd')  
+				                AND ZB.DIANCXXB_ID(+) = DC.ID  
+				                AND DC.JIB = 3 and (DC.ID in (#{id}) )  
+				              GROUP BY ROLLUP((DC.MINGC, DC.XUH))) ZF  
+			         WHERE JH.MK = ZB.MK(+) AND JH.MK=ZF.MK(+) 
+			         ORDER BY JH.A DESC, JH.B, JH.C DESC, JH.JIHKJ, JH.GONGYS)
+	</select>
+	<select id="getPinz"  resultType="java.util.HashMap">
+		select id,mingc from pinzb order by id 
+	</select>
+	<select id="getJihkj"  resultType="java.util.HashMap">
+		select id, mingc from jihkjb order by xuh
+	</select>
+	<select id="getFaz"  resultType="java.util.HashMap">
+	    select distinct c.id,c.mingc from chezxxb c  order by c.mingc
+	</select>
+	<select id="getGongys"  resultType="java.util.HashMap">
+		select distinct g.id,g.mingc from gongysb g where  g.leix = 1 order by g.mingc
+	</select>
+	<select id="getCaigData"  resultType="java.util.HashMap">
+			SELECT ROWNUM AS ROW_NUMBER,
+				   YC.ID,
+			       YC.DIANCXXB_ID, 
+			       GS.MINGC           AS GONGYSB_ID, 
+			       MK.MINGC           AS MEIKXXB_ID, 
+			       J.MINGC            AS JIHKJB_ID, 
+			       PZ.MINGC           AS PINZB_ID, 
+			       CZ.MINGC           AS FAZ_ID, 
+			       YC.JIH_SL, 
+			       YC.JIH_REZ, 
+			       YC.JIH_LIUF, 
+			       YC.JIH_HFF, 
+			       YC.JIH_MEIJ, 
+			       YC.JIH_MEIJBHS, 
+			       YC.JIH_YUNJ, 
+			       YC.JIH_YUNJBHS, 
+			       YC.JIH_ZAF, 
+			       YC.JIH_ZAFBHS, 
+			       YC.JIH_DAOCJ, 
+			       YC.JIH_DAOCJBHS, 
+			       YC.JIH_DAOCBMDJ, 
+			       YC.JIH_DAOCBMDJBHS, 
+			       YC.ZHUANGT 
+			  FROM YUEDJH_CAIG YC, 
+			       GONGYSB     GS, 
+			       DIANCXXB    DC, 
+			       MEIKXXB     MK, 
+			       PINZB       PZ, 
+			       CHEZXXB     CZ, 
+			       JIHKJB      J 
+			 WHERE YC.DIANCXXB_ID = DC.ID 
+			   AND YC.GONGYSB_ID = GS.ID 
+			   AND YC.MEIKXXB_ID = MK.ID(+) 
+			   AND YC.PINZB_ID = PZ.ID(+) 
+			   AND YC.FAZ_ID = CZ.ID(+) 
+			   AND YC.JIHKJB_ID = J.ID(+) 
+			   AND YC.RIQ = to_date('${riq}','yyyy-mm-dd')
+			   AND YC.DIANCXXB_ID = ${diancid}
+	</select>
+	<select id="getYuedcaigById"  resultType="java.util.HashMap">
+			SELECT  ID,
+					DIANCXXB_ID,
+					to_char(RIQ,'yyyy-mm-dd') RIQ,
+					GONGYSB_ID,
+					MEIKXXB_ID,
+					PINZB_ID,
+					FAZ_ID,
+					JIH_SL,
+					JIH_REZ,
+					JIH_LIUF,
+					JIH_HFF, 
+					JIH_MEIJ,
+					JIH_MEIJBHS, 
+					JIH_YUNJ, 
+					JIH_YUNJBHS, 
+					JIH_ZAF,
+					JIH_ZAFBHS,
+					JIH_DAOCJ,
+					JIH_DAOCJBHS,
+					JIH_DAOCBMDJ,
+					JIH_DAOCBMDJBHS,
+					JIHKJB_ID
+					FROM YUEDJH_CAIG WHERE ID = #{id}
+	</select>
+	<insert id="addCaigData"  useGeneratedKeys="true" keyProperty="id">
+ 		INSERT INTO YUEDJH_CAIG(id,DIANCXXB_ID,RIQ,GONGYSB_ID,MEIKXXB_ID,PINZB_ID,FAZ_ID,JIH_SL,
+								JIH_REZ,JIH_LIUF,JIH_HFF, JIH_MEIJ, JIH_MEIJBHS, JIH_YUNJ, JIH_YUNJBHS, 
+								JIH_ZAF,JIH_ZAFBHS,JIH_DAOCJ,JIH_DAOCJBHS,JIH_DAOCBMDJ,JIH_DAOCBMDJBHS,ZHUANGT,JIHKJB_ID) 
+								VALUES (XL_YUEDJH_CAIG_ID.nextval,#{DIANCID}, 
+								  to_date('${RIQ}','yyyy-mm-dd'), 
+								   	${GONGYSB_ID}, 
+								   	${MEIKXXB_ID}, 
+								   	${PINZB_ID}, 
+								   	${FAZ_ID}, 
+								   	${JIH_SL}, 
+								   	round(${JIH_REZ},2), 
+								   	${JIH_LIUF}, 
+								   	${JIH_HFF}, 
+								   	${JIH_MEIJ}, 
+								   	round(${JIH_MEIJ}/1.17,2), 
+								   	${JIH_YUNJ}, 
+								   	round(${JIH_YUNJ}/1.11,2), 
+								   	${JIH_ZAF}, 
+								   	${JIH_ZAFBHS}, 
+								   	round(${JIH_MEIJ}+${JIH_YUNJ}+${JIH_ZAFBHS},2),
+								   	round((round(${JIH_MEIJ}/1.17,2))+(round(${JIH_YUNJ}/1.11,2))+(${JIH_ZAFBHS}),2),
+								   	round((${JIH_MEIJ}+${JIH_YUNJ}+${JIH_ZAF})*29.2712/${JIH_REZ},2), 
+								   	round(round((round(${JIH_MEIJ}/1.17,2))+(round(${JIH_YUNJ}/1.11,2))+(${JIH_ZAFBHS}),2)*29.2712/${JIH_REZ},2), 
+								   	0,${JIHKJB_ID})
+	</insert>
+	<delete id="delCaigById" parameterType="java.lang.String" flushCache="true">  
+        delete from YUEDJH_CAIG where id =  #{id} 
+    </delete>
+    <update id="updateCaigById" flushCache="true">  
+        update YUEDJH_CAIG  
+        set GONGYSB_ID = #{GONGYSB_ID},
+        	MEIKXXB_ID = #{MEIKXXB_ID},
+        	PINZB_ID = #{PINZB_ID},
+        	FAZ_ID = #{FAZ_ID},
+        	JIH_SL =  #{JIH_SL},
+        	JIH_REZ = round(${JIH_REZ},2),
+        	JIH_LIUF = #{JIH_LIUF},
+        	JIH_HFF = #{JIH_HFF}, 
+        	JIH_MEIJ = #{JIH_MEIJ}, 
+        	JIH_MEIJBHS = round(${JIH_MEIJ}/1.17,2), 
+        	JIH_YUNJ = #{JIH_YUNJ}, 
+        	JIH_YUNJBHS = round(${JIH_YUNJ}/1.11,2), 
+			JIH_ZAF = #{JIH_ZAF},
+			JIH_ZAFBHS = #{JIH_ZAFBHS},
+			JIH_DAOCJ = round(${JIH_MEIJ}+${JIH_YUNJ}+${JIH_ZAFBHS},2),
+			JIH_DAOCJBHS = round(round(${JIH_MEIJ}/1.17,2)+round(${JIH_YUNJ}/1.11,2)+${JIH_ZAFBHS},2),
+			JIH_DAOCBMDJ = round((${JIH_MEIJ}+${JIH_YUNJ}+${JIH_ZAF})*29.271/${JIH_REZ},2),
+			JIH_DAOCBMDJBHS = round((round(${JIH_MEIJ}/1.17,2)+round(${JIH_YUNJ}/1.11,2)+${JIH_ZAFBHS})*29.271/${JIH_REZ},2),
+			JIHKJB_ID = #{JIHKJB_ID}
+        	WHERE ID = #{ID}
+    </update>
+    <select id="getyueducaigByDiancidAndRiq"  resultType="com.zhiren.fuelmis.dc.entity.jih.YuedcaigjhBean">
+			 select XL_YUEDJH_CAIG_ID.nextval as id,
+						${diancid} as diancid,
+			 			'${riq}' as riq,
+						GONGYSB_ID,
+						MEIKXXB_ID,
+						PINZB_ID,
+						FAZ_ID,
+						JIH_SL,
+						JIH_REZ,
+						JIH_LIUF,
+						JIH_HFF, 
+						JIH_MEIJ,
+						JIH_MEIJBHS, 
+						JIH_YUNJ, 
+						JIH_YUNJBHS, 
+						JIH_ZAF,
+						JIH_ZAFBHS,
+						JIH_DAOCJ,
+						JIH_DAOCJBHS,
+						JIH_DAOCBMDJ,
+						JIH_DAOCBMDJBHS,
+						JIHKJB_ID
+						FROM YUEDJH_CAIG 
+			           WHERE DIANCXXB_ID = ${diancid}
+			            AND RIQ =to_date('${lastriq}','yyyy-mm-dd')
+	</select>
+	<select id="getshenpstate"  resultType="java.lang.String">
+			            SELECT  distinct SANJ_ZT 
+						  FROM YUEDJH_CAIG 
+			 				WHERE DIANCXXB_ID = ${diancid}
+			            	AND RIQ =to_date('${riq}','yyyy-mm-dd')
+	</select>
+	<delete id="DelYuedcaigByDiancidAndRiq" parameterType="java.lang.String" flushCache="true">  
+        delete from YUEDJH_CAIG where DIANCXXB_ID =#{diancid} AND  RIQ = to_date('${riq}','yyyy-mm-dd')
+    </delete>	
+	<insert id="CopyYuedcaigData" parameterType="java.util.Map">
+		INSERT INTO YUEDJH_CAIG(ID,DIANCXXB_ID, RIQ,
+								GONGYSB_ID,MEIKXXB_ID,PINZB_ID,FAZ_ID,
+								JIH_SL,JIH_REZ,JIH_LIUF,JIH_HFF, 
+								JIH_MEIJ,JIH_MEIJBHS, JIH_YUNJ, JIH_YUNJBHS, 
+								JIH_ZAF,JIH_ZAFBHS,JIH_DAOCJ,
+								JIH_DAOCJBHS,JIH_DAOCBMDJ,
+								JIH_DAOCBMDJBHS,JIHKJB_ID)
+		<foreach collection="copylist" item="item" index="index"  separator="union" >
+			select  ${item.id},${item.diancid},to_date('${item.riq}','yyyy-mm-dd'),
+					${item.gongysb_id},${item.meikxxb_id},${item.pinzb_id},${item.faz_id} ,${item.jih_sl},
+					${item.jih_rez},${item.jih_liuf},${item.jih_hff},${item.jih_meij},${item.jih_meijbhs},${item.jih_yunj},
+					${item.jih_yunjbhs},${item.jih_zaf},${item.jih_zafbhs},${item.jih_daocj},${item.jih_daocjbhs},${item.jih_daocbmdj},
+					${item.jih_daocbmdjbhs},${item.jihkjb_id}
+				from dual  
+		</foreach>
+	</insert>	
+	<select id="getCaigJh"  resultType="java.util.HashMap">
+			SELECT ROWNUM AS ROW_NUMBER,
+				   ID,
+			       DIANCXXB_ID, 
+			       GONGYSB_ID, 
+			       MEIKXXB_ID, 
+			       JIHKJB_ID, 
+			       PINZB_ID, 
+			       FAZ_ID, 
+			       JIH_SL, 
+			       JIH_REZ, 
+			       JIH_LIUF, 
+			       JIH_HFF, 
+			       JIH_MEIJ, 
+			       JIH_MEIJBHS, 
+			       JIH_YUNJ, 
+			       JIH_YUNJBHS, 
+			       JIH_ZAF, 
+			       JIH_ZAFBHS, 
+			       JIH_DAOCJ, 
+			       JIH_DAOCJBHS, 
+			       JIH_DAOCBMDJ, 
+			       JIH_DAOCBMDJBHS, 
+			       ZHUANGT 
+			  FROM YUEDJH_CAIG 			     
+			 WHERE 
+			   RIQ = to_date('${riq}','yyyy-mm-dd')
+			   AND DIANCXXB_ID = ${diancid}
+	</select>
+	
+</mapper>

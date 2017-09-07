@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiren.fuelmis.dc.dao.jiesgl.ZafjsDao">
+	<select id="getZafjs" resultType="java.util.Map">
+	  select ID,JIESBH,Hetbh,CHES,JIESSL,JIESJG,JIESJE,DIANCXXB_ID,CAOZRQ,
+     CHANGRLJSRQ,GONGYSB_ID,PIAOZ,substr(shijd,0,10) kaisrq ,substr(shijd,12,22) jiesrq,MEIKJE,SHUIK,yzfxm
+     from rl_js_yuejsdb where jieslx='杂费结算' order by substr(shijd,0,10) desc
+	</select>
+	<update id="updateZafjs">
+	 update rl_js_yuejsdb set JIESBH='${JIESBH}',hetbh='${HETBH}',
+	 CHES=0,
+	 jingz='${PIAOZ}',
+	 JIESSL='${PIAOZ}',
+	 JIESJG='${JIESJG}',
+	 JIESJE='${JIESJE}',
+	 DIANCXXB_ID='${DIANCXXB_ID}',
+	 CAOZRQ=to_char(sysdate,'yyyy-mm-dd'),
+     CHANGRLJSRQ='${CHANGRLJSRQ}',
+     GONGYSB_ID='${GONGYSB_ID}',
+     PIAOZ='${PIAOZ}',shijd='${KAISRQ}'||':'||'${JIESRQ}',
+     MEIKJE='${MEIKJE}',SHUIK='${SHUIK}',yzfxm='${YZFXM}',faz_id=1
+       where id=${ID}
+	</update>
+	<select id="getgongysmcById" resultType="java.lang.String">
+		select quanc from gongysb where id = #{id} 
+	</select>
+	<insert id="insertZafjs">
+	insert into rl_js_yuejsdb (id,JIESBH,CHES,JIESSL,JIESJG,JIESJE,CAOZRQ,
+     GONGYSB_ID,GONGYSMC,DIANCMC,PIAOZ,shijd,MEIKJE,SHUIK,jieslx,diancxxb_id,CHANGRLJBR,CHANGRLJSRQ,zhuangt,hetjg,jingz,yzfxm,hetbh,faz_id)
+     values ('${ID}','${JIESBH}',0,'${PIAOZ}','${JIESJG}','${JIESJE}',
+     to_char(sysdate,'yyyy-mm-dd'),'${GONGYSB_ID}','${GONGYSMC}','${DIANCMC}','${PIAOZ}','${KAISRQ}'||':'||'${JIESRQ}','${MEIKJE}','${SHUIK}',
+     '杂费结算',515,'${CHANGRLJBR}',to_char(sysdate,'yyyy-mm-dd hh24:mi:ss'),0,'${JIESJG}','${PIAOZ}','${YZFXM}','${HETBH}',1)
+	</insert>
+	<delete id="delZafjs">
+	delete from rl_js_yuejsdb where id=#{0}
+	</delete>
+</mapper>

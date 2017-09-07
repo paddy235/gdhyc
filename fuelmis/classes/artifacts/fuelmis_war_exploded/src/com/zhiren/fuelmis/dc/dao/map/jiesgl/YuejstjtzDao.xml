@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiren.fuelmis.dc.dao.jiesgl.YuejstjtzDao">
+    <select id="getHetbh" resultType="java.util.Map">
+        select distinct  decode(hetbh ,null,GetHetbhForYuejs(jiesbh),hetbh)  value,decode(hetbh ,null,GetHetbhForYuejs(jiesbh),hetbh) name from rl_js_yuejsdb where substr(CAOZRQ,0,10) between '${sDate}' and '${eDate}'
+    order by value
+    </select>
+    <select id="getYuejstjtz" resultType="java.util.Map">
+        select decode(grouping(js.caozrq),1,'合计', JS.CAOZRQ) as CAOZRQ,
+		       JS.JIESBH,
+		       G.MINGC GONGYSB_ID,p.mingc pinz,
+		       decode(js.hetbh, null, GetHetbhForYuejs(jiesbh), js.hetbh) as hetbh,
+		       js.shijd,
+		       sum(JS.CHES) as CHES,
+		       sum(JS.JIESSL) as JIESSL,
+		       decode(sum(js.jiessl),0,0,round_new(sum(js.jiessl*JS.JIESRZ)/sum(js.jiessl),2)) as  JIESRZ,
+		       decode(sum(js.jiessl),0,0,round_new(sum(js.jiessl*JS.JIESLF)/sum(js.jiessl),2)) as  JIESLF,
+		       round(sum(js.JIESJE)/sum(js.jiessl),2) as  JIESJG,
+		       sum(JS.JIESJE) as JIESJE       
+		  from RL_JS_YUEJSDB JS, GONGYSB G, pinzb p
+		 where JS.GONGYSB_ID = G.ID
+		   and js.pinzb_id = p.id(+)
+        <if test="pinz!=-1">
+            and p.id = '${pinz}'
+        </if>
+        <if test="gongys!=-1">
+            and g.id = '${gongys}'
+        </if>
+        <if test="hetbh!='-1'">
+            and decode(js.hetbh ,null,GetHetbhForYuejs(jiesbh),js.hetbh) = '${hetbh}'
+        </if>
+        and substr(JS.CAOZRQ,0,10) between '${sDate}' and '${eDate}'
+        group by rollup((JS.CAOZRQ, JS.JIESBH, G.MINGC, js.hetbh, js.shijd, p.mingc))
+        order by grouping(js.caozrq) desc , hetbh, jiesbh asc
+    </select>
+</mapper>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiren.fuelmis.dc.dao.zonghzs.ZonghzsDao">
+
+    <select id="getTongzdb" resultType="java.util.Map">
+            select w.id as id,
+           r.mingc reny,
+           to_char(min(f.shij), 'YYYY-MM-DD HH24:MI:SS') shij,
+           to_date(to_char(sysdate, 'yyyy-mm-dd'), 'yyyy-mm-dd') -
+           to_date(to_char(max(f.shij), 'yyyy-mm-dd'), 'yyyy-mm-dd') as tians,
+           x.zhi as tiansbj,
+           to_char(min(w.youxq), 'YYYY-MM-DD') youxsj,
+           getMainHtmlAlert('main',
+                            '12',
+                            'Tongzwj',
+                            'wenj',
+                            w.id,
+                            w.biaot,
+                            to_char(max(f.shij), 'yyyy-mm-dd'),
+                            (x.zhi - (to_date(to_char(sysdate, 'yyyy-mm-dd'),
+                                              'yyyy-mm-dd') -
+                            to_date(to_char(max(f.shij), 'yyyy-mm-dd'),
+                                              'yyyy-mm-dd')))) as biaot,
+           getJiesdws(w.id, max(f.shij)) jiesdws
+      from fabwjb f, renyxxb r, wenjb w, xitxxb x
+     where f.renyxxb_id = r.id
+       and f.wenjb_id = w.id
+       and x.mingc = '新闻天数设置'
+       and w.youxq >= sysdate
+     group by w.id, r.mingc, w.biaot, x.zhi
+     order by shij desc
+	</select>
+</mapper>

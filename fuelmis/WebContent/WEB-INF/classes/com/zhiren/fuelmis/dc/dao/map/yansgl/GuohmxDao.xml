@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiren.fuelmis.dc.dao.yansgl.GuohmxDao">
+	<select id="getGuohmxAll" resultType="java.util.Map">
+		 select decode(grouping(g.mingc),1,'总计',g.mingc ) as gysmc, 
+	       decode(grouping(mk.mingc)+grouping(g.mingc),1,'小计',mk.mingc) as mkmc, 
+	       decode(grouping(pz.mingc)+grouping(mk.mingc),1,'车数:'||count(r.cheph),  
+	               decode(grouping(g.mingc),1,  '总车数:'||count(r.cheph), pz.mingc)  ) pzmc,
+	       r.cheph cheph,
+	       c.qingcsj qingcsj,
+	       c.zhongcsj zhongcsj,
+	       sum(round(r.piaoz,2)) piaoz,
+	       sum(round(r.maoz,2)) maoz,
+	       sum(round(r.piz,2)) piz,
+	       sum(round(r.koud,2)) koud,
+	       sum(r.maoz - r.piz-r.zongkd) jingz
+		  from rl_ys_chepb r, rl_ys_chepb_qc c,gongysb g,meikxxb mk,pinzb pz
+		  where substr(c.qingcsj,0,10) between '${sDate}' and '${eDate}'
+		 and r.id = c.chepb_id
+		  and r.gongysb_id = g.id 
+		  and r.meikxxb_id = mk.id
+		  and r.pinzb_id = pz.id
+		  
+		  <if test="gongys_id!=-1">
+		  	and g.id = ${gongys_id}
+		  </if>
+		  <if test="meikxxb_id!=-1">
+		   and mk.id = ${meikxxb_id}
+		  </if>
+		  group by rollup(g.mingc,mk.mingc,(pz.mingc,qingcsj,zhongcsj,cheph)) 
+		  order by grouping(g.mingc) desc ,g.mingc ,grouping(mk.mingc) desc ,mk.mingc,grouping(pz.mingc) desc ,pz.mingc
+	</select>
+</mapper>

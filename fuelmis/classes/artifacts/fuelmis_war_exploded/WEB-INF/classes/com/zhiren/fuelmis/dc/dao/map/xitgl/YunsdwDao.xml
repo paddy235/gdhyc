@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiren.fuelmis.dc.dao.xitgl.YunsdwDao" >
+	<resultMap id="BaseResultMap" type="yunsdw" >
+		<id column="ID" property="id" jdbcType="NUMERIC" />
+		<result column="DIANCXXB_ID" property="diancxxb_id" jdbcType="VARCHAR" />
+		<result column="MINGC" property="mingc" jdbcType="VARCHAR" />
+		<result column="BEIZ" property="beiz" jdbcType="VARCHAR" />
+		<result column="QUANC" property="quanc" jdbcType="VARCHAR" />
+		<result column="DANWDZ" property="danwdz" jdbcType="VARCHAR" />
+		<result column="YOUZBM" property="youzbm" jdbcType="VARCHAR" />
+		<result column="SHUIH" property="shuih" jdbcType="VARCHAR" />
+		<result column="FADDBR" property="faddbr" jdbcType="VARCHAR" />
+		<result column="WEITDLR" property="weitdlr" jdbcType="VARCHAR" />
+		<result column="KAIHYH" property="kaihyh" jdbcType="VARCHAR" />
+		<result column="ZHANGH" property="zhangh" jdbcType="VARCHAR" />
+		<result column="DIANH" property="dianh" jdbcType="VARCHAR" />
+		<result column="CHUANZ" property="chuanz" jdbcType="VARCHAR" />
+		<result column="BIANM" property="bianm" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<select id="getAll" resultMap="BaseResultMap">
+		select Y.ID, D.MINGC DIANCXXB_ID, Y.MINGC, Y.BEIZ, Y.QUANC, Y.DANWDZ, Y.YOUZBM, Y.SHUIH,
+		Y.FADDBR,Y.WEITDLR,Y.KAIHYH,Y.ZHANGH,Y.DIANH,Y.CHUANZ,Y.BIANM 
+		from YUNSDWB Y,DIANCXXB D where Y.DIANCXXB_ID = D.ID
+		<if test=' id!="" '>
+		    and Y.DIANCXXB_ID = #{id}
+		</if>
+	</select>
+	
+	<insert id="insertYunsdw" parameterType="java.util.Map">
+	    insert into YUNSDWB (ID,DIANCXXB_ID,MINGC,BEIZ,QUANC,DANWDZ,YOUZBM,SHUIH,FADDBR,WEITDLR,KAIHYH,ZHANGH,
+	    DIANH,CHUANZ,BIANM) values (${id},${diancxxb_id},'${mingc}','${beiz}','${quanc}','${danwdz}','${youzbm}',
+	    '${shuih}','${faddbr}','${weitdlr}','${kaihyh}','${zhangh}','${dianh}','${chuanz}','${bianm}')
+	</insert>
+	
+	<select id="getOne" resultMap="BaseResultMap">
+	    select Y.ID, Y.DIANCXXB_ID, Y.MINGC, Y.BEIZ, Y.QUANC, Y.DANWDZ, Y.YOUZBM, Y.SHUIH,
+		Y.FADDBR,Y.WEITDLR,Y.KAIHYH,Y.ZHANGH,Y.DIANH,Y.CHUANZ,Y.BIANM 
+		from YUNSDWB Y where Y.ID = #{id}
+	</select>
+	
+	<update id="updateYunsdw" parameterType="java.util.Map">
+	    update YUNSDWB 
+	    <trim prefix="SET" suffixOverrides=",">
+			<if test="mingc != null">MINGC=#{mingc},</if>
+			<if test="beiz	 != null">BEIZ=#{beiz},</if>
+			<if test="quanc != null">QUANC=#{quanc},</if>
+			<if test="danwdz != null">DANWDZ=#{danwdz},</if>
+			<if test="youzbm != null">YOUZBM=#{youzbm},</if>
+			<if test="shuih != null">SHUIH=#{shuih},</if>
+			<if test="faddbr != null">FADDBR=#{faddbr},</if>
+			<if test="weitdlr != null">WEITDLR=#{weitdlr},</if>
+			<if test="kaihyh != null">KAIHYH=#{kaihyh},</if>
+			<if test="zhangh != null">ZHANGH=#{zhangh},</if>
+			<if test="dianh != null">DIANH=#{dianh},</if>
+			<if test="chuanz != null">CHUANZ=#{chuanz},</if>
+			<if test="bianm != null">BIANM=#{bianm},</if>
+		</trim>
+		where ID=#{id}
+	</update>
+</mapper>

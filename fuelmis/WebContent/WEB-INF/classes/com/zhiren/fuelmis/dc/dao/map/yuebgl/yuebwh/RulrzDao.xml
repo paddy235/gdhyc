@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiren.fuelmis.dc.dao.yuebgl.yuebwh.RulrzDao">
+	<select id="getAll" resultType="java.util.Map">
+		select r.id,
+	       r.diancxxb_id,
+	       r.fenx,
+	       r.rulml,
+	       r.qnet_ar,
+	       r.mt,
+	       r.aar,
+	       r.vdaf,
+	       r.std
+	  from rulmrzybb r 
+	 where fenx = '本月'
+	   and substr(r.riq,0,7) = '${riq}'
+	   and r.diancxxb_id in ${dianc}
+	</select>
+</mapper>

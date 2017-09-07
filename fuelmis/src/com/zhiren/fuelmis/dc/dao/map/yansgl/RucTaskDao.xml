@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiren.fuelmis.dc.dao.yansgl.RucTaskDao">
+    <select id="getShulList" resultType="java.util.Map">
+        select o.*,
+            nvl((select max(id) from gongysb where mingc = GONGYSMC), 0) gongysb_id,
+            MEIKDWMC meikmc,
+            nvl((select max(id) from meikxxb where mingc = MEIKDWMC), 0) meikxxb_id,
+
+            nvl((select max(id) from pinzb where mingc = pinz),0) as pinzb_id,
+           
+            (select max(id) from chezxxb where mingc = faz) faz_id,
+          
+            (select max(id) from chezxxb where mingc = DAOZ) daoz_id,
+           
+            (select max(id) from jihkjb where mingc = JIHKJ) as jihkjb_id,
+          
+            (select max(id) from yunsfsb where mingc = YUNSFS) as yunsfsb_id,
+            CHEC SAMCODE,
+            BIAOZ PIAOZ,
+            KOUD as zongkd,
+            nvl(ZHONGCJJY,' ') as ZHONGCHH
+        from(
+        select
+        id as TRUCKENTER_ID,
+        515 as diancxxb_id,
+        ywid piaojh ,
+        collieryname meikdwmc ,
+        decode(goodsname,'燃煤','原煤',goodsname) pinz ,
+        nvl(dispatchstation,'汽') faz ,
+        nvl(arrivestation,'汽') daoz ,
+        fahrq fahrq ,
+            fahrq daohrq ,
+        transtype yunsfs ,
+        samcode chec ,
+        numberplate cheph ,
+        fweight maoz ,
+        eweight piz ,
+        dedcutton koud ,
+        weighttype jianjfs ,
+        decode(wagontype,'路车',1,'自备车',2 ,3 ) chebb_id ,
+        nvl(arrivestation,'汽') yuandz ,
+        transunitname yunsdwb_id ,
+        eweightime qingcsj ,
+        hashno qingchh ,
+        hashuser qingcjjy ,
+        fweightime zhongcsj ,
+        weighno zhongchh ,
+        weightuser zhongcjjy ,
+        nvl(tosamtime,to_char(sysdate,'yyyy-mm-dd')) caiyrq ,
+        unloadwagontype xiecfs ,
+        fweight yuanmz ,
+        eweight yuanpz ,
+        handlertype caozlx ,
+        coalfieldname meic ,
+        transunitcode chedhm ,
+        DEDCUTTONREASON koudyy ,
+        netweight jingz ,
+        netweight biaoz ,
+        fdeductuser meiczjy ,
+        sdeductuser koudzjy ,
+        coalfweight kuangfmz ,
+        coaleweight kuangfpz ,
+        coalnetweight kuangfjz ,
+        receivingunit xianshdw ,
+        uploadtime gengxsj,
+        COLLIERYCODE meikbm,
+        DISPATCHSTATIONCODE fazbm,
+        ARRIVESTATIONCODE daozbm,
+        (select nvl(max(g.mingc), 0)
+        from gongysb g, gongysmkglb gx,meikxxb mk
+        where g.id = gx.gongysb_id
+        and gx.meikxxb_id = mk.id
+        and mk.mingc = jk_truckenter.collieryname
+        and g.leix = 1 ) gongysmc,
+        (SELECT nvl(MAX(MINGC), 0)
+        FROM JIHKJB
+        WHERE ID = (SELECT MAX(JIHKJB_ID) AS JIHKJB_ID
+        FROM MEIKXXB
+        WHERE mingc = collieryname)) jihkj,
+        TRANSUNITNAME YUANSHDW,
+        0 as shujzt,
+        '系统导入' lury
+        from jk_truckenter
+        where DATASTATUS = 0
+          and jk_truckenter.fweightdate >= '2016-12-27'
+          and id is not null
+          and collieryname is not null
+          and nvl(eweight, 0) > 0 ) o
+    </select>
+    <select id="getBianmList" resultType="java.util.Map">
+        select SAMCODE caiybm,
+            'Z'||samcode zhiybm,
+            Assaycode  huaybm ,assaytime zhuanmsj,
+            HANDLERTYPE caozlx
+        from JK_ASSAYCODE
+        where DATASTATUS=0
+          and samcode is not null  
+          and assaycode is not null
+    </select>
+    <select id="getHuaydList" resultType="java.util.Map">
+        SELECT
+            515 zuzbm,515 dianc_id, LEIX, nvl(assaycode,' ') as HUAYBM, nvl(assaydate,' ') as HUAYSJ,
+            nvl(assayuser,' ') as HUAYY, nvl(MT,0) as MT, nvl(MAD,0) as MAD,
+            nvl(AAR,0) as AAR, nvl(AAD,0) as AAD, nvl(AD,0) as AD, nvl(ADAF,0) as ADAF,
+            nvl(VAR,0) as VAR, nvl(VAD,0) as VAD, nvl(VD,0) as VD, nvl(VDAF,0) as VDAF,
+            nvl(FCAD,0) as FCAD, nvl(FCAR,0) as FCAR, nvl(FCD,0) as FCD, nvl(FCDAF,0) as FCDAF,
+            nvl(STAR,0) as STAR, nvl(STAD,0) as STAD, nvl(STD,0) as STD, nvl(SDAF,0) as SDAF,
+            nvl(HAD,0) as HAD, nvl(HDAF,0) as HDAF, nvl(HAR,0) as HAR, nvl(Hd,0) as Hd,
+            nvl(QBAD,0)/1000 as QBAD, nvl(QGRAD,0)/1000 as QGRAD, nvl(QGRD,0) as QGRD,
+            nvl(QGRADDAF,0) as  QGRAD_DAF, nvl(QGRAR,0) as QGRAR, nvl(QNETAR,0) as  QNET_AR,
+            HandlerType CAOZLX, '入厂化验' danjlx,2 as ZHUANGT,getnewid(515) as  huayd_id
+        FROM Jk_RC_HUAYBGB WHERE DataStatus=0
+    </select>
+    <update id="saveData">
+        <if test="data.CAOZLX==0">
+            insert into ${tableName} (
+            <foreach collection="colNames" item="colName" index="index" separator=",">
+                <if test="data[colName]!=null">
+                    ${colName}
+                </if>
+            </foreach>
+            )VALUES(
+            <foreach collection="colNames" item="colName" index="index" separator=",">
+                <if test="data[colName]!=null">
+                  '${data[colName]}'
+                </if>
+            </foreach>
+            )
+        </if>
+        <if test="data.CAOZLX==1">
+            update ${tableName} set
+            <foreach collection="colNames" item="colName" index="i" separator=",">
+                <if test="data[colName]!=null and colName!='ID'">
+                    ${colName}=#{data[${colName}]}
+                </if>
+            </foreach>
+            where ${id}=#{data[${id}]}
+        </if>
+        <if test="data.CAOZLX==2">
+            delete from ${tableName}
+            where ${id}=#{data[${id}]}
+        </if>
+    </update>
+
+</mapper>

@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiren.fuelmis.dc.dao.jih.NiandcaigjhDao" >
+	<select id="getTabelData"  resultType="java.util.HashMap">
+						SELECT CG.MK,
+						       CG.GONGYS, 
+						       CG.JIHKJ, 
+						       CG.DAOHL, 
+						       CG.REZ, 
+						       CG.CHEBJ, 
+						       CG.YUNF, 
+						       CG.ZAF+CG.QIT CNFY, 
+						       (CG.CHEBJ + CG.YUNF + CG.ZAF + CG.QIT) DAOCJ, 
+						       DECODE(REZ, 
+						              0, 
+						              0, 
+						              ROUND((CG.CHEBJ + CG.YUNF + CG.ZAF + CG.QIT) * 29.271/ CG.REZ, 2)) DAOCBMJ, 
+						              DECODE(CG.REZ,0,0,ROUND((ROUND(CG.CHEBJ / 1.17,2) + ROUND(CG.YUNF /1.11,2) + CG.ZAFBHS + CG.QITBHS) *29.271/ CG.REZ,2)) DAOCBMJBHS, 
+						       ZG.RLZHBMDJ 
+						  FROM 
+						   (SELECT DECODE(GROUPING(DC.MINGC), 1, '公司合计', DC.MINGC) MK, 
+						       DECODE(GROUPING(DC.MINGC),1,'',DECODE(GROUPING(GS.MINGC), 1, '合计', GS.MINGC)) GONGYS, 
+						       J.MINGC JIHKJ, 
+						       NVL(SUM(CG.DAOHL), 0) AS DAOHL, 
+						    NVL(round(DECODE (SUM(CG.DAOHL),0,0,SUM(CG.REZ*CG.DAOHL)/SUM(CG.DAOHL)),2), 0) AS REZ, 
+						    NVL(round(DECODE (SUM(CG.DAOHL),0,0,SUM(CG.CHEBJ*CG.DAOHL)/SUM(CG.DAOHL)),2), 0)CHEBJ, 
+						    NVL(round(DECODE (SUM(CG.DAOHL),0,0,SUM(CG.YUNF*CG.DAOHL)/SUM(CG.DAOHL)),2), 0)YUNF, 
+						    NVL(round(DECODE (SUM(CG.DAOHL),0,0,SUM(CG.ZAF*CG.DAOHL)/SUM(CG.DAOHL)),2), 0)ZAF, 
+						       NVL(round(DECODE (SUM(CG.DAOHL),0,0,SUM(CG.ZAFBHS*CG.DAOHL)/SUM(CG.DAOHL)),2), 0)ZAFBHS, 
+						       NVL(round(DECODE (SUM(CG.DAOHL),0,0,SUM(CG.QIT*CG.DAOHL)/SUM(CG.DAOHL)),2), 0)QIT, 
+						      NVL(round(DECODE (SUM(CG.DAOHL),0,0,SUM(CG.QITBHS*CG.DAOHL)/SUM(CG.DAOHL)),2), 0)QITBHS 
+						      FROM (SELECT NC.DIANCXXB_ID  AS DIANCXXB_ID, 
+						               NC.GONGYSB_ID   AS GONGYSB_ID, 
+						        NC.JIHKJB_ID AS JIHKJB_ID, 
+						               NC.JIH_SL       AS DAOHL, 
+						               NC.JIH_REZ      AS REZ, 
+						               NC.JIH_MEIJ     AS CHEBJ, 
+						               NC.JIH_YUNJ     AS YUNF, 
+						               NC.JIH_ZAF      AS ZAF, 
+						               NC.JIH_ZAFBHS   AS ZAFBHS, 
+						               NC.JIH_QIT      AS QIT, 
+						               NC.JIH_DAOCJ    AS DAOCJ, 
+						               NC.JIH_DAOCBMDJ AS DAOCBMJ, 
+						              NC.JIH_QITBHS   AS QITBHS, 
+						              ROUND(ROUND(DECODE(NC.JIH_REZ,0,0,(NC.JIH_MEIJBHS + NC.JIH_YUNJBHS +NC.JIH_QITBHS) * 29.271 / NC.JIH_REZ),2),2) AS BIAOMDJBHS 
+						          FROM NIANDJH_CAIG NC 
+						         WHERE NC.RIQ = to_date(#{riq},'yyyy-mm-dd')) CG, 
+						        GONGYSB GS, JIHKJB J, DIANCXXB DC 
+						 WHERE CG.GONGYSB_ID = GS.ID 
+						  AND CG.JIHKJB_ID=J.ID 
+						   AND CG.DIANCXXB_ID(+) = DC.ID 
+						   AND DC.JIB = 3 and (DC.ID in (#{id}) ) 
+						  GROUP BY ROLLUP((DC.MINGC, DC.XUH), GS.MINGC,J.MINGC) 
+						   HAVING (GROUPING(J.MINGC)=0 OR GROUPING(GS.MINGC)=1) 
+						 ORDER BY GROUPING(DC.MINGC) DESC,DC.XUH,GROUPING(GS.MINGC) DESC,J.MINGC,GS.MINGC)CG, 
+						 ( 
+						 SELECT DECODE(GROUPING(DC.MINGC), 1, '公司合计', DC.MINGC) MK, 
+						       SUM(ZB.BIAOMLHJ)BIAOMLHJ, 
+						      NVL(round(DECODE(SUM(ZB.BIAOMLHJ),0,0,SUM(ZB.BIAOMLHJ * ZB.RLZHBMDJ) / SUM(ZB.BIAOMLHJ)),2),0) RLZHBMDJ 
+						 FROM (SELECT ZB.DIANCXXB_ID, Round(ZB.FADL*(1-ZB.FADCYDL/100)*ZB.GONGDMH/100,0)+Round(ZB.GONGRL*ZB.GONGRMH*10,0) as BIAOMLHJ, ZB.RLZHBMDJ 
+						          FROM NIANDJH_ZHIB ZB 
+						         WHERE ZB.RIQ = to_date(#{riq},'yyyy-mm-dd')) ZB, DIANCXXB DC 
+						         WHERE ZB.DIANCXXB_ID(+) = DC.ID 
+						         AND DC.JIB = 3 and (DC.ID in (#{id}) ) 
+						GROUP BY ROLLUP((DC.MINGC)))ZG 
+						WHERE CG.MK=ZG.MK
+	</select>
+	<select id="getGongys"  resultType="java.util.HashMap">
+		select id, mingc from gongysb where leix = 1 order by mingc
+	</select>
+	<select id="getNiandcaigData"  resultType="java.util.HashMap">
+						SELECT NC.ID,
+						 	   ROWNUM,
+						       NC.DIANCXXB_ID, 
+						       GS.MINGC AS GONGYSB_ID, 
+						       J.MINGC AS JIHKJB_ID, 
+						       NC.HET_SL, 
+						       NC.HET_REZ, 
+						       NC.HET_MEIJ, 
+						       NC.HET_YUNJ, 
+						       NC.JIH_SL, 
+						       NC.JIH_REZ, 
+						       NC.JIH_MEIJ, 
+						       NC.JIH_MEIJBHS, 
+						       NC.JIH_YUNJ, 
+						       NC.JIH_YUNJBHS, 
+						       NC.JIH_ZAF, 
+						       NC.JIH_ZAFBHS, 
+						       NC.JIH_QIT, 
+						       NC.JIH_QITBHS, 
+						       NC.JIH_DAOCJ, 
+						       NC.JIH_DAOCBMDJ, 
+						     DECODE(NC.JIH_REZ,0,0,ROUND(( round(NC.JIH_MEIJ/1.17,2) + round(NC.JIH_YUNJ*0.93,2) + round(NC.JIH_ZAFBHS,2) + NC.JIH_QITBHS) *29.271 / NC.JIH_REZ,2)) DAOCBHSBMDJ ,  
+						       NC.ZHUANGT	
+						  FROM NIANDJH_CAIG NC,GONGYSB GS,JIHKJB J  
+							WHERE NC.JIHKJB_ID=J.ID AND NC.GONGYSB_ID = GS.ID  
+						  		AND TO_CHAR(NC.RIQ, 'yyyy')= #{nianf} 
+						  		AND DIANCXXB_ID ='${diancid}'
+	</select>
+	<delete id="delNiandcaigById" parameterType="java.lang.String" flushCache="true">  
+        delete from NIANDJH_CAIG where id =  #{id} 
+    </delete>
+    <select id="getNiandCaigById"  resultType="java.util.HashMap">
+						SELECT  ID,
+								DIANCXXB_ID,
+ 								to_char(RIQ,'yyyy') RIQ,
+ 								GONGYSB_ID,
+ 								HET_REZ,
+ 								HET_SL,
+ 								HET_MEIJ,
+ 								HET_YUNJ,
+ 								JIHKJB_ID,
+ 								JIH_SL,
+ 								JIH_REZ,
+ 								JIH_MEIJ,
+ 								JIH_YUNJ,
+ 								JIH_QIT,
+ 								JIH_QITBHS,
+ 								JIH_DAOCJ,
+ 								JIH_DAOCBMDJ 
+						  FROM NIANDJH_CAIG 
+			 				WHERE id =#{id}
+	</select>
+    <insert id="addCaigData"  useGeneratedKeys="true" keyProperty="id">
+ 		INSERT INTO NIANDJH_CAIG(id,
+ 								DIANCXXB_ID,
+ 								RIQ,
+ 								GONGYSB_ID,
+ 								HET_REZ,
+ 								HET_SL,
+ 								HET_MEIJ,
+ 								HET_YUNJ,
+ 								JIHKJB_ID,
+ 								JIH_SL,
+ 								JIH_REZ,
+ 								JIH_MEIJ,
+ 								JIH_YUNJ,
+ 								JIH_QIT,
+ 								JIH_QITBHS,
+ 								JIH_DAOCJ,
+ 								JIH_DAOCBMDJ
+ 								)
+								VALUES (XL_YUEDJH_CAIG_ID.nextval,
+									${DIANCID}, 
+								 	 to_date('${NIANF}','yyyy-mm-dd'), 
+								  	${GONGYSB_ID}, 
+								  	round(${HET_REZ},2),
+								   	round(${HET_SL},2),
+								   	round(${HET_MEIJ},2),
+								   	round(${HET_YUNJ},2),
+								   	${JIHKJB_ID},
+								   	round(${JIH_SL},2),
+								   	round(${JIH_REZ},2), 
+								   	round(${JIH_MEIJ},2), 
+								   	round(${JIH_YUNJ},2),
+								   	round(${JIH_QIT},2), 
+								    round(${JIH_QIT},2), 
+								   	round(${JIH_MEIJ}+${JIH_YUNJ}+${JIH_QIT},2),  
+								   	round(round(${JIH_MEIJ}+${JIH_YUNJ}+${JIH_QIT},2)*29.271/round(${JIH_REZ},2),2))
+	</insert>
+	<update id="updateNiandcaigById" flushCache="true">  
+	update NIANDJH_CAIG set    	DIANCXXB_ID = ${DIANCID},
+ 								RIQ =  to_date('${NIANF}','yyyy-mm-dd'),
+ 								GONGYSB_ID = ${GONGYSB_ID},
+ 								HET_REZ = round(${HET_REZ},2),
+ 								HET_SL = round(${HET_SL},2),
+ 								HET_MEIJ = round(${HET_MEIJ},2),
+ 								HET_YUNJ = round(${HET_YUNJ},2),
+ 								JIHKJB_ID = ${JIHKJB_ID},
+ 								JIH_SL = round(${JIH_SL},2),
+ 								JIH_REZ = round(${JIH_REZ},2),
+ 								JIH_MEIJ = round(${JIH_MEIJ},2),
+ 								JIH_YUNJ = round(${JIH_YUNJ},2),
+ 								JIH_QIT = round(${JIH_QIT},2),
+ 								JIH_QITBHS = round(${JIH_QIT},2),
+ 								JIH_DAOCJ = round(${JIH_MEIJ}+${JIH_YUNJ}+${JIH_QIT},2),
+ 								JIH_DAOCBMDJ = round(round(${JIH_MEIJ}+${JIH_YUNJ}+${JIH_QIT},2)*29.271/round(${JIH_REZ},2),2)
+ 								WHERE ID = ${ID}
+    </update>
+    <select id="getNiandcaigByDiancidAndRiq"  resultType="com.zhiren.fuelmis.dc.entity.jih.NiandcaigjhBean">
+			            SELECT  XL_YUEDJH_CAIG_ID.nextval as id,
+								${diancid} as diancid,
+ 								'${nianf}' as riq,
+ 								GONGYSB_ID,
+ 								HET_REZ,
+ 								HET_SL,
+ 								HET_MEIJ,
+ 								HET_YUNJ,
+ 								JIHKJB_ID,
+ 								JIH_SL,
+ 								JIH_REZ,
+ 								JIH_MEIJ,
+ 								JIH_YUNJ,
+ 								JIH_QIT,
+ 								JIH_QITBHS,
+ 								JIH_DAOCJ,
+ 								JIH_DAOCBMDJ 
+						  FROM NIANDJH_CAIG 
+			 				WHERE DIANCXXB_ID = ${diancid}
+			            	AND RIQ =to_date('${lastyear}','yyyy-mm-dd')
+	</select>
+	<select id="getshenpstate"  resultType="java.lang.String">
+			            SELECT  distinct SANJ_ZT 
+						  FROM NIANDJH_CAIG 
+			 				WHERE DIANCXXB_ID = ${diancid}
+			            	AND RIQ =to_date('${nianf}','yyyy-mm-dd')
+	</select>
+	<delete id="DelNiandcaigByDiancidAndRiq"  flushCache="true">  
+        delete from NIANDJH_CAIG where DIANCXXB_ID ='${diancid}' AND  RIQ = to_date(#{nianf},'yyyy-mm-dd')
+    </delete>	
+	<insert id="CopyNiandcaigData" parameterType="java.util.Map">
+		INSERT INTO NIANDJH_CAIG(	ID,DIANCXXB_ID,RIQ,GONGYSB_ID,
+ 								HET_REZ,HET_SL,HET_MEIJ,HET_YUNJ,
+ 								JIHKJB_ID,JIH_SL,JIH_REZ,JIH_MEIJ,JIH_YUNJ,JIH_QIT,
+ 								JIH_QITBHS,JIH_DAOCJ,JIH_DAOCBMDJ )
+ 		<foreach collection="copylist" item="item" index="index"  separator="union" >
+			select  ${item.id},${item.diancid},to_date('${item.riq}','yyyy-mm-dd'),
+					${item.gongysb_id},${item.het_rez},${item.het_sl},${item.het_meij} ,${item.het_yunj},
+					${item.jihkjb_id},${item.jih_sl},${item.jih_rez},${item.jih_meij},${item.jih_yunj},${item.jih_qit},
+					${item.jih_qitbhs},${item.jih_daocj},${item.jih_daocbmdj}
+				from dual  
+		</foreach>
+	</insert>
+	<select id="getCaigJh"  resultType="java.util.HashMap">
+						SELECT NC.ID,
+						 	   ROWNUM,
+						       NC.DIANCXXB_ID, 
+						       nc.GONGYSB_ID, 
+						       nc.JIHKJB_ID, 
+						       NC.HET_SL, 
+						       NC.HET_REZ, 
+						       NC.HET_MEIJ, 
+						       NC.HET_YUNJ, 
+						       NC.JIH_SL, 
+						       NC.JIH_REZ, 
+						       NC.JIH_MEIJ, 
+						       NC.JIH_MEIJBHS, 
+						       NC.JIH_YUNJ, 
+						       NC.JIH_YUNJBHS, 
+						       NC.JIH_ZAF, 
+						       NC.JIH_ZAFBHS, 
+						       NC.JIH_QIT, 
+						       NC.JIH_QITBHS, 
+						       NC.JIH_DAOCJ, 
+						       NC.JIH_DAOCBMDJ, 
+						     DECODE(NC.JIH_REZ,0,0,ROUND(( round(NC.JIH_MEIJ/1.17,2) + round(NC.JIH_YUNJ*0.93,2) + round(NC.JIH_ZAFBHS,2) + NC.JIH_QITBHS) *29.271 / NC.JIH_REZ,2)) DAOCBHSBMDJ ,  
+						       NC.ZHUANGT	
+						  FROM NIANDJH_CAIG NC
+							WHERE  TO_CHAR(NC.RIQ, 'yyyy')= '${nianf}' 
+						  		AND DIANCXXB_ID ='${diancid}'
+	</select>
+</mapper>

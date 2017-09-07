@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.zhiren.fuelmis.dc.dao.gongyspg.gongmjhzl.GongmjhtzDao">
+	
+	<select id="getGongmjhtzAll" resultType="java.util.Map">
+		 SELECT GYS.Mingc MINGC,
+	       GYS.ID AS GONGYSB_ID,
+	       YUEGMJHMXB.ID,
+	       YUEGMJHMXB.JIHGMRQ,
+	       YUEGMJHMXB.ZHIBZ,
+	       YUEGMJHMXB.BEIZ,
+	       DECODE((SELECT ID FROM RL_GYS_RIGMJHB 
+	       WHERE GONGYSB_ID = GYS.ID 
+	       AND RIQ = YUEGMJHMXB.JIHGMRQ
+	       ),NULL,'未发布','已发布') AS ZHUANGT,
+	       DECODE((SELECT max(PINGFFAB_ID) FROM rl_gys_hetb
+	               WHERE GONGYSB_ID = GYS.ID
+	               AND substr(JIESRQ,0,7) = '${Date}'),
+	              NULL,
+	              0,
+	              (SELECT max(PINGFFAB_ID)
+	                 FROM rl_gys_hetb
+	                WHERE GONGYSB_ID = GYS.ID
+	                  AND substr(JIESRQ,0,7) = '${Date}')) AS PINGFFAB_ID
+	  FROM rl_gys_YUEGMJHB YUEGMJHB, rl_gys_YUEGMJHMXB YUEGMJHMXB, GONGYSB GYS
+	 WHERE YUEGMJHMXB.YUEGMJHB_ID = YUEGMJHB.ID
+	   AND YUEGMJHB.GONGYSB_ID = GYS.ID
+	   AND JIHRQ ='${Date}'
+	   AND YUEGMJHMXB.ZHIBDM = 'SL'
+	   AND YUEGMJHB.ZHUANGT = 1
+	   <if test="gongysb_id!=-1">
+		AND GYS.ID = '${gongysb_id}'
+       </if>     	  
+	 ORDER BY GYS.Mingc, YUEGMJHMXB.JIHGMRQ
+	</select>
+	
+	<update id="updateGongmjh">
+	    update rl_gys_YUEGMJHMXB
+			 set JIHGMRQ = '${JIHGMRQ}',
+			 	ZHIBZ=  '${ZHIBZ}',
+			 	beiz='${BEIZ}'
+			  	where id= ${ID}
+	</update>
+	 
+		
+</mapper>

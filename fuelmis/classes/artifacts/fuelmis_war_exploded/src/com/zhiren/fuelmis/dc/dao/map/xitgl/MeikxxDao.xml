@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiren.fuelmis.dc.dao.xitgl.MeikxxDao" >
+	<resultMap id="BaseResultMap" type="meikxx" >
+		<id column="ID" property="id" jdbcType="NUMERIC" />
+		<result column="XUH" property="xuh" jdbcType="NUMERIC" />
+		<result column="MEIKDQ_ID" property="meikdq_id" jdbcType="NUMERIC" />
+		<result column="BIANM" property="bianm" jdbcType="NUMERIC" />
+		<result column="MINGC" property="mingc" jdbcType="VARCHAR" />
+		<result column="QUANC" property="quanc" jdbcType="VARCHAR" />
+		<result column="PINY" property="piny" jdbcType="VARCHAR" />
+		<result column="SHENGFB_ID" property="shengfb_id" jdbcType="VARCHAR" />
+		<result column="LEIB" property="leib" jdbcType="VARCHAR" />
+		<result column="LEIX" property="leix" jdbcType="VARCHAR" />
+		<result column="JIHKJ_ID" property="jihkjb_id" jdbcType="VARCHAR" />
+		<result column="BEIZ" property="beiz" jdbcType="VARCHAR" />
+		<result column="LIANXR" property="lianxr" jdbcType="VARCHAR" />
+		<result column="GUDDH" property="guddh" jdbcType="VARCHAR" />
+		<result column="YIDDH" property="yiddh" jdbcType="VARCHAR" />
+		<result column="CHUANZ" property="chuanz" jdbcType="VARCHAR" />
+		<result column="EMAIL" property="email" jdbcType="VARCHAR" />
+		<result column="WENJMC" property="wenjmc" jdbcType="VARCHAR" />
+		<result column="SHIYZT" property="shiyzt" jdbcType="NUMERIC" />
+	</resultMap>
+	
+	<select id="getAll" resultMap="BaseResultMap">
+		select distinct M.ID, M.XUH,G.DQMC MEIKDQ_ID, M.BIANM, M.MINGC, M.QUANC, M.PINY,
+        G.SMC SHENGFB_ID,M.LEIB, M.LEIX,J.MINGC JIHKJB_ID,M.BEIZ,M.SHANGJGSBM,M.LIANXR,M.GUDDH,
+        M.YIDDH,M.CHUANZ,M.EMAIL,getWenj(M.WENJMC) WENJMC,M.SHIYZT
+  		from MEIKXXB M, JIHKJB J,  VWGONGYSDQ G
+ 		where M.ID = G.MK_ID(+)  and M.JIHKJB_ID = J.ID(+) and M.SHIYZT = 1  order by xuh
+
+	</select>
+	
+	<insert id="insertMeikxx" parameterType="java.util.Map">
+	    insert into MEIKXXB (ID,XUH,BIANM,MINGC,QUANC,PINY,SHENGFB_ID,LEIB,JIHKJB_ID,LEIX,BEIZ,MEIKDQ_ID,SHIYZT,LIANXR,
+	    GUDDH,YIDDH,CHUANZ,EMAIL,CREATER,CREATE_DATE)
+	    values (${id},nvl(${xuh},0),nvl('${bianm}',0),'${mingc}','${quanc}','${piny}',nvl(${shengfb_id},0),'${leib}',
+	    nvl(${jihkjb_id},0),'${leix}','${beiz}',${id},${shiyzt},'${lianxr}','${guddh}','${yiddh}',
+	    '${chuanz}','${email}','${creater}','${create_date}')
+	</insert>
+	
+	<select id="getOne" resultMap="BaseResultMap">
+	    select ID,XUH,BIANM,MINGC,QUANC,PINY,SHENGFB_ID,LEIB,JIHKJB_ID,LEIX,BEIZ,MEIKDQ_ID,SHIYZT,
+	    LIANXR,GUDDH,YIDDH,CHUANZ,EMAIL,getWenj(WENJMC) WENJMC,SHIYZT
+	    from MEIKXXB where ID = #{id}
+	</select>
+	
+	<update id="updateMeikxx" parameterType="java.util.Map">
+	     update MEIKXXB
+	    <trim prefix="SET" suffixOverrides=",">
+	        <if test="xuh != null">XUH=#{xuh},</if>
+	        <if test="bianm != null">BIANM=#{bianm},</if>
+			<if test="mingc != null">MINGC=#{mingc},</if>
+			<if test="quanc != null">QUANC=#{quanc},</if>
+			<if test="piny != null">PINY=#{piny},</if>
+			<if test="shengfb_id != null">SHENGFB_ID=#{shengfb_id},</if>
+			<if test="leib != null">LEIB=#{leib},</if>
+			<if test="jihkjb_id != null">JIHKJB_ID=#{jihkjb_id},</if>
+			<if test="leix != null">LEIX=#{leix},</if>
+			<if test="beiz != null">BEIZ=#{beiz},</if>
+			<if test="meikdq_id != null">MEIKDQ_ID=#{meikdq_id},</if>
+			<if test="shiyzt != null">SHIYZT=#{shiyzt},</if>
+			<if test="lianxr != null">LIANXR=#{lianxr},</if>
+			<if test="guddh != null">GUDDH=#{guddh},</if>
+			<if test="yiddh != null">YIDDH=#{yiddh},</if>
+			<if test="chuanz != null">CHUANZ=#{chuanz},</if>
+			<if test="email != null">EMAIL=#{email},</if>
+			<if test="wenjmc != null">WENJMC=#{wenjmc},</if>
+			<if test="last_editer != null">last_editer=#{last_editer},</if>
+			<if test="last_edit_date != null">last_edit_date=#{last_edit_date},</if>
+		</trim>
+		where ID=#{id}
+	</update>
+	
+	<select id="getKuangzglb" resultType="java.lang.String">
+	    select CHEZXXB_ID from KUANGZGLB where MEIKXXB_ID = #{meikxxb_id}
+	</select>
+	
+	<select id="getGongysmkglb" resultType="java.lang.String">
+	    select GONGYSB_ID from GONGYSMKGLB where MEIKXXB_ID = #{meikxxb_id}
+	</select>
+	
+	<delete id="deleteKuangzglb" parameterType="java.lang.String">
+	    delete from KUANGZGLB where MEIKXXB_ID = #{meikxxb_id}
+	</delete>
+	
+	<insert id="insertKuangzglb" parameterType="java.util.List">
+	    insert into KUANGZGLB(ID,MEIKXXB_ID,CHEZXXB_ID) 
+	    <foreach collection="list" item="item" index="index" separator=" union ">
+	        select getNewId(515),#{item.meikxxb_id},#{item.chezxxb_id} from dual
+	    </foreach>
+	</insert>
+	
+	<delete id="deleteGongysmkglb" parameterType="java.lang.String">
+	    delete from GONGYSMKGLB where MEIKXXB_ID = #{meikxxb_id}
+	</delete>
+	
+	<insert id="insertGongysmkglb" parameterType="java.util.List">
+	    insert into GONGYSMKGLB(ID,MEIKXXB_ID,GONGYSB_ID) 
+	    <foreach collection="list" item="item" index="index" separator=" union ">
+	        select getNewId(515),#{item.meikxxb_id},#{item.gongysb_id} from dual
+	    </foreach>
+	</insert>
+</mapper>

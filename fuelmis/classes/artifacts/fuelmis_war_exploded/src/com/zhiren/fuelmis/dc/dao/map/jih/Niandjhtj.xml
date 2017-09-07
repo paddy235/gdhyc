@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiren.fuelmis.dc.dao.jih.NiandjhtjDao" >
+	<select id="getCgjhData"  resultType="java.util.HashMap">
+			SELECT GHDW,
+       JIHKJ,
+       HET_SL,
+       HET_REZ,
+       HET_MEIJ,
+       HET_YUNJ,
+       JIH_SL,
+       JIH_REZ,
+       JIH_REZC,
+       JIH_MEIJ,
+       JIH_MEIJBHS,
+       JIH_YUNJ,
+       JIH_YUNJBHS,
+       JIH_ZAF,
+       JIH_ZAFBHS,
+       JIH_QIT,
+       JIH_QITBHS,
+       (JIH_MEIJ + JIH_YUNJ + JIH_ZAF + JIH_QIT) JIH_DAOCJ,
+       DECODE(JIH_REZ,
+              0,
+              0,
+              ROUND((JIH_MEIJ + JIH_YUNJ + JIH_ZAF + JIH_QIT) * 29.271 /
+                    JIH_REZ,
+                    2)) JIH_DAOCBMDJ,
+       ZRLBMDL,
+       DECODE(JIH_REZC,
+              0,
+              0,
+              ROUND((JIH_MEIJBHS + JIH_YUNJBHS + JIH_ZAFBHS + JIH_QITBHS) *
+                    29.271 / JIH_REZC,
+                    2)) RLMZBMDJ
+  FROM (SELECT DECODE(GROUPING(G.MINGC),
+                      1,
+                      <![CDATA['<b>总计</b>' ]]>,
+                      G.MINGC) GHDW,
+               J.MINGC JIHKJ,
+               SUM(CG.HET_SL) HET_SL,
+               ROUND(DECODE(SUM(CG.HET_SL),
+                            0,
+                            0,
+                            SUM(CG.HET_REZ * CG.HET_SL) / SUM(CG.HET_SL)),
+                     2) HET_REZ,
+               ROUND(DECODE(SUM(CG.HET_SL),
+                            0,
+                            0,
+                            SUM(CG.HET_MEIJ * CG.HET_SL) / SUM(CG.HET_SL)),
+                     2) HET_MEIJ,
+               ROUND(DECODE(SUM(CG.HET_SL),
+                            0,
+                            0,
+                            SUM(CG.HET_YUNJ * CG.HET_SL) / SUM(CG.HET_SL)),
+                     2) HET_YUNJ,
+               SUM(CG.JIH_SL) JIH_SL,
+               ROUND(DECODE(SUM(CG.JIH_SL),
+                            0,
+                            0,
+                            SUM(CG.JIH_REZ * CG.JIH_SL) / SUM(CG.JIH_SL)),
+                     2) JIH_REZ,
+               ROUND(DECODE(SUM(CG.JIH_SL),
+                            0,
+                            0,
+                            SUM((CG.JIH_REZ - NVL(ZB.RUCRLRZC, 0)) *
+                                CG.JIH_SL) / SUM(CG.JIH_SL)),
+                     2) JIH_REZC,
+               ROUND(DECODE(SUM(CG.JIH_SL),
+                            0,
+                            0,
+                            SUM(CG.JIH_MEIJ * CG.JIH_SL) / SUM(CG.JIH_SL)),
+                     2) JIH_MEIJ,
+               ROUND(DECODE(SUM(CG.JIH_SL),
+                            0,
+                            0,
+                            SUM(CG.JIH_MEIJ/1.17 * CG.JIH_SL) / SUM(CG.JIH_SL)),
+                     2) JIH_MEIJBHS,
+               ROUND(DECODE(SUM(CG.JIH_SL),
+                            0,
+                            0,
+                            SUM(CG.JIH_YUNJ * CG.JIH_SL) / SUM(CG.JIH_SL)),
+                     2) JIH_YUNJ,
+               ROUND(DECODE(SUM(CG.JIH_SL),
+                            0,
+                            0,
+                            SUM(CG.JIH_YUNJ/1.11 * CG.JIH_SL) / SUM(CG.JIH_SL)),
+                     2) JIH_YUNJBHS,
+               ROUND(DECODE(SUM(CG.JIH_SL),
+                            0,
+                            0,
+                            SUM(CG.JIH_ZAF * CG.JIH_SL) / SUM(CG.JIH_SL)),
+                     2) JIH_ZAF,
+               ROUND(DECODE(SUM(CG.JIH_SL),
+                            0,
+                            0,
+                            SUM(CG.JIH_ZAFBHS * CG.JIH_SL) / SUM(CG.JIH_SL)),
+                     2) JIH_ZAFBHS,
+               ROUND(DECODE(SUM(CG.JIH_SL),
+                            0,
+                            0,
+                            SUM(CG.JIH_QIT * CG.JIH_SL) / SUM(CG.JIH_SL)),
+                     2) JIH_QIT,
+               ROUND(DECODE(SUM(CG.JIH_SL),
+                            0,
+                            0,
+                            SUM(CG.JIH_QITBHS * CG.JIH_SL) / SUM(CG.JIH_SL)),
+                     2) JIH_QITBHS,
+               ROUND(DECODE(SUM(CG.JIH_SL),
+                            0,
+                            0,
+                            SUM(CG.JIH_DAOCJ * CG.JIH_SL) / SUM(CG.JIH_SL)),
+                     2) JIH_DAOCJ,
+               sum(round((CG.JIH_REZ - NVL(ZB.RUCRLRZC, 0)) * CG.JIH_SL /
+                         29.271,
+                         0)) ZRLBMDL,
+               ROUND(DECODE(SUM(CG.JIH_SL),
+                            0,
+                            0,
+                            SUM(CG.JIH_DAOCBMDJ * CG.JIH_SL) / SUM(CG.JIH_SL)),
+                     2) JIH_DAOCBMDJ
+          FROM NIANDJH_CAIG CG, GONGYSB G, NIANDJH_ZHIB ZB, JIHKJB J
+         WHERE CG.GONGYSB_ID = G.ID
+           AND CG.JIHKJB_ID = J.ID
+           AND CG.DIANCXXB_ID = ZB.DIANCXXB_ID
+           AND CG.RIQ = ZB.RIQ
+           AND CG.RIQ = to_date(#{curdate}, 'yyyy-mm-dd')
+           AND CG.DIANCXXB_ID = #{diancid}
+         GROUP BY ROLLUP((G.MINGC, J.MINGC)))
+	</select>
+	<select id="getZfjhData"  resultType="java.util.HashMap">
+			SELECT DECODE(GROUPING(za.ZAFMC), 1, <![CDATA['<b>总计</b>' ]]>, IT.MINGC) ZAFMC,
+			       SUM(za.YUCJE) AS YUCJE, 
+			       za.YUCSM, 
+			       SUM(za.SHIJWCJE+za.YUJWCJE) AS HEJ,
+					SUM(za.SHIJWCJE) AS SHIJWCJE, 
+			       SUM(za.YUJWCJE) AS YUJWCJE, 
+			       za.YUJWCSM 
+			  FROM NIANDJH_ZAF za,ITEM IT
+			 WHERE RIQ = to_date(#{curdate},'yyyy-mm-dd') 
+			   AND IT.ID = za.zafmc 
+			   AND za.DIANCXXB_ID = #{diancid} 
+			 GROUP BY ROLLUP((za.ZAFMC,IT.MINGC , za.YUCSM, za.YUJWCSM))
+	</select>
+	<select id="getDiancMingc"  resultType="java.lang.String">
+		select quanc from diancxxb where id = #{diancid}
+	</select>
+	<select id="getZhibData"  resultType="java.util.HashMap">
+			SELECT DECODE(0, 0, '合计') QIB,
+             FADL, 
+             GONGDMH, 
+             FADCYDL, 
+             Round(FADL*(1-FADCYDL/100)*GONGDMH/100,0) as FADBML, 
+             GONGRL, 
+             GONGRMH, 
+             Round(GONGRL*GONGRMH*10,0) as GONGRBML, 
+             Round(FADL*(1-FADCYDL/100)*GONGDMH/100,0)+Round(GONGRL*GONGRMH*10,0) as BIAOMLHJ, 
+             Round(FADL*(1-FADCYDL/100)*GONGDMH/100,0)+Round(GONGRL*GONGRMH*10,0)-Round(RANYL*41.816/29.271,0) as MEIZBML, 
+             MEIZBMDJ, 
+             RANYL, 
+             Round(RANYL*41.816/29.271,0) as YOUZBML, 
+             RANYDJ, 
+             Round(DECODE(RANYL,0,0,RANYL*RANYDJ/Round(RANYL*41.816/29.271,0)),2) as YOUZBMDJ, 
+             QITFY, 
+             RLZHBMDJ 
+        FROM NIANDJH_ZHIB 
+			 WHERE RIQ = to_date(#{curdate},'yyyy-mm-dd')  
+			   AND DIANCXXB_ID = #{diancid}
+	</select>
+	<select id="getSanjshenpState" resultType="java.lang.String">
+		select distinct(sanj_zt) from niandjh_zaf where diancxxb_id = #{diancid} and riq = to_date(#{riq},'yyyy-mm-dd')
+	</select>
+	<update id="UpdateState">
+					    UPDATE NIANDJH_ZHIB ZHIB
+						     SET ZHIB.sanj_zt =1
+						   WHERE to_char(ZHIB.RIQ,'yyyy') = #{year}
+						     AND ZHIB.DIANCXXB_ID = #{diancid}
+						  UPDATE NIANDJH_ZAF ZAF
+						     SET ZAF.sanj_zt = 1
+						   WHERE  to_char(ZAF.RIQ,'yyyy') = #{year}
+						     AND ZAF.DIANCXXB_ID =  #{diancid}
+						  UPDATE NIANDJH_CAIG CG
+						     SET CG.sanj_zt = 1
+						   WHERE  to_char(CG.RIQ,'yyyy') = #{year}
+						     AND CG.DIANCXXB_ID = #{diancid}
+	</update>
+</mapper>

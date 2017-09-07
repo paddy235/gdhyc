@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiren.fuelmis.dc.dao.xitgl.JizDao" >
+	<resultMap id="BaseResultMap" type="jiz" >
+		<id column="ID" property="id" jdbcType="NUMERIC" />
+		<result column="DIANCXXB_ID" property="diancxxb_id" jdbcType="NUMERIC" />
+		<result column="XUH" property="xuh" jdbcType="VARCHAR" />
+		<result column="JIZBH" property="jizbh" jdbcType="VARCHAR" />
+		<result column="JIZURL" property="jizurl" jdbcType="VARCHAR" />
+		<result column="TOUCRQ" property="toucrq" jdbcType="VARCHAR" />
+		<result column="RIJHM" property="rijhm" jdbcType="VARCHAR" />
+		<result column="MEIHL" property="meihl" jdbcType="VARCHAR" />
+		<result column="JIHDL" property="jihdl" jdbcType="VARCHAR" />
+		<result column="SHEJMZ" property="shejmz" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<select id="getAll" resultMap="BaseResultMap">
+		select J.ID, D.MINGC DIANCXXB_ID, J.XUH,J.JIZBH,J.JIZURL,to_char(J.TOUCRQ,'yyyy-MM-dd') TOUCRQ,J.RIJHM,
+		J.MEIHL,J.JIHDL,J.SHEJMZ
+	    from JIZB J,DIANCXXB D
+	    where J.DIANCXXB_ID = D.ID
+	    <if test=' id!="" '>
+	       and J.DIANCXXB_ID = #{id}
+	    </if>
+	</select>
+	
+	<insert id="insertJiz" parameterType="java.util.Map">
+	    insert into JIZB(ID,DIANCXXB_ID,XUH,JIZBH,JIZURL,TOUCRQ,RIJHM,MEIHL,JIHDL,SHEJMZ)
+	    values (${id},${diancxxb_id},nvl(${xuh},0),'${jizbh}',nvl(${jizurl},0),to_date('${toucrq}','yyyy-MM-dd'),
+	    nvl(${rijhm},0),nvl(${meihl},0),nvl(${jihdl},0),'${shejmz}')
+	</insert>
+	
+	<select id="getOne" resultMap="BaseResultMap">
+	    select J.ID, J.XUH,J.JIZBH,J.JIZURL,to_char(J.TOUCRQ,'yyyy-MM-dd') TOUCRQ,J.RIJHM,
+		J.MEIHL,J.JIHDL,J.SHEJMZ
+	    from JIZB J 
+	    where ID = #{id}
+	</select>
+	
+	<update id="updateJiz" parameterType="java.util.Map">
+	    update JIZB
+	    <trim prefix="SET" suffixOverrides=",">
+			<if test="xuh != null">XUH=#{xuh},</if>
+			<if test="jizbh != null">JIZBH=#{jizbh},</if>
+			<if test="jizurl != null">JIZURL=#{jizurl},</if>
+			<if test="toucrq != null">TOUCRQ=to_date(#{toucrq},'yyyy-MM-dd'),</if>
+			<if test="rijhm != null">RIJHM=#{rijhm},</if>
+			<if test="meihl != null">MEIHL=#{meihl},</if>
+			<if test="jihdl != null">JIHDL=#{jihdl},</if>
+			<if test="shejmz != null">SHEJMZ=#{shejmz},</if>
+		</trim>
+		where ID=#{id}
+	</update>
+	
+	<delete id="deleteJiz" parameterType="java.util.Map">
+	    delete from JIZB where ID = #{id}
+	</delete>
+</mapper>

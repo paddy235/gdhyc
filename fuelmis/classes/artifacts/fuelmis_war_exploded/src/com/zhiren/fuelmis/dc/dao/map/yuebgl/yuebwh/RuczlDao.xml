@@ -1,0 +1,319 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiren.fuelmis.dc.dao.yuebgl.yuebwh.RuczlDao">
+    <select id="getAll" resultType="java.util.Map">
+	SELECT *
+	  FROM (SELECT -2 ID,
+               0 YUETJKJB_ID,
+               '' AS GONGYSB_ID,
+               '' AS JIHKJB_ID,
+               '' AS PINZB_ID,
+               '' AS YUNSFSB_ID,
+               decode(t.fenx,'本月','本月合计','累计合计' )  AS FENX,
+               SUM(SL.JINGZ) JINGZ,
+               ROUND(DECODE(SUM(SL.JINGZ),
+                            0,
+                            0,
+                            SUM(SL.JINGZ * QNET_AR) / SUM(SL.JINGZ)),
+                     2) AS QNET_AR,
+               ROUND(DECODE(SUM(SL.JINGZ),
+                            0,
+                            0,
+                            SUM(SL.JINGZ * QBAD) / SUM(SL.JINGZ)),
+                     2) AS QBAD,
+               ROUND(DECODE(SUM(SL.JINGZ),
+                            0,
+                            0,
+                            SUM(SL.JINGZ * MT) / SUM(SL.JINGZ)),
+                     1) AS MT,
+               ROUND(DECODE(SUM(SL.JINGZ),
+                            0,
+                            0,
+                            SUM(SL.JINGZ * MAD) / SUM(SL.JINGZ)),
+                     2) AS MAD,
+               ROUND(DECODE(SUM(SL.JINGZ),
+                            0,
+                            0,
+                            SUM(SL.JINGZ * AAR) / SUM(SL.JINGZ)),
+                     2) AS AAR,
+               ROUND(DECODE(SUM(SL.JINGZ),
+                            0,
+                            0,
+                            SUM(SL.JINGZ * AAD) / SUM(SL.JINGZ)),
+                     2) AS AAD,
+               ROUND(DECODE(SUM(SL.JINGZ),
+                            0,
+                            0,
+                            SUM(SL.JINGZ * AD) / SUM(SL.JINGZ)),
+                     2) AS AD,
+               ROUND(DECODE(SUM(SL.JINGZ),
+                            0,
+                            0,
+                            SUM(SL.JINGZ * VDAF) / SUM(SL.JINGZ)),
+                     2) AS VDAF,
+               ROUND(DECODE(SUM(SL.JINGZ),
+                            0,
+                            0,
+                            SUM(SL.JINGZ * STD) / SUM(SL.JINGZ)),
+                     2) AS STD,
+               ROUND(DECODE(SUM(SL.JINGZ),
+                            0,
+                            0,
+                            SUM(SL.JINGZ * HAD) / SUM(SL.JINGZ)),
+                     2) AS HAD,
+               ROUND(DECODE(SUM(SL.JINGZ),
+                            0,
+                            0,
+                            SUM(SL.JINGZ * FCAD) / SUM(SL.JINGZ)),
+                     2) AS FCAD,
+               ROUND(DECODE(SUM(SL.JINGZ),
+                            0,
+                            0,
+                            SUM(SL.JINGZ * QNET_AR_KF) / SUM(SL.JINGZ)),
+                     2) AS QNET_AR_KF,
+               ROUND(DECODE(SUM(SL.JINGZ),
+                            0,
+                            0,
+                            SUM(SL.JINGZ * QBAD_KF) / SUM(SL.JINGZ)),
+                     2) AS QBAD_KF,
+               ROUND(DECODE(SUM(SL.JINGZ),
+                            0,
+                            0,
+                            SUM(SL.JINGZ * MT_KF) / SUM(SL.JINGZ)),
+                     1) AS MT_KF,
+               ROUND(DECODE(SUM(SL.JINGZ),
+                            0,
+                            0,
+                            SUM(SL.JINGZ * MAD_KF) / SUM(SL.JINGZ)),
+                     2) AS MAD_KF,
+               ROUND(DECODE(SUM(SL.JINGZ),
+                            0,
+                            0,
+                            SUM(SL.JINGZ * AAR_KF) / SUM(SL.JINGZ)),
+                     2) AS AAR_KF,
+               ROUND(DECODE(SUM(SL.JINGZ),
+                            0,
+                            0,
+                            SUM(SL.JINGZ * AAD_KF) / SUM(SL.JINGZ)),
+                     2) AS AAD_KF,
+               ROUND(DECODE(SUM(SL.JINGZ),
+                            0,
+                            0,
+                            SUM(SL.JINGZ * VDAF_KF) / SUM(SL.JINGZ)),
+                     2) AS VDAF_KF,
+               ROUND(DECODE(SUM(SL.JINGZ),
+                            0,
+                            0,
+                            SUM(SL.JINGZ * STD_KF) / SUM(SL.JINGZ)),
+                     2) AS STD_KF,
+               ROUND(DECODE(SUM(SL.JINGZ),
+                            0,
+                            0,
+                            SUM(SL.JINGZ * HAD_KF) / SUM(SL.JINGZ)),
+                     2) AS HAD_KF,
+               ROUND(DECODE(SUM(SL.JINGZ),
+                            0,
+                            0,
+                            SUM(SL.JINGZ * FCAD_KF) / SUM(SL.JINGZ)),
+                     2) AS FCAD_KF,
+               SUM(ZHIJBFML) AS ZHIJBFML,
+               SUM(ZHIJBFJE) AS ZHIJBFJE,
+               SUM(ZHIJBFJE_M) AS ZHIJBFJE_M,
+               SUM(ZHIJBFJE_A) AS ZHIJBFJE_A,
+               SUM(ZHIJBFJE_V) AS ZHIJBFJE_V,
+               SUM(ZHIJBFJE_Q) AS ZHIJBFJE_Q,
+               SUM(ZHIJBFJE_S) AS ZHIJBFJE_S,
+               SUM(ZHIJBFJE_T) AS ZHIJBFJE_T,
+               SUM(T.SUOPJE) AS SUOPJE,
+               SUM(T.LSUOPSL) AS LSUOPSL,
+               SUM(T.LSUOPJE) LSUOPJE,
+               1 ZHUANGT,
+               0 GID,
+               0 JID,
+               0 PID,
+               0 YID
+          FROM YUETJKJB TJ,
+               YUEZLB   T,
+               YUESLB   SL,
+               meikxxb m,
+               JIHKJB,
+               PINZB,
+               YUNSFSB
+         WHERE TJ.ID = T.YUETJKJB_ID
+           AND TJ.GONGYSB_ID = m.ID
+           AND TJ.JIHKJB_ID = JIHKJB.ID
+           AND TJ.PINZB_ID = PINZB.ID
+           AND TJ.YUNSFSB_ID = YUNSFSB.ID
+           AND TJ.ID = SL.YUETJKJB_ID
+           AND SL.FENX = T.FENX
+           AND TJ.DIANCXXB_ID = ${dianc}
+           AND substr(TJ.RIQ, 0, 7) ='${riq}'
+         group by t.fenx
+        UNION
+        SELECT zl.ID,TJ.ID YUETJKJB_ID,g.MINGC AS GONGYSB_ID,j.MINGC AS JIHKJB_ID,p.MINGC AS PINZB_ID,y.MINGC AS YUNSFSB_ID,zl.FENX,SL.JINGZ,
+        trunc(QNET_AR, 2) QNET_AR,trunc(QBAD, 2) QBAD,trunc(MT, 1) MT,trunc(MAD, 2) MAD,trunc(AAR, 2) AAR,trunc(AAD, 2) AAD,trunc(AD, 2) AD,
+        VDAF,STD,HAD,FCAD,QNET_AR_KF,QBAD_KF,MT_KF,MAD_KF,trunc(AAR_KF, 2) AAR_KF,trunc(AAD_KF, 2) AAD_KF,trunc(VDAF_KF, 2) VDAF_KF,trunc(STD_KF, 2) STD_KF,
+        trunc(HAD_KF, 2) HAD_KF,trunc(FCAD_KF, 2) FCAD_KF,ZHIJBFML,ZHIJBFJE,ZHIJBFJE_M,ZHIJBFJE_A,ZHIJBFJE_V,ZHIJBFJE_Q,ZHIJBFJE_S,ZHIJBFJE_T,zl.SUOPJE,
+        LSUOPSL,LSUOPJE,zl.ZHUANGT,TJ.GONGYSB_ID GID,TJ.JIHKJB_ID JID,TJ.PINZB_ID PID,TJ.YUNSFSB_ID YID
+        FROM (select * from yuetjkjb where substr(riq,0,7) = '${riq}') tj
+        inner join YUEZLB zl on tj.id=zl.yuetjkjb_id
+        left join  YUESLB SL on tj.id=sl.yuetjkjb_id and zl.fenx=sl.fenx
+        inner join  meikxxb g on tj.gongysb_id=g.id
+        inner join JIHKJB j on tj.JIHKJB_ID=j.id
+        inner join PINZB p on tj.PINZB_ID=p.id
+        inner join YUNSFSB y on tj.YUNSFSB_ID=y.id)
+ ORDER BY ID          ASC,
+          GONGYSB_ID,
+          JIHKJB_ID   DESC,
+          PINZB_ID,
+          ID,
+          YUETJKJB_ID,
+          FENX
+
+	</select>
+    <select id="getHuayz" resultType="java.util.Map">
+  select * from (select max(c.meikxxb_id) gongysb_id,
+           max(c.jihkjb_id) jihkjb_id,
+           max(c.pinzb_id) pinzb_id,
+           max(c.yunsfsb_id) yunsfsb_id,
+           sum(c.maoz - c.piz-c.zongkd) jingz,
+           sum(c.piaoz) biaoz, 
+           decode(sum(c.maoz - c.piz-c.zongkd), 0, 0,
+                  round_new(sum(h.mt * (c.maoz - c.piz-c.zongkd)) / sum(c.maoz - c.piz-c.zongkd),1) ) as mt,
+           decode(sum(c.maoz - c.piz-c.zongkd), 0, 0,
+                  round_new(sum(h.mad * (c.maoz - c.piz-c.zongkd)) / sum(c.maoz - c.piz-c.zongkd),2)) as mad,
+           decode(sum(c.maoz - c.piz-c.zongkd), 0, 0,
+                  round_new(sum(h.aad * (c.maoz - c.piz-c.zongkd)) / sum(c.maoz - c.piz-c.zongkd),2)) as aad, 
+           decode(sum(c.maoz - c.piz-c.zongkd), 0, 0,
+                  round_new(sum(h.aar * (c.maoz - c.piz-c.zongkd)) / sum(c.maoz - c.piz-c.zongkd),2)) as aar,
+           decode(sum(c.maoz - c.piz-c.zongkd), 0, 0,
+                  round_new(sum(h.ad * (c.maoz - c.piz-c.zongkd)) / sum(c.maoz - c.piz-c.zongkd),2)) as ad,
+           decode(sum(c.maoz - c.piz-c.zongkd), 0, 0,
+                  round_new(sum(h.vdaf * (c.maoz - c.piz-c.zongkd)) / sum(c.maoz - c.piz-c.zongkd),2)) as vdaf,
+           decode(sum(c.maoz - c.piz-c.zongkd), 0, 0,
+                  round_new(sum(h.std * (c.maoz - c.piz-c.zongkd)) / sum(c.maoz - c.piz-c.zongkd),2)) as std,                
+           decode(sum(c.maoz - c.piz-c.zongkd), 0, 0,
+                  round_new(sum(h.had * (c.maoz - c.piz-c.zongkd)) / sum(c.maoz - c.piz-c.zongkd),2)) as had,
+           decode(sum(c.maoz - c.piz-c.zongkd), 0, 0,
+                  round_new(sum(h.fcad * (c.maoz - c.piz-c.zongkd)) / sum(c.maoz - c.piz-c.zongkd),2)) as fcad,                
+           decode(sum(c.maoz - c.piz-c.zongkd), 0, 0,
+                  round_new(sum(h.qnet_ar * (c.maoz - c.piz-c.zongkd)) / sum(c.maoz - c.piz-c.zongkd), 2)) as qnet_ar                                
+        from rl_ys_chepb c
+        left join rl_ys_chepb_qc q
+          on c.id = q.chepb_id
+        left join (select * from gx_chep_caizhbmb where zhuanhlb_id = 1) gx1
+          on c.samcode = gx1.yuanbm
+        left join (select * from gx_chep_caizhbmb where zhuanhlb_id = 2) gx2
+          on gx1.mubbm = gx2.yuanbm
+        left join rl_hy_huaydb h
+          on gx2.mubbm = h.huaybm
+     where  c.diancxxb_id ='${dianc}'
+       and substr(q.zhongcsj, 0, 10) between '${yuebksrq}' and '${yuebjzrq}' 
+       and h.huayd_id is not null
+     group by c.meikxxb_id,c.jihkjb_id,c.pinzb_id, c.yunsfsb_id, c.pinzb_id)
+    union   
+    select distinct gongysb_id,jihkjb_id,pinzb_id,yunsfsb_id,0 as jingz,0 as biaoz ,0 as mt,0 as mad,0 as aad,0 as aar,0 as ad,
+           0 as vdaf,0 as stad,0 as had,0 as fcad,0 as qnet_ar        
+     from yuetjkjb  
+     where substr(riq, 0, 4) = substr('${riq}',0,4)
+      and (gongysb_id,jihkjb_id,pinzb_id,yunsfsb_id) not in ( 
+       select distinct meikxxb_id,jihkjb_id,pinzb_id,yunsfsb_id
+         from rl_ys_chepb c,rl_ys_chepb_qc q
+          where c.id = q.chepb_id 
+           and diancxxb_id ='${dianc}'
+           and substr(q.zhongcsj, 0, 10) between '${yuebksrq}' and '${yuebjzrq}'
+           )    
+        and id in (
+        select kj.id from yuetjkjb kj,yuezlb zl where kj.id = zl.yuetjkjb_id  and zl.qnet_ar != 0   
+        and substr(kj.riq,0,4)=substr('${riq}',0,4) and substr(kj.riq,0,7)<![CDATA[<]]>'${riq}'
+        )      
+	                   
+	</select>
+    <select id="getYuetjkjb_id" resultType="java.lang.String">
+		 select max(ID) from yuetjkjb 
+		 where GONGYSB_ID=${GONGYSB_ID}
+		and JIHKJB_ID=${JIHKJB_ID}
+		and PINZB_ID=${PINZB_ID}
+		and YUNSFSB_ID=${YUNSFSB_ID}
+		and DIANCXXB_ID=${dianc}
+		and substr(RIQ,0,7)='${riq}'
+	</select>
+    <insert id="insertYuezlb">
+		insert into yuezlb(ID,YUETJKJB_ID,FENX,QNET_AR,MT,MAD,AAR,AAD,AD,VDAF,STD,HAD,FCAD,QNET_AR_KF,MT_KF,MAD_KF,AAR_KF,AAD_KF,AD_KF,VDAF_KF,STD_KF,HAD_KF,FCAD_KF,ZHUANGT) values(
+		${ID},${YUETJKJB_ID},'本月',${QNET_AR},${MT},${MAD},${AAR},${AAD},${AD},${VDAF},${STD},${HAD},${FCAD},${QNET_AR},${MT},${MAD},${AAR},${AAD},${AD},${VDAF},${STD},${HAD},${FCAD},0)
+	</insert>
+    <select id="getLeij_qit" resultType="java.util.Map">
+		select diancxxb_id,gongysb_id,jihkjb_id,pinzb_id,yunsfsb_id,sum(jingz) jingz,
+		       decode(sum(jingz), 0, 0, round_new(sum(jingz * MT) / sum(jingz), 1)) MT,
+		       decode(sum(jingz), 0, 0, round_new(sum(jingz * MAD) / sum(jingz), 2)) MAD,
+		       decode(sum(jingz), 0, 0, round_new(sum(jingz * AAR) / sum(jingz), 2)) AAR,       
+		       decode(sum(jingz), 0, 0, round_new(sum(jingz * AAD) / sum(jingz), 2)) AAD,
+		       decode(sum(jingz), 0, 0, round_new(sum(jingz * AD) / sum(jingz), 2)) AD,
+		       decode(sum(jingz), 0, 0, round_new(sum(jingz * VDAF) / sum(jingz), 2)) VDAF,
+		       decode(sum(jingz), 0, 0, round_new(sum(jingz * STD) / sum(jingz), 2)) STD,
+		       decode(sum(jingz), 0, 0, round_new(sum(jingz * HAD) / sum(jingz), 2)) HAD,
+		       decode(sum(jingz), 0, 0, round_new(sum(jingz * FCAD) / sum(jingz), 2)) FCAD,
+		       decode(sum(jingz), 0, 0, round_new(sum(jingz * QNET_AR) / sum(jingz), 2)) QNET_AR
+		from 
+		(select kj.diancxxb_id,kj.gongysb_id,kj.jihkjb_id,kj.pinzb_id,kj.yunsfsb_id,sl.jingz,zl.*
+		  from yuetjkjb kj, yueslb sl, yuezlb zl
+		 where kj.id = sl.yuetjkjb_id
+		   and kj.id = zl.yuetjkjb_id
+		   and sl.fenx = zl.fenx
+		   and zl.fenx = '本月'
+		   and kj.riq = '${riq}'
+		union
+		select kj.diancxxb_id,kj.gongysb_id,kj.jihkjb_id,kj.pinzb_id,kj.yunsfsb_id,sl.jingz,zl.*
+		  from yuetjkjb kj, yueslb sl, yuezlb zl
+		 where kj.id = sl.yuetjkjb_id
+		   and kj.id = zl.yuetjkjb_id
+		   and sl.fenx = zl.fenx
+		   and zl.fenx = '累计'
+		   and kj.riq = '${lastMonth}' )
+		where diancxxb_id = ${dianc}
+		  and gongysb_id = ${GONGYSB_ID}
+		  and jihkjb_id = ${JIHKJB_ID}
+		  and pinzb_id = ${PINZB_ID}
+		  and yunsfsb_id =  ${YUNSFSB_ID}
+		group by diancxxb_id,gongysb_id,jihkjb_id,pinzb_id,yunsfsb_id
+	 
+	</select>
+
+    <select id="getLeij_yuany" resultType="java.util.Map">
+		select diancxxb_id,gongysb_id,jihkjb_id,pinzb_id,yunsfsb_id,sum(jingz) jingz,
+		       decode(sum(jingz), 0, 0, round_new(sum(jingz * MT) / sum(jingz), 1)) MT,
+		       decode(sum(jingz), 0, 0, round_new(sum(jingz * MAD) / sum(jingz), 2)) MAD,
+		       decode(sum(jingz), 0, 0, round_new(sum(jingz * AAR) / sum(jingz), 2)) AAR,       
+		       decode(sum(jingz), 0, 0, round_new(sum(jingz * AAD) / sum(jingz), 2)) AAD,
+		       decode(sum(jingz), 0, 0, round_new(sum(jingz * AD) / sum(jingz), 2)) AD,
+		       decode(sum(jingz), 0, 0, round_new(sum(jingz * VDAF) / sum(jingz), 2)) VDAF,
+		       decode(sum(jingz), 0, 0, round_new(sum(jingz * STD) / sum(jingz), 2)) STD,
+		       decode(sum(jingz), 0, 0, round_new(sum(jingz * HAD) / sum(jingz), 2)) HAD,
+		       decode(sum(jingz), 0, 0, round_new(sum(jingz * FCAD) / sum(jingz), 2)) FCAD,
+		       decode(sum(jingz), 0, 0, round_new(sum(jingz * QNET_AR) / sum(jingz), 2)) QNET_AR
+		from 
+		(select kj.diancxxb_id,kj.gongysb_id,kj.jihkjb_id,kj.pinzb_id,kj.yunsfsb_id,sl.jingz,zl.*
+		  from yuetjkjb kj, yueslb sl, yuezlb zl
+		 where kj.id = sl.yuetjkjb_id
+		   and kj.id = zl.yuetjkjb_id
+		   and sl.fenx = zl.fenx
+		   and zl.fenx = '本月'
+		   and kj.riq = '${riq}' )
+		where diancxxb_id = ${dianc}
+		  and gongysb_id = ${GONGYSB_ID}
+		  and jihkjb_id = ${JIHKJB_ID}
+		  and pinzb_id = ${PINZB_ID}
+		  and yunsfsb_id =  ${YUNSFSB_ID}
+		group by diancxxb_id,gongysb_id,jihkjb_id,pinzb_id,yunsfsb_id
+	 
+	</select>
+
+    <insert id="insertYuezlbLeij">
+		insert into yuezlb(ID,YUETJKJB_ID,FENX,QNET_AR,MT,MAD,AAR,AAD,AD,VDAF,STD,HAD,FCAD,QNET_AR_KF,MT_KF,MAD_KF,AAR_KF,AAD_KF,AD_KF,VDAF_KF,STD_KF,HAD_KF,FCAD_KF,ZHUANGT) values  (
+		${ID},${YUETJKJB_ID},'累计',${QNET_AR},${MT},${MAD},${AAR},${AAD},${AD},${VDAF},${STD},${HAD},${FCAD},${QNET_AR},${MT},${MAD},${AAR},${AAD},${AD},${VDAF},${STD},${HAD},${FCAD},0)
+	</insert>
+    <insert id="insertYuezlbEmpty">
+      insert into yuezlb(ID,YUETJKJB_ID,FENX,QNET_AR,MT,MAD,AAR,AAD,AD,VDAF,STD,HAD,FCAD,QNET_AR_KF,MT_KF,MAD_KF,AAR_KF,AAD_KF,AD_KF,VDAF_KF,STD_KF,HAD_KF,FCAD_KF,ZHUANGT) values  (
+		${ID},${YUETJKJB_ID},'本月',0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)
+    </insert>
+</mapper>

@@ -1,0 +1,300 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiren.fuelmis.dc.dao.rucsl.HuaytzDao">
+    <select id="getTabelData" resultType="java.util.LinkedHashMap">
+        select fhdw,
+        mkdw,
+        daohrq,
+        pz,
+        fz,
+        jingz,
+        ches,
+        round_new(mt, 1) mt,
+        mad,
+        aad,
+        ad,
+        aar,
+        vad,
+        vdaf,
+        round_new(qbad * 1000, 0) as qbad,
+        round_new(farl * 1000, 0) as farl,
+        round_new(farl * 1000 / 4.1816, 0) as qbar,
+        sdaf,
+        stad,
+        std,
+        star,
+        hdaf,
+        had,
+        fcad,
+        round_new(qgrd * 1000, 0) as qgrd
+        from (select decode(grouping(c.GONGYSMC), 1, '总计', c.GONGYSMC) as fhdw,
+        decode(grouping(c.MEIKMC) + grouping(c.GONGYSMC),
+        1,
+        '合计',
+        c.MEIKMC) mkdw,
+        decode(grouping(c.MEIKMC) + grouping(c.GONGYSMC) +
+        grouping(substr(q.qingcsj, 0, 10)),
+        1,
+        '小计',
+        substr(q.qingcsj, 0, 10)) daohrq,
+        c.pinz pz,
+        c.faz fz,
+        sum(c.maoz - c.piz - c.zongkd) jingz,
+        sum(c.piaoz) biaoz,
+        sum(c.yuns) yuns,
+        sum(c.yingk) yingk,
+        sum(c.zongkd) zongkd,
+        count(c.samcode) ches,
+        decode(sum((c.maoz - c.piz - c.zongkd)*nvl(h.mt, 0)),
+        0,
+        0,
+        sum(h.mt * (c.maoz - c.piz - c.zongkd)) /
+        sum(decode(nvl(h.mt, 0),
+        0,
+        0,
+        (c.maoz - c.piz - c.zongkd)))) as mt,
+        decode(sum((c.maoz - c.piz - c.zongkd)*nvl(h.mad, 0)),
+        0,
+        0,
+        sum(h.mad * (c.maoz - c.piz - c.zongkd)) /
+        sum(decode(nvl(h.mad, 0),
+        0,
+        0,
+        (c.maoz - c.piz - c.zongkd)))) as mad,
+        decode(sum((c.maoz - c.piz - c.zongkd)*nvl(h.aad, 0)),
+        0,
+        0,
+        sum(h.aad * (c.maoz - c.piz - c.zongkd)) /
+        sum(decode(nvl(h.aad, 0),
+        0,
+        0,
+        (c.maoz - c.piz - c.zongkd)))) as aad,
+        decode(sum((c.maoz - c.piz - c.zongkd)*nvl(h.ad, 0)),
+        0,
+        0,
+        sum(h.ad * (c.maoz - c.piz - c.zongkd)) /
+        sum(decode(nvl(h.ad, 0),
+        0,
+        0,
+        (c.maoz - c.piz - c.zongkd)))) as ad,
+        decode(sum((c.maoz - c.piz - c.zongkd)*nvl(h.aar, 0)),
+        0,
+        0,
+        sum(h.aar * (c.maoz - c.piz - c.zongkd)) /
+        sum(decode(nvl(h.aar, 0),
+        0,
+        0,
+        (c.maoz - c.piz - c.zongkd)))) as aar,
+        decode(sum((c.maoz - c.piz - c.zongkd)*nvl(h.vad, 0)),
+        0,
+        0,
+        sum(h.vad * (c.maoz - c.piz - c.zongkd)) /
+        sum(decode(nvl(h.vad, 0),
+        0,
+        0,
+        (c.maoz - c.piz - c.zongkd)))) as vad,
+        decode(sum((c.maoz - c.piz - c.zongkd)*nvl(h.vdaf, 0)),
+        0,
+        0,
+        sum(h.vdaf * (c.maoz - c.piz - c.zongkd)) /
+        sum(decode(nvl(h.vdaf, 0),
+        0,
+        0,
+        (c.maoz - c.piz - c.zongkd)))) as vdaf,
+        decode(sum((c.maoz - c.piz - c.zongkd)*nvl(h.qbad, 0)),
+        0,
+        0,
+        sum(h.qbad * (c.maoz - c.piz - c.zongkd)) /
+        sum(decode(nvl(h.qbad, 0),
+        0,
+        0,
+        (c.maoz - c.piz - c.zongkd)))) as qbad,
+        decode(sum((c.maoz - c.piz - c.zongkd)*nvl(h.qnet_ar, 0)),
+        0,
+        0,
+        sum(h.qnet_ar * (c.maoz - c.piz - c.zongkd)) /
+        sum(decode(nvl(h.qnet_ar, 0),
+        0,
+        0,
+        (c.maoz - c.piz - c.zongkd))) * 1000 /
+        4.1816) as qbar,
+        decode(sum((c.maoz - c.piz - c.zongkd)*nvl(h.qnet_ar, 0)),
+        0,
+        0,
+        sum(h.qnet_ar * (c.maoz - c.piz - c.zongkd)) /
+        sum(decode(nvl(h.qnet_ar, 0),
+        0,
+        0,
+        (c.maoz - c.piz - c.zongkd)))) as farl,
+        decode(sum((c.maoz - c.piz - c.zongkd)*nvl(h.sdaf, 0)),
+        0,
+        0,
+        sum(h.sdaf * (c.maoz - c.piz - c.zongkd)) /
+        sum(decode(nvl(h.sdaf, 0),
+        0,
+        0,
+        (c.maoz - c.piz - c.zongkd)))) as sdaf,
+        decode(sum((c.maoz - c.piz - c.zongkd)*nvl(h.stad, 0)),
+        0,
+        0,
+        sum(h.stad * (c.maoz - c.piz - c.zongkd)) /
+        sum(decode(nvl(h.stad, 0),
+        0,
+        0,
+        (c.maoz - c.piz - c.zongkd)))) as stad,
+        decode(sum((c.maoz - c.piz - c.zongkd)*nvl(h.std, 0)),
+        0,
+        0,
+        sum(h.std * (c.maoz - c.piz - c.zongkd)) /
+        sum(decode(nvl(h.std, 0),
+        0,
+        0,
+        (c.maoz - c.piz - c.zongkd)))) as std,
+        decode(sum((c.maoz - c.piz - c.zongkd)*nvl(h.stad, 0)),
+        0,
+        0,
+        sum(h.stad * (100 - h.mt) / (100 - h.mad) *
+        (c.maoz - c.piz - c.zongkd)) /
+        sum(decode(nvl(h.stad, 0),
+        0,
+        0,
+        (c.maoz - c.piz - c.zongkd)))) as star,
+        decode(sum((c.maoz - c.piz - c.zongkd)*nvl(h.hdaf, 0)),
+        0,
+        0,
+        sum(h.hdaf * (c.maoz - c.piz - c.zongkd)) /
+        sum(decode(nvl(h.hdaf, 0),
+        0,
+        0,
+        (c.maoz - c.piz - c.zongkd)))) as hdaf,
+        decode(sum((c.maoz - c.piz - c.zongkd)*nvl(h.had, 0)),
+        0,
+        0,
+        sum(h.had * (c.maoz - c.piz - c.zongkd)) /
+        sum(decode(nvl(h.had, 0),
+        0,
+        0,
+        (c.maoz - c.piz - c.zongkd)))) as had,
+        decode(sum((c.maoz - c.piz - c.zongkd)*nvl(h.fcad, 0)),
+        0,
+        0,
+        sum(h.fcad * (c.maoz - c.piz - c.zongkd)) /
+        sum(decode(nvl(h.fcad, 0),
+        0,
+        0,
+        (c.maoz - c.piz - c.zongkd)))) as fcad,
+        decode(sum((c.maoz - c.piz - c.zongkd)*nvl(h.qgrd, 0)),
+        0,
+        0,
+        sum(h.qgrd * (c.maoz - c.piz - c.zongkd)) /
+        sum(decode(nvl(h.qgrd, 0),
+        0,
+        0,
+        (c.maoz - c.piz - c.zongkd)))) as qgrd
+        from rl_ys_chepb c
+        left join rl_ys_chepb_qc q
+        on c.id = q.chepb_id
+        left join (select * from gx_chep_caizhbmb where zhuanhlb_id = 1) gx1
+        on c.samcode = gx1.yuanbm
+        left join (select * from gx_chep_caizhbmb where zhuanhlb_id = 2) gx2
+        on gx1.mubbm = gx2.yuanbm
+        left join rl_hy_huaydb h
+        on gx2.mubbm = h.huaybm
+
+        where 1=1
+
+        <if test='yunsfs != null'>
+            and c.YUNSFSB_ID = ${yunsfs}
+        </if>
+
+        <if test='pinzid != null'>
+            and c.pinzb_id = ${pinzid}
+        </if>
+
+        <if test='diancid != null'>
+            and c.diancxxb_id = ${diancid}
+        </if>
+        and substr(q.qingcsj,0,10) between '${strdate}' and '${enddate}'
+        group by rollup(c.GONGYSMC,
+        c.MEIKMC,
+        substr(q.qingcsj, 0, 10),
+        c.pinz,
+        c.faz)
+        having grouping(substr(q.qingcsj, 0, 10)) = 1 or grouping(c.faz) = 0
+        ORDER BY GROUPING(c.GONGYSMC) DESC,
+        c.GONGYSMC,
+        grouping( c.MEIKMC) DESC,
+        c.MEIKMC,
+        grouping(substr(q.qingcsj, 0, 10)) DESC,
+        substr(q.qingcsj, 0, 10))
+
+    </select>
+    <select id="getTabelDataByRiq" resultType="java.util.LinkedHashMap">
+        SELECT decode(substr(q.qingcsj, 0, 10),
+                      NULL,
+                      '合计',
+                      substr(q.qingcsj, 0, 10)) AS daohrq,
+               DECODE(SUM(c.maoz - c.piz-c.zongkd), 0, 0, SUM(c.maoz - c.piz-c.zongkd)) AS JINGZ,
+               DECODE(SUM(c.maoz - c.piz-c.zongkd),
+                      0,
+                      0,
+                      round_new(SUM(h.QNET_AR * (c.maoz - c.piz-c.zongkd)) /
+                                SUM(decode(nvl(h.qnet_ar, 0), 0, 0, (c.maoz - c.piz-c.zongkd))) * 1000 /
+                                4.1816,
+                                0)) AS QNET_AR,
+               DECODE(SUM(c.maoz - c.piz-c.zongkd),
+                      0,
+                      0,
+                      round_new(SUM(h.MT * (c.maoz - c.piz-c.zongkd)) /
+                                SUM(decode(nvl(h.MT, 0), 0, 0, (c.maoz - c.piz-c.zongkd))),
+                                1)) AS MT,
+               DECODE(SUM(c.maoz - c.piz-c.zongkd),
+                      0,
+                      0,
+                      round_new(SUM(h.AAR * (c.maoz - c.piz-c.zongkd)) /
+                                SUM(decode(nvl(h.AAR, 0), 0, 0, (c.maoz - c.piz-c.zongkd))),
+                                2)) AS AAR,
+               DECODE(SUM(c.maoz - c.piz-c.zongkd),
+                      0,
+                      0,
+                      round_new(SUM(h.vad * (100 - h.mt) / (100 - h.mad) *
+                                    (c.maoz - c.piz-c.zongkd)) /
+                                SUM(decode(nvl(h.vad, 0), 0, 0, (c.maoz - c.piz-c.zongkd))),
+                                2)) AS VAR,
+               DECODE(SUM(c.maoz - c.piz-c.zongkd),
+                      0,
+                      0,
+                      round_new(SUM(decode(nvl(h.star, 0),
+                                           0,
+                                           h.std * (100 - h.Mt) / 100,
+                                           h.star) * (c.maoz - c.piz-c.zongkd)) /
+                                SUM(decode(nvl(h.star, 0), 0, 0, (c.maoz - c.piz-c.zongkd))),
+                                2)) AS STAR,
+
+               DECODE(SUM(c.maoz - c.piz-c.zongkd),
+                      0,
+                      0,
+                      round_new(SUM(h.Qnet_ar * (c.maoz - c.piz-c.zongkd)) /
+                                SUM(decode(nvl(h.qnet_ar, 0), 0, 0, (c.maoz - c.piz-c.zongkd))),
+                                2)) AS Qnetar,
+
+               DECODE(SUM(c.maoz - c.piz-c.zongkd),
+                      0,
+                      0,
+                      round_new(SUM(h.vdaf * (c.maoz - c.piz-c.zongkd)) /
+                                SUM(decode(nvl(h.vdaf, 0), 0, 0, (c.maoz - c.piz-c.zongkd))),
+                                2)) AS vdaf
+        FROM rl_ys_chepb c,
+            rl_ys_chepb_qc q,
+            rl_hy_huaydb h,
+            (select * from gx_chep_caizhbmb where zhuanhlb_id = 1) gx1,
+            (select * from gx_chep_caizhbmb where zhuanhlb_id = 2) gx2
+        WHERE c.id = q.chepb_id
+              and gx2.mubbm = h.huaybm(+)
+              and c.samcode = gx1.yuanbm(+)
+              and gx1.mubbm = gx2.yuanbm(+)
+              and substr(q.qingcsj, 0, 10) between '${strdate}' and '${enddate}'
+        GROUP BY ROLLUP(substr(q.qingcsj, 0, 10))
+        order by grouping(substr(q.qingcsj, 0, 10)) desc ,substr(q.qingcsj, 0, 10)
+    </select>
+</mapper>

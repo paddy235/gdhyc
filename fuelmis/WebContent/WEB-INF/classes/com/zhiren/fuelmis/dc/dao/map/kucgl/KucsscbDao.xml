@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiren.fuelmis.dc.dao.kucgl.KucsscbDao">
+	<select id="getKucsscbAll" resultType="java.util.Map">
+		select decode(c.rukdbh, null, '总计', c.rukdbh) rukdbh,
+		zz.kuczzmc KUCZZ,
+		wz.kucwzms KUCWZ,
+		wlb.wuzmc KUCWL,
+		hz.mingc HUOZ,
+		sum(round(decode(k.churklx,'入库',k.SHUL, -k.shul), 2)) SHUL,
+		sum(round(decode(k.churklx,'入库',k.JINE ,-k.jine), 2)) JINE,
+		yewlx.leixmc YEWLX,
+		(k.CHURKLX) CHURKLX,
+		(k.YEWRQ) YEWRQ,
+		(k.KUAIJRQ) KUAIJRQ,
+		(k.JIZRQ) JIZRQ
+		from rl_kc_kucmxb k, rl_kc_churkdb c ,rl_kc_kuczzb zz,rl_kc_kucwzb
+		wz,rl_kc_kucwlb wlb ,diancxxb hz ,gy_dm_churkywlxdmb yewlx
+		where k.churkdb_id = c.id
+		and zz.id = k.kuczz
+		and yewlx.id = k.yewlx
+		and wlb.id = k.kucwl
+		and k.kucwz = wz.id
+		and k.huoz = hz.id
+		and k.kuaijrq = to_char(to_date('${Date}','yyyy-MM'),'yyyy-MM')
+		group by rollup(rukdbh,(zz.kuczzmc
+		,wz.kucwzms,wlb.wuzmc,k.HUOZ,hz.mingc,yewlx.leixmc,k.CHURKLX,k.YEWRQ,k.KUAIJRQ,k.JIZRQ)
+		)
+		having grouping(rukdbh)+grouping(zz.kuczzmc) != 1
+		order by (rukdbh) asc
+	</select>
+	<select id="getBaseChurkBean" resultType="ChurkBean">
+		select * from rl_kc_danwcbslb where jilsj=
+		(select max(jilsj) from rl_kc_danwcbslb where
+		substr(jilsj,0,7)=to_char(sysdate,'yyyy-mm') )
+	</select>
+	<select id="getNewChurkBeans" resultType="ChurkBean">
+		select max(kms.id) id,
+		km.TRANSACTION_DATE riq,
+		'入库' jizfl,
+		km.INV_TRANSACTION_TYPE_ID yewlx,
+		d.leixmc jizsm,
+		sum(RUKSL) shul,
+		sum(TRANSACTION_AMOUNT) jine,
+		huoz,
+		kuczz,
+		kucwz,
+		kucwl,
+		zuz,
+		to_char(sysdate,'yyyy-mm-dd') jizrq
+		from rl_kc_ruk_meik km inner join rl_kc_ruk_meik_sub kms on
+		km.id=kms.inv_receive_id
+		left join gy_dm_churkywlxdmb d on km.INV_TRANSACTION_TYPE_ID=d.id
+		where INV_NUMBER=#{0}
+		group by
+		kuczz,kucwz,kucwl,zuz,huoz,km.TRANSACTION_DATE,km.INV_TRANSACTION_TYPE_ID,d.leixmc
+	</select>
+
+	<insert id="saveChurkBean" parameterType="ChurkBean">
+		insert into RL_KC_DANWCBSLB(
+		ID,DANWCB,JIEYCB,JIEYJE,JIEYSL,JINE,JIZFL,JIZSM,RIQ,SHISMCCB,SHISMCJE,SHISMCSL,SHUL,ZANGDJ,ZANGJE,ZANGSL,yewlx,jilsj,
+		huoz,
+		kuczz,
+		kucwz,
+		kucwl,zuz)values(
+		#{id},round(#{danwcb},2),round(#{jieycb},2),round(#{jieyje},2),round(#{jieysl},2),#{jine},#{jizfl},#{jizsm},to_char(sysdate,'yyyy-mm-dd'),
+		round(#{shismccb},2),round(#{shismcje},2),round(#{shismcsl},2),
+		#{shul},round(#{zangdj},2),round(#{zangje},2),round(#{zangsl},2),#{yewlx},to_char(sysdate,'yyyy-mm-dd
+		hh24:mi:ss'),
+		#{huoz},
+		#{kuczz},
+		#{kucwz},
+		#{kucwl},#{zuz}
+		)
+	</insert>
+	<update id="updateChurkBean" parameterType="ChurkBean">
+		update RL_KC_DANWCBSLB
+		set
+		danwcb=round(#{danwcb},2),jieycb=round(#{jieycb},2),JIEYJE=round(#{jieyje},2),
+		JIEYSL=round(#{jieysl},2),JINE=#{jine},JIZFL=#{jizfl},JIZSM=#{jizsm},RIQ=to_char(sysdate,'yyyy-mm-dd'),
+		SHISMCCB=round(#{shismccb},2),SHISMCJE=round(#{shismcje},2),SHISMCSL=round(#{shismcsl},2),SHUL=#{shul},
+		ZANGDJ=round(#{zangdj},2),ZANGJE=round(#{zangje},2),ZANGSL=round(#{zangsl},2),yewlx=#{yewlx},jilsj=to_char(sysdate,'yyyy-mm-dd
+		hh24:mi:ss'),
+		huoz=#{huoz},
+		kuczz=#{kuczz},
+		kucwz=#{kucwz},
+		kucwl=#{kucwl},
+		zuz=#{zuz}
+		where id=#{id}
+	</update>
+	<delete id="deleteChurkBeanByID">
+	delete from RL_KC_DANWCBSLB where id=#{0}
+	</delete>
+</mapper>

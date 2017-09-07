@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD SQL Map Config 3.0//EN"  
+	"http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+	<typeAliases>
+		<typeAlias type="com.zhiren.fuelmis.dc.entity.xitgl.Renyxx" alias="renyxx" />
+		<typeAlias type="com.zhiren.fuelmis.dc.entity.xitgl.Ziyxx" alias="ziyxx" />
+		<typeAlias type="com.zhiren.fuelmis.dc.entity.xitgl.Diancxx" alias="diancxx" />
+		<typeAlias type="com.zhiren.fuelmis.dc.entity.xitgl.Meikdq" alias="meikdq" />
+		<typeAlias type="com.zhiren.fuelmis.dc.entity.xitgl.Gongys" alias="gongys" />
+		<typeAlias type="com.zhiren.fuelmis.dc.entity.xitgl.Meikxx" alias="meikxx" />
+		<typeAlias type="com.zhiren.fuelmis.dc.entity.xitgl.Chezxx" alias="chezxx" />
+		<typeAlias type="com.zhiren.fuelmis.dc.entity.xitgl.Liclx" alias="liclx" />
+		<typeAlias type="com.zhiren.fuelmis.dc.entity.xitgl.Lic" alias="lic" />
+		<typeAlias type="com.zhiren.fuelmis.dc.entity.xitgl.Meiz" alias="meiz" />
+		<typeAlias type="com.zhiren.fuelmis.dc.entity.xitgl.Pinz" alias="pinz" />
+		<typeAlias type="com.zhiren.fuelmis.dc.entity.xitgl.Yunsdw" alias="yunsdw" />
+		<typeAlias type="com.zhiren.fuelmis.dc.entity.xitgl.Jiz" alias="jiz" />
+		<typeAlias type="com.zhiren.fuelmis.dc.entity.diaodjh.Diaodjh" alias="daiodjh"/>
+		<typeAlias type="com.zhiren.fuelmis.dc.entity.gongyspg.kaohzb.Kaohzb" alias="kaohzb"/>	
+		<typeAlias type="com.zhiren.fuelmis.dc.entity.gongyspg.pingffa.Pingffa" alias="pingffa"/>	
+		<typeAlias type="com.zhiren.fuelmis.dc.entity.kucgl.PandGdjt" alias="pand_gdjt" />
+		<typeAlias type="com.zhiren.fuelmis.dc.entity.gongyspg.pingffaxzb.Pingffaxzb" alias="pingffaxzb" />
+		<typeAlias type="com.zhiren.fuelmis.dc.entity.gongyspg.hetb.Hetb" alias="hetb"/>
+		<typeAlias type="com.zhiren.fuelmis.dc.entity.yueshchjb.YueshchjbVo" alias="yueshchjbb"/>
+		<typeAlias type="com.zhiren.fuelmis.dc.entity.gongyspg.yuegmjh.Yuegmjh" alias="yuegmjh"/>
+		<typeAlias type="com.zhiren.fuelmis.dc.entity.gongyspg.rigmjh.Rigmjh" alias="rigmjh"/>
+		<typeAlias type="com.zhiren.fuelmis.dc.entity.hetgl.Caigddb" alias="caigddb"/>
+		<typeAlias type="com.zhiren.fuelmis.dc.entity.hetgl.Caigddbsub" alias="caigddbsub"/>
+		<typeAlias type="com.zhiren.fuelmis.dc.entity.rucslys.Chepbtmp" alias="chepbtmp"/>
+		<typeAlias type="com.zhiren.fuelmis.dc.entity.hetgl.Hetbean" alias="hetbean"/>
+		<typeAlias type="com.zhiren.fuelmis.dc.entity.hetgl.Hetbxianggfzb" alias="hetbxianggfzb"/>	
+		<typeAlias type="com.zhiren.fuelmis.dc.entity.common.Fujxx" alias="fujxx"/>
+		<typeAlias type="com.zhiren.fuelmis.dc.entity.hetgl.Hetkhzb" alias="hetkhzb"/>		
+		<typeAlias type="com.zhiren.fuelmis.dc.entity.gongyspg.fahb.Fahb" alias="fahb"/>
+		<typeAlias type="com.zhiren.fuelmis.dc.entity.hetgl.Rlhtmb" alias="rlhtmb"/>
+		<typeAlias type="com.zhiren.fuelmis.dc.entity.hetgl.PriceComponent" alias="priceComponet"/>
+		<typeAlias type="com.zhiren.fuelmis.dc.entity.hetgl.PriceItem" alias="priceItem"/>
+		<typeAlias type="com.zhiren.fuelmis.dc.entity.hetgl.PriceQalityRange" alias="priceQalityRange"/>
+		<typeAlias type="com.zhiren.fuelmis.dc.entity.hetgl.Caigddbyfsub" alias="caigddbyfsub"/>
+		<typeAlias type="com.zhiren.fuelmis.dc.entity.hetgl.PriceScheme" alias="priceScheme"/>
+		<typeAlias type="com.zhiren.fuelmis.dc.entity.kucgl.ChurkBean" alias="ChurkBean"/>
+	</typeAliases>
+	<mappers>
+
+        <!--<package name="com.zhiren.fuelmis.dc.dao.xitgl"/>-->
+     <!--   &lt;!&ndash; =========================================首页======================================================= &ndash;&gt;
+        &lt;!&ndash;综合展示&ndash;&gt;
+        <mapper resource="com/zhiren/fuelmis/dc/dao/map/zonghzs/ZonghzsDao.xml" />
+		<mapper resource="com/zhiren/fuelmis/dc/dao/map/common/CommonDao.xml" />
+		
+		&lt;!&ndash; =========================================计划管理======================================================= &ndash;&gt;
+		<mapper resource="com/zhiren/fuelmis/dc/dao/map/jih/Yuedjhcx.xml" />
+		<mapper resource="com/zhiren/fuelmis/dc/dao/map/jih/Yuedcaigjh.xml" />
+		<mapper resource="com/zhiren/fuelmis/dc/dao/map/jih/Yuedjhtj.xml" />
+		<mapper resource="com/zhiren/fuelmis/dc/dao/map/jih/Yuedranlzfjh.xml" />
+		<mapper resource="com/zhiren/fuelmis/dc/dao/map/jih/Yuedjhzhibyc.xml" />
+		<mapper resource="com/zhiren/fuelmis/dc/dao/map/jih/Niandcaigjh.xml" />
+		<mapper resource="com/zhiren/fuelmis/dc/dao/map/jih/Niandjhtj.xml" />
+		<mapper resource="com/zhiren/fuelmis/dc/dao/map/jih/Niandranlzfjh.xml" />
+		<mapper resource="com/zhiren/fuelmis/dc/dao/map/jih/Niandjhzhibyc.xml" />
+		<mapper resource="com/zhiren/fuelmis/dc/dao/map/jih/reback/rebackniandjh.xml" />
+		<mapper resource="com/zhiren/fuelmis/dc/dao/map/jih/reback/rebackyuedjh.xml" />
+		<mapper resource="com/zhiren/fuelmis/dc/dao/map/jih/reback/rebackhet.xml" />
+		<mapper resource="com/zhiren/fuelmis/dc/dao/map/jih/upload/UploadDao.xml" />
+        &lt;!&ndash; ============================================合同管理=================================================== &ndash;&gt;
+        <mapper resource="com/zhiren/fuelmis/dc/dao/map/hetgl/CaigddppDao.xml"/>
+        &lt;!&ndash; 采购订单&ndash;&gt;
+        <mapper resource="com/zhiren/fuelmis/dc/dao/map/hetgl/Caigddb.xml"/>
+        <mapper resource="com/zhiren/fuelmis/dc/dao/map/hetgl/Hetbean.xml"/>
+        <mapper resource="com/zhiren/fuelmis/dc/dao/map/hetgl/Hetmbgl.xml"/>
+        <mapper resource="com/zhiren/fuelmis/dc/dao/map/rucslys/Chepbtmp.xml"/>
+        <mapper resource="com/zhiren/fuelmis/dc/dao/map/hetgl/Rlhtmb.xml" />
+        <mapper resource="com/zhiren/fuelmis/dc/dao/map/hetgl/ChaxdyDao.xml" />
+        <mapper resource="com/zhiren/fuelmis/dc/dao/map/hetgl/Fahb.xml"/>
+        <mapper resource="com/zhiren/fuelmis/dc/dao/map/hetgl/PriceComponet.xml"/>
+        <mapper resource="com/zhiren/fuelmis/dc/dao/map/hetgl/PriceItem.xml"/>
+        <mapper resource="com/zhiren/fuelmis/dc/dao/map/hetgl/PriceScheme.xml"/>
+        <mapper resource="com/zhiren/fuelmis/dc/dao/map/hetgl/PriceQalityRange.xml"/>
+        &lt;!&ndash; ==========================================采样管理====================================================== &ndash;&gt;
+        &lt;!&ndash; 采样管理-编码维护 &ndash;&gt;
+        <mapper resource="com/zhiren/fuelmis/dc/dao/map/caiygl/Heby.xml"/>
+        &lt;!&ndash; 编码查询 &ndash;&gt;
+        <mapper resource="com/zhiren/fuelmis/dc/dao/map/caiygl/Bianmcx.xml"/>
+        <mapper resource="com/zhiren/fuelmis/dc/dao/map/caiygl/Caizhbmwh.xml"/>
+        &lt;!&ndash; ==========================================验收管理====================================================== &ndash;&gt;
+        &lt;!&ndash; 入厂数量&ndash;&gt;
+        <mapper resource="com/zhiren/fuelmis/dc/dao/map/ruchy/SanfsllrDao.xml" />
+        &lt;!&ndash; 过衡日报 &ndash;&gt;
+        <mapper resource="com/zhiren/fuelmis/dc/dao/map/rib/Guohrb.xml" />
+        &lt;!&ndash; 数量台账 &ndash;&gt;
+        <mapper resource="com/zhiren/fuelmis/dc/dao/map/rucsl/Shultz.xml" />
+        &lt;!&ndash;化验日报  &ndash;&gt;
+        <mapper resource="com/zhiren/fuelmis/dc/dao/map/rucsl/Huayrb.xml"/>
+        &lt;!&ndash;化验报告  &ndash;&gt;
+        <mapper resource="com/zhiren/fuelmis/dc/dao/map/rucsl/Ruchybg.xml"/>
+        &lt;!&ndash; 化验台账 &ndash;&gt;
+        <mapper resource="com/zhiren/fuelmis/dc/dao/map/rucsl/Huaytz.xml"/>
+        <mapper resource="com/zhiren/fuelmis/dc/dao/map/rucsl/Zonghtz.xml"/>
+        <mapper resource="com/zhiren/fuelmis/dc/dao/map/caiygl/Caiydzm.xml"/>
+        &lt;!&ndash; 一级、二级审核 &ndash;&gt;
+        <mapper resource="com/zhiren/fuelmis/dc/dao/map/ruchy/ShenhDao.xml"/>
+        &lt;!&ndash;  入厂化验&ndash;&gt;
+        <mapper resource="com/zhiren/fuelmis/dc/dao/map/ruchy/RuchyDao.xml"/>
+        &lt;!&ndash; 验收管理 - 外来样维护 &ndash;&gt;
+        <mapper resource="com/zhiren/fuelmis/dc/dao/map/yansgl/WailyrlDao.xml" />
+        <mapper resource="com/zhiren/fuelmis/dc/dao/map/yansgl/ZhilhjblDao.xml" />
+        &lt;!&ndash; 验收管理  - 数量痕迹保留 &ndash;&gt;
+        <mapper resource="com/zhiren/fuelmis/dc/dao/map/yansgl/ShulhjblDao.xml" />
+        &lt;!&ndash; 过衡明细 &ndash;&gt;
+        <mapper resource="com/zhiren/fuelmis/dc/dao/map/yansgl/GuohmxDao.xml" />
+        <mapper resource="com/zhiren/fuelmis/dc/dao/map/rucsl/ShulshDao.xml" />
+        <mapper resource="com/zhiren/fuelmis/dc/dao/map/rucsl/ShuldrDao.xml" />
+        <mapper resource="com/zhiren/fuelmis/dc/dao/map/ruchy/HuayshDao.xml" />
+        &lt;!&ndash; ==========================================库存管理====================================================== &ndash;&gt;
+        <mapper resource="com/zhiren/fuelmis/dc/dao/map/kucgl/baobcx/KucbbcxDao.xml"/>
+        <mapper resource="com/zhiren/fuelmis/dc/dao/map/kucgl/KucglDao.xml"/>
+        <mapper resource="com/zhiren/fuelmis/dc/dao/map/kucgl/chukgl/ChuksjdrDao.xml"/>
+        <mapper resource="com/zhiren/fuelmis/dc/dao/map/kucgl/rukgl/RuksjdrDao.xml"/>
+        <mapper resource="com/zhiren/fuelmis/dc/dao/map/kucgl/rukgl/RanlcgrkDao.xml"/>
+        <mapper resource="com/zhiren/fuelmis/dc/dao/map/kucgl/rukgl/YunzfrkDao.xml"/>
+        <mapper resource="com/zhiren/fuelmis/dc/dao/map/kucgl/rukgl/QitrkDao.xml"/>
+        <mapper resource="com/zhiren/fuelmis/dc/dao/map/kucgl/shangccw/ShangccwDao.xml"/>
+        &lt;!&ndash; 库存管理 - 库存实时成本核算 &ndash;&gt;
+        <mapper resource="com/zhiren/fuelmis/dc/dao/map/kucgl/KucsscbDao.xml" />
+        &lt;!&ndash; 库存管理 - 耗用出库 &ndash;&gt;
+        <mapper resource="com/zhiren/fuelmis/dc/dao/map/kucgl/chukgl/HaoyckDao.xml" />
+        &lt;!&ndash; 库存管理 - 入库管理 &ndash;&gt;
+        <mapper resource="com/zhiren/fuelmis/dc/dao/map/kucgl/rukgl/ChurkdlrDao.xml" />
+        <mapper resource="com/zhiren/fuelmis/dc/dao/map/kucgl/ShujlrDao.xml" />
+        <mapper resource="com/zhiren/fuelmis/dc/dao/map/kucgl/PandcxDao.xml" />
+        <mapper resource="com/zhiren/fuelmis/dc/dao/map/kucgl/PandcxDao.xml" />
+        <mapper resource="com/zhiren/fuelmis/dc/dao/map/kucgl/CaigrkDao.xml" />
+        <mapper resource="com/zhiren/fuelmis/dc/dao/map/kucgl/rukgl/ZidrkDao.xml"/>
+        &lt;!&ndash; ==========================================结算管理====================================================== &ndash;&gt;
+        &lt;!&ndash; 月结算统计台账 &ndash;&gt;
+        <mapper resource="com/zhiren/fuelmis/dc/dao/map/jiesgl/YuejstjtzDao.xml" />
+        &lt;!&ndash; 日结算删除 &ndash;&gt;
+        <mapper resource="com/zhiren/fuelmis/dc/dao/map/jiesgl/RijsscDao.xml" />
+        &lt;!&ndash; 结算管理-杂费结算 &ndash;&gt;
+        <mapper resource="com/zhiren/fuelmis/dc/dao/map/jiesgl/ZafjsDao.xml" />
+        <mapper resource="com/zhiren/fuelmis/dc/dao/map/jiesgl/MeikjsDao.xml" />
+        <mapper resource="com/zhiren/fuelmis/dc/dao/map/jiesgl/JiesbbDao.xml" />
+        &lt;!&ndash; 发票管理 &ndash;&gt;
+        <mapper resource="com/zhiren/fuelmis/dc/dao/map/js/Jies.xml" />
+
+        &lt;!&ndash; ==========================================厂内费用====================================================== &ndash;&gt;
+		<mapper resource="com/zhiren/fuelmis/dc/dao/map/cnfy/Yuedyussq.xml" />
+		<mapper resource="com/zhiren/fuelmis/dc/dao/map/cnfy/Niandyussq.xml" />
+		<mapper resource="com/zhiren/fuelmis/dc/dao/map/cnfy/Yustzsq.xml" />
+		<mapper resource="com/zhiren/fuelmis/dc/dao/map/cnfy/Feiyxmsq.xml" />
+		<mapper resource="com/zhiren/fuelmis/dc/dao/map/cnfy/Yuszhcx.xml" />
+		<mapper resource="com/zhiren/fuelmis/dc/dao/map/cnfy/Feiyxmfl.xml" />
+		<mapper resource="com/zhiren/fuelmis/dc/dao/map/cnfy/Feiyxmwh.xml" />
+		<mapper resource="com/zhiren/fuelmis/dc/dao/map/cnfy/Cnfymx.xml" />
+		<mapper resource="com/zhiren/fuelmis/dc/dao/map/cnfy/Zafht.xml" />
+		<mapper resource="com/zhiren/fuelmis/dc/dao/map/cnfy/Zafjswh.xml" />
+        &lt;!&ndash; ==========================================入炉管理====================================================== &ndash;&gt;
+        &lt;!&ndash; 入炉管理-基础设置 &ndash;&gt;
+        <mapper resource="com/zhiren/fuelmis/dc/dao/map/rulgl/baseSetDao.xml"/>
+        &lt;!&ndash; 入炉管理-相关维护 &ndash;&gt;
+        <mapper resource="com/zhiren/fuelmis/dc/dao/map/rulgl/XianggwhDao.xml"/>
+        &lt;!&ndash; 入炉管理-入炉化验 &ndash;&gt;
+        <mapper resource="com/zhiren/fuelmis/dc/dao/map/ruchy/RulhyDao.xml"/>
+        <mapper resource="com/zhiren/fuelmis/dc/dao/map/rulgl/BaobcxDao.xml" />
+		&lt;!&ndash; ========================================调运管理======================================================== &ndash;&gt;
+		<mapper resource="com/zhiren/fuelmis/dc/dao/map/rib/Ribcx.xml" />
+        <mapper resource="com/zhiren/fuelmis/dc/dao/map/diaodjh/Diaodjh.xml"/>
+        &lt;!&ndash; 日调度审核 &ndash;&gt;
+        <mapper resource="com/zhiren/fuelmis/dc/dao/map/diaoygl/RiddshDao.xml"/>
+        <mapper resource="com/zhiren/fuelmis/dc/dao/map/yueshchjb/YueshchjbDao.xml" />
+        &lt;!&ndash; 调运管理-报表查询 &ndash;&gt;
+        <mapper resource="com/zhiren/fuelmis/dc/dao/map/diaoygl/DiaoybbDao.xml" />
+        &lt;!&ndash; 调运管理-调度计划维护 &ndash;&gt;
+        <mapper resource="com/zhiren/fuelmis/dc/dao/map/diaoygl/DiaodjhwhDao.xml" />
+        &lt;!&ndash; 调运管理-填报 &ndash;&gt;
+        <mapper resource="com/zhiren/fuelmis/dc/dao/map/diaoygl/RibglDao.xml" />
+        &lt;!&ndash; ========================================供应商管理======================================================= &ndash;&gt;
+        <mapper resource="com/zhiren/fuelmis/dc/dao/map/gongysgp/Kaohzb.xml"/>
+        <mapper resource="com/zhiren/fuelmis/dc/dao/map/gongysgp/Pingffa.xml"/>
+        <mapper resource="com/zhiren/fuelmis/dc/dao/map/gongysgp/Pingffaxzb.xml"/>
+        <mapper resource="com/zhiren/fuelmis/dc/dao/map/gongysgp/Pingffaxzb.xml"/>
+        <mapper resource="com/zhiren/fuelmis/dc/dao/map/gongysgp/Hetb.xml"/>
+        <mapper resource="com/zhiren/fuelmis/dc/dao/map/gongysgp/Yuegmjh.xml"/>
+        <mapper resource="com/zhiren/fuelmis/dc/dao/map/gongysgp/Gongmjhzl.xml"/>
+        &lt;!&ndash; 供应商管理 - 合同执行管理 - 供煤计划调整 &ndash;&gt;
+        <mapper resource="com/zhiren/fuelmis/dc/dao/map/gongysgp/Rigmjh.xml" />
+        <mapper resource="com/zhiren/fuelmis/dc/dao/map/gongysgp/Gongmjhtz.xml" />
+        <mapper resource="com/zhiren/fuelmis/dc/dao/map/gongysgp/pingggl/RitspfDao.xml" />
+        &lt;!&ndash; 供应商管理 - 合同执行管理 - 日计划质量填报 &ndash;&gt;
+        <mapper resource="com/zhiren/fuelmis/dc/dao/map/gongysgp/Rijhzltb.xml" />
+        <mapper resource="com/zhiren/fuelmis/dc/dao/map/jicxx/RitszbDao.xml" />
+        &lt;!&ndash; =========================================月报管理======================================================= &ndash;&gt;
+        <mapper resource="com/zhiren/fuelmis/dc/dao/map/yuebgl/GuodbbDao.xml" />
+        <mapper resource="com/zhiren/fuelmis/dc/dao/map/yuebgl/YuebscDao.xml" />
+        <mapper resource="com/zhiren/fuelmis/dc/dao/map/yuebgl/yuebwh/RucslDao.xml" />
+        <mapper resource="com/zhiren/fuelmis/dc/dao/map/yuebgl/yuebwh/RuczlDao.xml" />
+        <mapper resource="com/zhiren/fuelmis/dc/dao/map/yuebgl/yuebwh/HaochjDao.xml" />
+        <mapper resource="com/zhiren/fuelmis/dc/dao/map/yuebgl/yuebwh/HaocmxDao.xml" />
+        <mapper resource="com/zhiren/fuelmis/dc/dao/map/yuebgl/yuebwh/RucbmdjDao.xml" />
+        <mapper resource="com/zhiren/fuelmis/dc/dao/map/yuebgl/yuebwh/RulrzDao.xml" />
+        <mapper resource="com/zhiren/fuelmis/dc/dao/map/yuebgl/yuebwh/YoushcDao.xml" />
+        <mapper resource="com/zhiren/fuelmis/dc/dao/map/yuebgl/yuebwh/ZafwhDao.xml" />
+        <mapper resource="com/zhiren/fuelmis/dc/dao/map/yuebgl/yuebwh/ZhibqkDao.xml" />
+        &lt;!&ndash; =========================================系统管理======================================================= &ndash;&gt;
+        <mapper resource="com/zhiren/fuelmis/dc/dao/map/xitgl/RenyxxDao.xml" />
+        <mapper resource="com/zhiren/fuelmis/dc/dao/map/xitgl/ZiyxxDao.xml" />
+        <mapper resource="com/zhiren/fuelmis/dc/dao/map/xitgl/DiancxxDao.xml" />
+        <mapper resource="com/zhiren/fuelmis/dc/dao/map/xitgl/MeikdqDao.xml" />
+        <mapper resource="com/zhiren/fuelmis/dc/dao/map/xitgl/GongysDao.xml" />
+        <mapper resource="com/zhiren/fuelmis/dc/dao/map/xitgl/MeikxxDao.xml" />
+        <mapper resource="com/zhiren/fuelmis/dc/dao/map/xitgl/ChezxxDao.xml" />
+        <mapper resource="com/zhiren/fuelmis/dc/dao/map/xitgl/LiclxDao.xml" />
+        <mapper resource="com/zhiren/fuelmis/dc/dao/map/xitgl/LicDao.xml" />
+        <mapper resource="com/zhiren/fuelmis/dc/dao/map/xitgl/MeizDao.xml" />
+        <mapper resource="com/zhiren/fuelmis/dc/dao/map/xitgl/PinzDao.xml" />
+        <mapper resource="com/zhiren/fuelmis/dc/dao/map/xitgl/YunsdwDao.xml" />
+        <mapper resource="com/zhiren/fuelmis/dc/dao/map/xitgl/JizDao.xml" />-->
+	</mappers>
+</configuration>

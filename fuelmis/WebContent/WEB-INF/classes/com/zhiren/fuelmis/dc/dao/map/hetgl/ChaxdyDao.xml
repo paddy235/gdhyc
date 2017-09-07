@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiren.fuelmis.dc.dao.hetgl.ChaxdyDao">
+	<select id="getHetcx" resultType="java.util.LinkedHashMap">
+		select h.id,<![CDATA['<a ng-click="showHet('||h.id||')"  id="'||h.id||'" href="javascript:void(0);">']]>||h.hetbh||<![CDATA['</a>']]> hetbh,h.diancxxb_id,d.mingc xufdwmc,x.danwmc gongfdwmc,h.hetl,h.qiandrq,h.qisrq,h.guoqrq,
+		j.mingc jihkj,h.jiag meij
+		from rl_ht_hetb h,rl_ht_hetb_xianggfzb x,diancxxb d,jihkjb j
+		where h.id = x.hetb_id and h.diancxxb_id = d.id and h.jihkj_id = j.id and x.xianggflx = '供方'
+		and qiandrq <![CDATA[>=]]> #{sDate} and qiandrq <![CDATA[<=]]> #{eDate}
+		order by h.hetbh 
+	</select>
+
+	<select id="getHetbh" resultType="java.util.Map">
+		SELECT ID,HETBH FROM RL_HT_HETB
+		WHERE QIANDRQ BETWEEN #{sDate} AND #{eDate}
+		GROUP BY ID,HETBH
+		ORDER BY HETBH
+	</select>
+
+	<select id="getHetxx" resultType="java.util.Map">
+		select H.QIANDRQ,H.HETBH,G.QUANC,H.JIAG,H.LIUC_ID from RL_HT_HETB H,GONGYSB G where H.GONGF = G.ID
+		and H.ID = #{hetb_id}
+	</select>
+
+	<!--  
+	<select id="getPingsxx" resultType="java.util.Map">
+		SELECT TO_CHAR(RZB.SHIJ, 'yyyy"年"mm"月"dd"日') SHIJ,
+		(SELECT MAX(MINGC) FROM RENYXXB WHERE QUANC = RZB.CAOZY) CAORY
+		FROM (SELECT MAX(RZB.ID) ID
+		FROM HETB, LIUCGZB RZB
+		WHERE HETB.LIUCGZID = RZB.LIUCGZID
+		AND HETB.ID = #{hetb_id}
+		GROUP BY QIANQZTMC) RZ,
+		LIUCGZB RZB
+		WHERE RZ.ID = RZB.ID
+		ORDER BY RZB.ID
+	</select>
+	-->
+</mapper>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiren.fuelmis.dc.dao.common.SaveDao">
+
+    <update id="saveData">
+
+        <if test="data.CAOZLX==0">
+            insert into ${tableName} (
+            <foreach collection="colNames" item="colName" index="index" separator=",">
+                <if test="data[colName]!=null">
+                    ${colName}
+                </if>
+            </foreach>
+            )VALUES(
+            <foreach collection="colNames" item="colName" index="index" separator=",">
+                <if test="data[colName]!=null">
+                    '${data[colName]}'
+                </if>
+            </foreach>
+            )
+        </if>
+        <if test="data.CAOZLX==1">
+            update ${tableName} set
+            <foreach collection="colNames" item="colName" index="i" separator=",">
+                <if test="data[colName]!=null and colName!='ID'">
+                    ${colName}= '${data[colName]}'
+                </if>
+            </foreach>
+            where ${id}=#{data[${id}]}
+        </if>
+        <if test="data.CAOZLX==2">
+            delete from ${tableName}
+            where ${id}=#{data[${id}]}
+        </if>
+
+    </update>
+</mapper>

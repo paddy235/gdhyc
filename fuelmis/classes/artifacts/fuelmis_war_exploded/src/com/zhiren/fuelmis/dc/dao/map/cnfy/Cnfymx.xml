@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiren.fuelmis.dc.dao.cnfy.CnfymxDao" >
+	<select id="getTabelData" resultType="java.util.HashMap">
+		select <![CDATA[ '<a href="javascript:void(0);" ng-click="select()" name="feiybxd" id="'||bxd.ID||'">'||bxd.BIANH||'</a>']]>bianh, bxd.zongje,djb.changnfyxmb_id, cf.mingc,djb.jine 
+  from rl_cnfy_zaffybxd bxd, rl_cnfy_zafhtfydjb djb, rl_cnfy_changnfyxm cf
+ where djb.zaffybxd_id = bxd.id
+   and cf.id = djb.changnfyxmb_id and  BXD.RIQ BETWEEN DATE '${riq}' AND ADD_MONTHS(DATE '${riq}', 1) - 1 
+ union all
+select '本月合计',dx.zongje,cx.changnfyxmb_id,cx.mingc, cx.jine from (
+select sum(ax.jine) as jine, ax.changnfyxmb_id, cf.mingc
+  from (select bxd.bianh, bxd.zongje, djb.changnfyxmb_id, djb.jine, cf.mingc
+          from rl_cnfy_zaffybxd   bxd,
+               rl_cnfy_zafhtfydjb djb,
+               rl_cnfy_changnfyxm cf
+         where djb.zaffybxd_id = bxd.id
+           and cf.id = djb.changnfyxmb_id
+           and BXD.RIQ BETWEEN DATE  '${riq}'
+           AND ADD_MONTHS(DATE '${riq}', 1) - 1) ax,
+       rl_cnfy_changnfyxm cf
+ where cf.id = ax.changnfyxmb_id
+ group by ax.changnfyxmb_id,cf.mingc)cx ,
+ (select sum(bx.jine) as zongje from(
+select sum(ax.jine) as jine, ax.changnfyxmb_id, cf.mingc
+  from (select bxd.bianh, bxd.zongje, djb.changnfyxmb_id, djb.jine, cf.mingc
+          from rl_cnfy_zaffybxd   bxd,
+               rl_cnfy_zafhtfydjb djb,
+               rl_cnfy_changnfyxm cf
+         where djb.zaffybxd_id = bxd.id
+           and cf.id = djb.changnfyxmb_id
+           and BXD.RIQ BETWEEN DATE '${riq}'
+           AND ADD_MONTHS(DATE '${riq}', 1) - 1) ax,
+       rl_cnfy_changnfyxm cf
+ where cf.id = ax.changnfyxmb_id
+ group by ax.changnfyxmb_id,cf.mingc)bx)dx
+ union all 
+  select '本年累计', fx.zongje, gx.changnfyxmb_id,gx.mingc, gx.jine
+   from (select sum(zongje) zongje from rl_cnfy_zaffybxd) fx,
+        (select sum(jine) jine, ex.changnfyxmb_id, cf.mingc
+           from (select *
+                   from rl_cnfy_zafhtfydjb djb, rl_cnfy_zaffybxd bxd
+                  where bxd.id = djb.zaffybxd_id
+                    and to_char(bxd.riq, 'yyyy') = '${nianf}') ex,
+                rl_cnfy_changnfyxm cf
+          where cf.id = ex.changnfyxmb_id
+          group by ex.changnfyxmb_id, ex.changnfyxmb_id, cf.mingc) gx
+	</select>
+</mapper>

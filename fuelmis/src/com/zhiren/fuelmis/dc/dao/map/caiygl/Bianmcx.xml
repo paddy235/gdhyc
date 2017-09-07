@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiren.fuelmis.dc.dao.caiygl.bianmcx.BianmcxDao" >	
+	<select id="getTabelData"  resultType="java.util.LinkedHashMap">
+		select distinct gcc.yuanbm caiybm,gcc.mubbm zhiybm
+		   from gx_chep_caizhbmb gcc
+		   left join rl_ys_chepb c
+		     on gcc.yuanbm=c.samcode
+		   left join rl_ys_chepb_qc q
+		     on c.id = q.chepb_id
+		  where substr(q.qingcsj, 0, 10) = '${date}'
+		  and gcc.zhuanhlb_id=1
+		  order by gcc.yuanbm
+	</select>
+</mapper>

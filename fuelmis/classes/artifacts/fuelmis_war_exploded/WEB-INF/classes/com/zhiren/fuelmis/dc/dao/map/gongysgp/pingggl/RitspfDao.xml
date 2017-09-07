@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.zhiren.fuelmis.dc.dao.gongyspg.pingggl.RitspfDao">
+	
+	<select id="getRitspf" resultType="java.util.LinkedHashMap">
+SELECT GYS.ID as GONGYSB_ID,GYS.mingc,
+				      JH.RIQ,        JF.JIF AS JIAF,
+				       JF.BEIZ AS BEIZ,
+				       NVL(JF.RIGMJFB_ID, 0) AS RIGMJFB_ID,
+				       NVL(JF.RIGMJFMXB_ID, 0) AS RIGMJFMXB_ID
+				  FROM rl_gys_RIGMJHB JH,        GONGYSB GYS,
+				       (SELECT JF.ID         AS RIGMJFB_ID,
+				               JFMX.ID       AS RIGMJFMXB_ID,
+				               JF.RIQ,
+				               JF.GONGYSB_ID,
+				               JFMX.JIF,                JFMX.BEIZ
+				          FROM rl_gys_RIGMJFB JF, rl_gys_RIGMJFMXB JFMX
+				         WHERE JF.ID = JFMX.RIGMJFB_ID
+				           AND  substr(JF.RIQ,0,10) between '${sDate}' and '${eDate}'
+				     	<if test="gongysid!=-1">
+           					AND JF.GONGYSB_ID  = ${gongysid}
+           				</if>
+                    AND JFMX.ZHIBDM = 'TSJF' ) JF
+         WHERE JH.GONGYSB_ID = GYS.ID
+           AND JH.RIQ = JF.RIQ(+)
+           AND JH.GONGYSB_ID = JF.GONGYSB_ID(+)
+           AND substr(JH.RIQ,0,10) between '${sDate}' and '${eDate}'
+           <if test="gongysid!=-1">
+           AND JH.GONGYSB_ID  = ${gongysid}
+           </if>
+           AND JH.ZHUANGT = 1  ORDER BY GYS.mingc, substr(JH.RIQ,0,10) desc
+	</select>
+</mapper>

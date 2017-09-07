@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiren.fuelmis.dc.dao.jih.YuedjhtjDao" >
+	<select id="getYuedjhcaig"  resultType="java.util.HashMap">
+			SELECT		GONGYSB_ID, 
+						MEIKXXB_ID, 
+						JIHKJB_ID, 
+						PINZB_ID, 
+						FAZ_ID, 
+						JIH_SL, 
+						JIH_REZ, 
+						JIH_REZC, 
+						JIH_LIUF, 
+						JIH_HFF, 
+						JIH_MEIJ, 
+						JIH_MEIJBHS, 
+						JIH_YUNJ, 
+						JIH_YUNJBHS, 
+						JIH_ZAF, 
+						JIH_ZAFBHS, 
+						(JIH_MEIJ+JIH_YUNJ+JIH_ZAF) JIH_DAOCJ, 
+						(JIH_MEIJBHS+JIH_YUNJBHS+JIH_ZAFBHS) JIH_DAOCJBHS, 
+						 DECODE(JIH_REZ, 0,0, ROUND((JIH_MEIJ+JIH_YUNJ+JIH_ZAF) * 29.271 / JIH_REZ, 2)) JIH_DAOCBMDJ, 
+						 DECODE(JIH_REZ,0,0,ROUND((JIH_MEIJBHS+JIH_YUNJBHS+JIH_ZAFBHS) *29.271 / JIH_REZ,2)) JIH_DAOCBMDJBHS, 
+						 ZRLBMDL,
+						DECODE(JIH_REZC,0,0,ROUND((JIH_MEIJBHS+JIH_YUNJBHS+JIH_ZAFBHS)*29.271/JIH_REZC,2))RLMZBMDJ
+						FROM(SELECT decode(grouping(gys.mingc),1,<![CDATA['<b>总计</b>']]>,GYS.MINGC)        GONGYSB_ID,
+		       MK.MINGC        MEIKXXB_ID, J.MINGC JIHKJB_ID, 
+		       PZ.MINGC        PINZB_ID, 
+		       CZ.MINGC        FAZ_ID, 
+		       sum(JIH_SL) JIH_SL, 
+		       round(decode(sum(JIH_SL),0,0,sum(JIH_REZ*JIH_SL) /sum(JIH_SL)),3) JIH_REZ, 
+		       ROUND(DECODE(SUM(JIH_SL),0,0,SUM((JIH_REZ - NVL(RUCRLRZC, 0)) * JIH_SL) /SUM(JIH_SL)),3) JIH_REZC, 
+		       round(decode(sum(JIH_SL),0,0,sum(JIH_LIUF*JIH_SL) /sum(JIH_SL)),2) JIH_LIUF, 
+		       round(decode(sum(JIH_SL),0,0,sum(JIH_HFF*JIH_SL) /sum(JIH_SL)),2)JIH_HFF , 
+		       round(decode(sum(JIH_SL),0,0,sum(JIH_MEIJ*JIH_SL) /sum(JIH_SL)),2) JIH_MEIJ, 
+		       round(decode(sum(JIH_SL),0,0,sum(JIH_MEIJBHS*JIH_SL) /sum(JIH_SL)),2) JIH_MEIJBHS, 
+		       round(decode(sum(JIH_SL),0,0,sum(JIH_YUNJ*JIH_SL) /sum(JIH_SL)),2) JIH_YUNJ, 
+		       round(decode(sum(JIH_SL),0,0,sum(JIH_YUNJBHS*JIH_SL) /sum(JIH_SL)),2)JIH_YUNJBHS , 
+		       round(decode(sum(JIH_SL),0,0,sum(JIH_ZAF*JIH_SL) /sum(JIH_SL)),2)JIH_ZAF , 
+		       round(decode(sum(JIH_SL),0,0,sum(JIH_ZAFBHS*JIH_SL) /sum(JIH_SL)),2) JIH_ZAFBHS, 
+		       round(decode(sum(JIH_SL),0,0,sum(JIH_DAOCJ*JIH_SL) /sum(JIH_SL)),2) JIH_DAOCJ, 
+		       round(decode(sum(JIH_SL),0,0,sum(JIH_DAOCJBHS*JIH_SL) /sum(JIH_SL)),2) JIH_DAOCJBHS, 
+		      sum( round((JIH_REZ - NVL(RUCRLRZC, 0))*JIH_SL/29.271,0))ZRLBMDL, 
+		       round(decode(sum(JIH_SL),0,0,sum(JIH_DAOCBMDJ*JIH_SL) /sum(JIH_SL)),2)JIH_DAOCBMDJ , 
+		       round(decode(sum(JIH_SL),0,0,sum(JIH_DAOCBMDJBHS*JIH_SL) /sum(JIH_SL)),2) JIH_DAOCBMDJBHS 
+		  FROM YUEDJH_CAIG CG, GONGYSB GYS, MEIKXXB MK, PINZB PZ, YUEDJH_ZHIB ZB,  CHEZXXB CZ,JIHKJB J 
+		 WHERE CG.GONGYSB_ID = GYS.ID AND CG.JIHKJB_ID=J.ID 
+		   AND CG.MEIKXXB_ID = MK.ID 
+		   AND CG.PINZB_ID = PZ.ID 
+		   AND CG.FAZ_ID = CZ.ID 
+		   AND CG.DIANCXXB_ID = ZB.DIANCXXB_ID 
+		   AND CG.RIQ = ZB.RIQ 
+		   AND CG.DIANCXXB_ID = #{diancid} 
+		   AND CG.RIQ = to_date(#{curdate},'yyyy-mm-dd')
+		   GROUP BY ROLLUP ((GYS.MINGC,MK.MINGC,J.MINGC,PZ.MINGC,CZ.MINGC)))
+	</select>
+	<select id="getZfjh"  resultType="java.util.HashMap">
+			SELECT DECODE(GROUPING(za.ZAFMC), 1, <![CDATA['<b>总计</b>']]>, IT.MINGC) ZAFMC,
+			       SUM(za.YUCJE) as YUCJE, 
+			       za.YUCSM  as yucsm 
+			 FROM YUEDJH_ZAF za,ITEM IT
+			 WHERE za.RIQ =  to_date(#{curdate},'yyyy-mm-dd')
+			 AND za.DIANCXXB_ID =  #{diancid}
+			 AND IT.id = ZA.ZAFMC
+			 GROUP BY ROLLUP((za.ZAFMC,IT.MINGC ,za.YUCSM))
+	</select>
+	<select id="getZhib"  resultType="java.util.HashMap">
+			SELECT DECODE(0, 0, '合计') QIB,
+			       FADL, 
+			       GONGDMH, 
+			       FADCYDL, 
+			     Round(FADL*(1-FADCYDL/100)*GONGDMH/100,0) as  FADBML, 
+			       GONGRL, 
+			       GONGRMH, 
+			     Round(GONGRL*GONGRMH*10,0) as  GONGRBML, 
+			     Round(FADL*(1-FADCYDL/100)*GONGDMH/100,0)+Round(GONGRL*GONGRMH*10,0) as  BIAOMLHJ, 
+			       HAOYYML, 
+			       RLZHBMDJ, 
+			       SHANGYMKC, 
+			       SHANGYMKCDJ, 
+			       SHANGYMKCRZ, 
+			       YUEMKCJHZ, 
+			       YUEMKCRZ 
+			  FROM YUEDJH_ZHIB 
+			 WHERE RIQ = to_date(#{curdate},'yyyy-mm-dd')
+			   AND DIANCXXB_ID = #{diancid}
+	</select>
+	<select id="getdiancxx"  resultType="java.util.HashMap">
+		select mingc,quanc from diancxxb where id = #{id}
+	</select>
+	<select id="getSanjshenpState" resultType="java.lang.String">
+		select distinct(sanj_zt) from yuedjh_zaf where diancxxb_id = #{diancid} and riq = to_date(#{riq},'yyyy-mm-dd')
+	</select>
+	<update id="UpdateState">
+					  UPDATE YUEDJH_ZHIB ZHIB 
+					     SET ZHIB.sanj_zt = 1 
+					   WHERE to_char(ZHIB.RIQ,'yyyy-mm') = #{riq} 
+					     AND ZHIB.DIANCXXB_ID =  #{diancid}; 
+					  UPDATE YUEDJH_CAIG CG 
+					     SET CG.sanj_zt = 1
+					   WHERE to_char(CG.RIQ,'yyyy-mm') =  #{riq}
+					     AND CG.DIANCXXB_ID =  #{diancid}; 
+					  UPDATE YUEDJH_ZAF ZAF 
+					     SET ZAF.sanj_zt = 1
+					   WHERE to_char(ZAF.RIQ,'yyyy-mm') =  #{riq}
+					     AND ZAF.DIANCXXB_ID =  #{diancid}
+	</update>
+</mapper>

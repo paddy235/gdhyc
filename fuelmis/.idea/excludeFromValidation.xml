@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ExcludeFromValidation">
+    <file url="file://$PROJECT_DIR$/src/com/zhiren/fuelmis/dc/controller/kucgl/rukgl/RanlcgrkController.java" />
+    <file url="file://$PROJECT_DIR$/src/com/zhiren/fuelmis/dc/controller/jih/yuedjh/YuedjzbycController.java" />
+  </component>
+</project>

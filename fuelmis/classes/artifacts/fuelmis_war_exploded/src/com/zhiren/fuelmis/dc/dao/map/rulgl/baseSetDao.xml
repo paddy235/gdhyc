@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiren.fuelmis.dc.dao.rulgl.BaseSetDao">
+<!-- 班组 -->
+	<select id="getBanz" resultType="java.util.Map">
+		select
+		ID,XUH,MINGC,BEIZ,ZHUANGT,DIANCXXB_ID
+		from RL_RUL_BANZB order by XUH
+	</select>
+	<insert id="insertBanz">
+		INSERT
+		INTO RL_RUL_BANZB
+		(ID,XUH,MINGC,BEIZ,ZHUANGT,DIANCXXB_ID)
+		VALUES
+		('${id}','${XUH}','${MINGC}','${BEIZ}','${ZHUANGT}','${DIANCXXB_ID}')
+	</insert>
+	<update id="updateBanz" flushCache="true">
+		update RL_RUL_BANZB set
+		XUH='${XUH}',
+		MINGC='${MINGC}',
+		
+		BEIZ='${BEIZ}',
+		ZHUANGT='${ZHUANGT}'
+		WHERE id = ${ID}
+	</update>
+	<!-- 机组 -->
+	<select id="getJiz" resultType="java.util.Map">
+		select
+		ID,XUH,MINGC,LEIB,ZHUANGT
+		from RL_RUL_JIZB order by XUH
+	</select>
+
+	<update id="updateJiz" flushCache="true">
+		update RL_RUL_JIZB set
+		XUH='${XUH}',
+		MINGC='${MINGC}',
+		LEIB='${LEIB}',
+		ZHUANGT='${ZHUANGT}'
+		WHERE id = ${ID}
+	</update>
+		<insert id="insertJiz">
+		INSERT
+		INTO RL_RUL_JIZB
+		(ID,XUH,MINGC,LEIB,ZHUANGT,DIANCXXB_ID)
+		VALUES
+		('${id}','${XUH}','${MINGC}','${LEIB}','${ZHUANGT}','${DIANCXXB_ID}')
+	</insert>
+</mapper>

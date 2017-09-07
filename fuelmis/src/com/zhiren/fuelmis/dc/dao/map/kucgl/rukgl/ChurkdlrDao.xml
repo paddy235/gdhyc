@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiren.fuelmis.dc.dao.kucgl.rukgl.ChurkdlrDao">
+    <select id="getChurkd" resultType="java.util.Map">
+		select
+		 	id,
+			rukdbh,
+			zuz,
+			kuczz,
+			kucwz,
+			kucwl,
+			huoz,
+			round(jine,2) jine,
+			tiaozje,
+			yewlx,
+			churklx,
+			yewrq,
+			kuaijrq,
+			jizrq,
+			yundsl,
+			ruksl,
+			jiessl,
+			jiz_id,
+			banz_id,
+			hangh,
+			zhuangt,
+			jiesdrzrq,
+			gongysb_id,
+			yuejsb_id from rl_kc_churkdb WHERE substr(YEWRQ,0,10)='${riq}'
+	</select>
+    <update id="updateChurkd">
+		UPDATE RL_KC_CHURKDB set
+			RUKDBH='${RUKDBH}',
+			ZUZ='${ZUZ}',
+			KUCZZ='${KUCZZ}',
+			KUCWZ='${KUCWZ}',
+			KUCWL='${KUCWL}',
+			HUOZ='${HUOZ}',
+			JINE='${JINE}',
+			TIAOZJE='${TIAOZJE}',
+			YEWLX='${YEWLX}',
+			CHURKLX='${CHURKLX}',
+			YEWRQ='${YEWRQ}',
+			KUAIJRQ='${KUAIJRQ}',
+			JIZRQ='${JIZRQ}',
+			YUNDSL='${YUNDSL}',
+			YANSSL='${YANSSL}',
+			RUKSL='${RUKSL}',
+			JIESSL='${JIESSL}',
+			JIZ_ID='${JIZ_ID}',
+			BANZ_ID='${BANZ_ID}',
+			HANGH='${HANGH}',
+			ZHUANGT='${ZHUANGT}',
+			JIESDRZRQ='${JIESDRZRQ}',
+			GONGYSB_ID='${GONGYSB_ID}',
+			YUEJSB_ID='${YUEJSB_ID}'
+			where id='${ID}'
+	</update>
+    <insert id="insertChurkd">
+		INSERT into
+			RL_KC_CHURKDB (rukdbh,zuz,kuczz,kucwz,kucwl,huoz,jine,tiaozje,yewlx,churklx,yewrq,kuaijrq,
+			jizrq,id,yundsl,yanssl,ruksl,jiessl,jiz_id,banz_id,hangh,zhuangt,jiesdrzrq,gongysb_id,
+			yuejsb_id ) values(
+			'${RUKDBH}',
+			'${ZUZ}',
+			'${KUCZZ}',
+			'${KUCWZ}',
+			'${KUCWL}',
+			'${HUOZ}',
+			'${JINE}',
+			'${TIAOZJE}',
+			'${YEWLX}',
+			'${CHURKLX}',
+			'${YEWRQ}',
+			'${KUAIJRQ}',
+			'${JIZRQ}',
+			'${ID}',
+			'${YUNDSL}',
+			'${YANSSL}',
+			'${RUKSL}',
+			'${JIESSL}',
+			'${JIZ_ID}',
+			'${BANZ_ID}',
+			'${HANGH}',
+			'${ZHUANGT}',
+			'${JIESDRZRQ}',
+			'${GONGYSB_ID}',
+			'${YUEJSB_ID}'
+			)
+	</insert>
+	<delete id="delChurkd">
+		delete from RL_KC_CHURKDB where id =#{0}
+	</delete>
+    <delete id="deleteKucyeb">
+		delete from RL_KC_KUYEB where KUAIJRQ='${kuaijrq}'
+	</delete>
+    <insert id="insertKucyeb">
+	insert into rl_kc_kuyeb
+    (id, zuz, kuczz, kucwz, kucwl, huoz,
+    kuaijrq, jizrq,
+    jine_qic, shul_qic, qnetar_qic,
+    jine_churk, shul_churk, qnetar_churk,
+    jine_zang, shul_zang, qnetar_zang,
+    jiesje,jiessl,jiesrz)
+    select seq_kuyeb_id.nextval id, a.zuz,a.kuczz,a.kucwz,a.kucwl,a.huoz,
+    a.kuaijrq,a.jizrq,
+    nvl(c.jine_qic,0) jine_qic,nvl(c.shul_qic,0) shul_qic,nvl(c.qnetar_qic,0) qnetar_qic,
+    a.jine_churk,nvl(a.shul_churk,0) shul_churk,nvl(a.qnetar_churk,0) qnetar_churk,
+    nvl(b.jine_zang,0) jine_zang,nvl(b.shul_zang,0) shul_zang,nvl(b.qnetar_zang,0) qnetar_zang,
+    nvl(a.jiesje,0) jiesje,nvl(a.jiessl,0) jiessl,nvl(a.jiesrz,0) jiesrz
+    from
+    (
+    select
+    max(zuz) zuz,
+    max(kuczz) kuczz,
+    max(kucwz) kucwz,
+    max(kucwl) kucwl,
+    max(huoz) huoz,
+    max(kuaijrq) kuaijrq,
+    to_char(sysdate,'yyyy-mm-dd hh24:mi:ss') jizrq,
+    sum(jine) jine_churk,
+    sum(ruksl) shul_churk,
+    round(sum(h.qnet_ar*ruksl)/sum(ruksl),2) qnetar_churk,
+
+    sum(j.jiesje) jiesje,
+    sum(j.jiessl) jiessl,
+    round(sum(j.jiesrz*j.jiessl)/sum(j.jiessl),2) jiesrz
+
+    from rl_kc_churkdb k left join rl_kc_huaybgb h on k.rukdbh=h.rukdh left join rl_js_yuejsdb j on j.id=k.yuejsb_id
+    where kuaijrq='${kuaijrq}'
+    group by
+    zuz,
+    kuczz,
+    kucwz,
+    kucwl,
+    huoz
+    ) a left join
+    (select
+    max(zuz) zuz,
+    max(kuczz) kuczz,
+    max(kucwz) kucwz,
+    max(kucwl) kucwl,
+    max(huoz) huoz,
+    sum(jine) jine_zang,
+    sum(ruksl) shul_zang,
+    round(sum(h.qnet_ar*ruksl)/sum(ruksl),2) qnetar_zang
+
+    from rl_kc_churkdb k full join rl_kc_huaybgb h on k.rukdbh=h.rukdh
+    where kuaijrq=null and yewlx=1
+    group by
+    zuz,
+    kuczz,
+    kucwz,
+    kucwl,
+    huoz) b on a.zuz=b.zuz and a.kuczz=b.kuczz and a.kucwz=b.kucwz and a.kucwl=b.kucwl  and a.huoz=b.huoz
+    full join
+    (select
+    zuz,
+    kuczz,
+    kucwz,
+    kucwl,
+    huoz,
+    jie_jiey jine_qic,
+    shul_jiey shul_qic,
+    qnetar_jiey qnetar_qic
+    from rl_kc_kuyeb
+    where substr(jizrq,0,7)='${lastMoth}'
+    )c on a.zuz=c.zuz and a.kuczz=c.kuczz and a.kucwz=c.kucwz and a.kucwl=c.kucwl  and a.huoz=c.huoz
+</insert>
+<!--     <update id="">
+		update rl_kc_kuyeb set
+		jie_jiey=jine_qic-jine_churk,
+		shul_jiey=shul_qic-shul_churk,
+		qnetar_jiey=qnetar_qic-qnetar_churk,
+		jie_kc=jine_qic-jine_churk+jine_zang,
+		shul_kc=shul_qic-shul_churk+shul_zang,
+		qnetar_kc=qnetar_qic-qnetar_churk+qnetar_zang
+		where KUAIJRQ='${kuaijrq}'
+	</update> -->
+    <select id="getChukdbh" resultType="java.lang.String">
+	select case
+			 when max(rukdbh) is null then
+			  replace(to_char(sysdate, 'yyyy-mm-dd'), '-', '') || '001'
+			 else
+			  to_char(max(rukdbh) + 1)
+		   end rukdbh
+	  from (select distinct rukdbh
+			  from RL_KC_CHURKDB
+			 where substr(rukdbh, 0, 8) =
+				   replace(to_char(sysdate, 'yyyy-mm-dd'), '-', ''))
+</select>
+</mapper>

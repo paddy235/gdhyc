@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiren.fuelmis.dc.dao.jiesgl.JiesbbDao">
+	<select id="getAllJiesbh" resultType="java.lang.String">
+		select JIESBH from RL_JS_YUEJSDB where caozrq between '${sDate}' and '${eDate}'
+		<if test="gongys!=-1">
+			and gongysb_id=${gongys}
+		</if>
+		order by JIESBH
+	</select>
+</mapper>

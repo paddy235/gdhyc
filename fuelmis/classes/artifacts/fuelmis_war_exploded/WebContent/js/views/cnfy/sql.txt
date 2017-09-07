@@ -1,0 +1,20 @@
+
+insert into rl_cnfy_changnfyxm(id,bianm,zhuangt,mingc)select id,bianh,shiyzt,mingc from changnfyxmb;
+
+insert into rl_cnfy_feiyxmfl value select * from feiyxmfl;
+
+insert into rl_cnfy_feiyxmsx value select * from feiyxmsx;
+
+insert into rl_cnfy_fenlkj value select * from fenlkj;
+
+insert into rl_cnfy_hetb(id,mingc,bianh,jiaf,yif,qiandrq,jiaysfzr,weiyzr,fukfs,anqzayd,youxksrq,youxjsrq,qit,qianddd,qianzy,zhuangt) select id,mingc,bianh,diancxxb_id,gongysmc,qiandrq,jiaysfzr,weiyzr,fukfs,anqyd,qisrq,jiesrq,qitsy,qianddd,qianzy,tijzt from zafhtb;
+
+insert into rl_cnfy_niandys value select * from niandys;
+
+insert into rl_cnfy_yuedys value select * from yuedys;
+
+insert into rl_cnfy_yustz value select * from yustz;
+
+insert into rl_cnfy_zaffybxd  select id,bianh,riq,zuz,zongje,beiz,renyxxb_id,tijzt from zaffybxd;
+
+insert into rl_cnfy_zafhtfydjb  select id,zafhtb_id,changnfyxmb_id,danj,jiagdw,beiz,jiesrq,shul,jine,qisrq,'' from zafhtfydjb;

@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiren.fuelmis.dc.dao.yuebgl.yuebwh.RucslDao">
+	<select id="getAll" resultType="java.util.Map">
+	SELECT z.*
+	  FROM (SELECT -1 ID,
+	           0 YUETJKJB_ID,
+	           '' AS GONGYSB_ID,
+	           '' AS JIHKJB_ID,
+	           '' AS PINZB_ID,
+	           '' AS YUNSFSB_ID,
+	           decode(T.FENX,'本月','本月合计','累计合计') FENX,
+	           SUM(T.JINGZ) AS JINGZ,
+	           SUM(T.BIAOZ) BIAOZ,
+	           SUM(T.YINGD) YINGD,
+	           1 ZHUANGT,
+	           SUM(T.KUID) KUID,
+	           SUM(T.YUNS) YUNS,
+	           SUM(T.ZONGKD) ZONGKD,
+	           SUM(T.JIANJL) JIANJL,
+	           SUM(T.RUCTZL) RUCTZL,
+	           SUM(T.YINGDZJE) YINGDZJE,
+	           SUM(T.KUIDZJE) KUIDZJE,
+	           SUM(T.SUOPSL) SUOPSL,
+	           SUM(T.SUOPJE) SUOPJE,
+	           0 GID,
+	           0 JID,
+	           0 PID,
+	           0 YID
+	      FROM YUETJKJB TJ, YUESLB T, meikxxb m, JIHKJB, PINZB, YUNSFSB
+	     WHERE TJ.ID = T.YUETJKJB_ID
+	       AND TJ.GONGYSB_ID = m.ID
+	       AND TJ.JIHKJB_ID = JIHKJB.ID
+	       AND TJ.PINZB_ID = PINZB.ID
+	       AND TJ.YUNSFSB_ID = YUNSFSB.ID
+	       AND TJ.DIANCXXB_ID = ${dianc}
+	       AND substr(TJ.RIQ, 0, 7) = '${riq}'
+	       group by t.fenx 
+	        UNION
+	        SELECT T.ID,
+	               TJ.ID         YUETJKJB_ID,
+	               m.MINGC AS GONGYSB_ID,
+	               JIHKJB.MINGC  AS JIHKJB_ID,
+	               PINZB.MINGC   AS PINZB_ID,
+	               YUNSFSB.MINGC AS YUNSFSB_ID,
+	               FENX,
+	               T.JINGZ,
+	               T.BIAOZ,
+	               T.YINGD,
+	               T.ZHUANGT,
+	               T.KUID,
+	               T.YUNS,
+	               T.ZONGKD,
+	               T.JIANJL,
+	               T.RUCTZL,
+	               T.YINGDZJE,
+	               T.KUIDZJE,
+	               T.SUOPSL,
+	               T.SUOPJE,
+	               TJ.GONGYSB_ID GID,
+	               TJ.JIHKJB_ID  JID,
+	               TJ.PINZB_ID   PID,
+	               TJ.YUNSFSB_ID YID
+	          FROM (SELECT TJ.ID,
+	                       TJ.GONGYSB_ID,
+	                       TJ.JIHKJB_ID,
+	                       TJ.PINZB_ID,
+	                       TJ.YUNSFSB_ID
+	                  FROM YUETJKJB TJ, YUESLB T
+	                 WHERE TJ.ID = T.YUETJKJB_ID
+	                   AND TJ.DIANCXXB_ID = ${dianc}
+	                   AND substr(TJ.RIQ, 0, 7) ='${riq}'
+	                   AND T.FENX = '本月') TJ,
+	               YUESLB T,
+	               meikxxb m,
+	               JIHKJB,
+	               PINZB,
+	               YUNSFSB
+	         WHERE TJ.ID = T.YUETJKJB_ID
+	           AND TJ.GONGYSB_ID = m.ID
+	           AND TJ.JIHKJB_ID = JIHKJB.ID
+	           AND TJ.PINZB_ID = PINZB.ID
+	           AND TJ.YUNSFSB_ID = YUNSFSB.ID) z
+	  ORDER BY gongysb_id desc, YUETJKJB_ID, z.gongysb_id desc, FENX
+	
+	</select>
+</mapper>

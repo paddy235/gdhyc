@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiren.fuelmis.dc.dao.hetgl.CaigddppDao">
+    <select id="getCaigddxxcombox" resultType="java.util.Map">
+        SELECT  sub.id  ,
+		       ta.bianh || '(' || tb.mingc || ',' || p.mingc|| ',' || sub.startdate || '至' ||
+		       sub.enddate|| ')' AS mingc
+		  FROM rl_ht_caigddb ta, gongysb tb, rl_ht_caigddb_sub sub,pinzb p
+		 WHERE sub.gongys_id = tb.id
+		   AND sub.caigddb_id = ta.id
+		   and sub.pinz_id = p.id
+		 ORDER BY tb.mingc,sub.enddate desc , ta.bianh DESC
+    </select>
+    <insert id="addcaigddpp">
+        INSERT INTO RL_HT_CAIGDDPPB (ID, MEIKXXB_ID, MEIZ_ID, QISRQ, JIESRQ, HUOZ_ID, CAIGDDB_SUB_ID, DIANCXXB_ID)
+        VALUES
+            (#{ID}, #{MEIKXXB_ID}, #{MEIZ_ID}, #{QISRQ},
+             #{JIESRQ}, #{HUOZ_ID}, #{CAIGDDB_SUB_ID,jdbcType=NUMERIC}, 515)
+    </insert>
+    <update id="updatecaigddpp">
+        update RL_HT_CAIGDDPPB
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="MEIKXXB_ID != null">MEIKXXB_ID=#{MEIKXXB_ID},</if>
+            <if test="MEIZ_ID != null">MEIZ_ID=#{MEIZ_ID},</if>
+            <if test="QISRQ != null">QISRQ=#{QISRQ},</if>
+            <if test="JIESRQ != null">JIESRQ=#{JIESRQ},</if>
+            <if test="HUOZ_ID != null">HUOZ_ID=#{HUOZ_ID},</if>
+            <if test="CAIGDDB_SUB_ID != null">CAIGDDB_SUB_ID=#{CAIGDDB_SUB_ID},</if>
+        </trim>
+        where id =#{ID}
+    </update>
+    <select id="getCaigddppList" resultType="java.util.Map">
+        select id, meikxxb_id ,meiz_id , qisrq ,jiesrq , huoz_id , CAIGDDB_SUB_ID
+        from RL_HT_CAIGDDPPB where to_date(jiesrq,'yyyy-mm-dd') + 120 >= sysdate
+        <if test="diancid != -1">
+            and diancxxb_id = #{diancid}
+        </if>
+        <if test="meikid != -1">
+            and meikxxb_id = #{meikid}
+        </if>
+        <if test="pinzid != -1">
+            and meiz_id = #{pinzid}
+        </if>
+        order by meikxxb_id ,meiz_id , qisrq ,jiesrq
+    </select>
+    <delete id="deleteCaigddppById" parameterType="java.lang.String">
+        DELETE FROM rl_ht_caigddppb
+        WHERE ID = #{id}
+    </delete>
+</mapper>

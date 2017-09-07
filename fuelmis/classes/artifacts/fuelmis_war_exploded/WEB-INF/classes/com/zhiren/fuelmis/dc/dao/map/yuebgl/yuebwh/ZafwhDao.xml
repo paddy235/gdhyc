@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiren.fuelmis.dc.dao.yuebgl.yuebwh.ZafwhDao">
+	<select id="getAll" resultType="java.util.Map">
+		SELECT ZF.ID AS ZFID, ZF.DIANCXXB_ID,ZF.MINGC,ZF.JINE,ZF.BEIZ,ZF.ZHUANGT  
+			FROM  ZAFB  ZF 
+				WHERE SUBSTR(RIQ,0,7)='${riq}' 	
+	</select>
+	
+	<select id="getAll_new" resultType="java.util.Map">
+		select decode(z.id, '',null, z.id) ZFID,
+	       decode(z.diancxxb_id,
+	              null,
+	              (select mingc from diancxxb where id = 515),
+	              (select mingc from diancxxb where id = z.diancxxb_id)) as diancxxb_id,
+	       decode(z.id, '', zafxm.mingc, z.mingc) as mingc,
+	       nvl(z.jine, 0) as jine,
+	       z.beiz,
+	       decode(z.zhuangt,'',0,z.zhuangt) zhuangt 
+	  from (select *
+	          from rl_cnfy_changnfyxm
+	         where diancxxb_id = 515
+	           and shiyzt = 1) zafxm,
+	       (select *
+	          from zafb
+	         where SUBSTR(RIQ,0,7)='${riq}'
+	           and diancxxb_id = 515) z
+	 where zafxm.mingc = z.mingc(+)
+	 	
+	</select>
+	
+	<select id="getZfmingc" resultType="java.util.Map">
+		SELECT M.MINGC ,M.ID FROM ITEMSORT S
+			LEFT JOIN ITEM M ON M.ITEMSORTID=S.ITEMSORTID
+				WHERE S.MINGC='杂费名称'
+	</select>
+	<select id="getZafeiByDiancidAndRiq" resultType="java.util.Map">
+		SELECT  MINGC,BEIZ  FROM  ZAFB 	WHERE SUBSTR(RIQ,0,7)='${lastriq}' 	and DIANCXXB_ID=#{dianc}
+	</select>
+	<insert id="insertZf" parameterType="java.util.Map">
+		INSERT INTO ZAFB 
+		(ID,DIANCXXB_ID,MINGC,JINE,BEIZ,RIQ)
+		VALUES
+		(${ID},${dianc},'${MINGC}',${JINE},${BEIZ},'${RIQ}')
+	</insert>
+	<insert id="CopyZafeiData" parameterType="java.util.Map">
+		INSERT INTO ZAFB 
+		(ID,DIANCXXB_ID,MINGC,BEIZ,RIQ)
+		VALUES
+		(${ID},${dianc},'${MINGC}','${BEIZ}','${riq}')
+	</insert>
+	<update id="updateZf" parameterType="java.util.Map">
+		UPDATE ZAFB SET MINGC='${MINGC}',JINE=${JINE},BEIZ='${BEIZ}' WHERE ID=${ZFID}
+	</update>
+	<delete id="deleteZf" parameterType="java.util.HashMap">
+		DELETE FROM ZAFB WHERE ID=#{ZFID}
+	</delete>
+	<delete id="DelZafeiByDiancidAndRiq" parameterType="java.util.Map">
+		DELETE FROM ZAFB  WHERE  SUBSTR(RIQ,0,7)='${riq}' and  DIANCXXB_ID=${dianc}
+	</delete>
+	
+</mapper>

@@ -1,0 +1,12 @@
+eclipse.preferences.version=1
+encoding//WebContent/views/hetgl/hychetbean/4000Qnet_template.jsp=UTF-8
+encoding//WebContent/views/hetgl/hychetbean/4500Qnet_template.jsp=UTF-8
+encoding//WebContent/views/hetgl/hychetbean/5000Qnet_template.jsp=UTF-8
+encoding//src/com/zhiren/fuelmis/dc/service/impl/hetgl/calculator/FourCalculatorService.java=GBK
+encoding//src/com/zhiren/fuelmis/dc/service/impl/hetgl/calculator/OneCalculatorService.java=GBK
+encoding//src/com/zhiren/fuelmis/dc/service/impl/hetgl/calculator/QnetBaseChangeCalculatorService.java=GBK
+encoding//src/com/zhiren/fuelmis/dc/service/impl/hetgl/calculator/QnetQualityUnitCalculatorService.java=GBK
+encoding//src/com/zhiren/fuelmis/dc/service/impl/hetgl/calculator/QnetStepCalculatorService.java=GBK
+encoding//src/com/zhiren/fuelmis/dc/service/impl/hetgl/calculator/SecondCalculatorService.java=UTF-8
+encoding//src/com/zhiren/fuelmis/dc/service/impl/hetgl/calculator/ThreeCalculatorService.java=GBK
+encoding/<project>=UTF-8

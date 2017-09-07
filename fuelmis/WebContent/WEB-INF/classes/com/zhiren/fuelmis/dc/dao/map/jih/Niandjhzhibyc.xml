@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiren.fuelmis.dc.dao.jih.NiandjhzhibycDao" >
+	<select id="getJihzbdyb"  resultType="java.util.HashMap">
+		select xuh,mingc,danw,zidm,decode(gongs,'0',zidm,gongs )  gongs from JIHZBDYB where mokmc ='年计划' order by xuh 
+	</select>
+	<select id="getZhiFromniandjhzhib"  resultType="java.util.HashMap">
+		${sql} from niandjh_zhib where diancxxb_id = ${diancid} and to_char(riq,'yyyy')= '${riq}'
+	</select>
+	<select id="getIdByRiqAndDiancid" resultType="java.lang.Integer">
+		select count(id) from niandjh_zhib where to_char(riq,'yyyy')= '${riq}' and diancxxb_id=${diancid}
+	</select>
+	<update id="updateniandjhzhib" flushCache="true">  
+    	update niandjh_zhib set  ${ZIDM} = ${ZHI} where to_char(riq,'yyyy')= '${riq}' and diancxxb_id=${diancid}
+    </update>
+    <!-- 查询出煤折标煤单价、其他费用、入炉综合标煤单价 -->
+    <select id="selectThreeData" resultType="java.util.HashMap">
+    	SELECT MEIZBMDJ,
+		       ZAFJE, 
+		       ROUND(DECODE(BIAOMLHJ,0,0,(MEIZBML * MEIZBMDJ + RANYL * RANYDJ + ZAFJE) / BIAOMLHJ),2) RULZHBMDJ 
+		  FROM (SELECT NVL(CGJH.JIH_REZ, 0) JIH_REZ, 
+		               NVL(CGJH.JIH_DAOCJ, 0) JIH_DAOCJ, 
+		               NVL(ZAF.ZAFJE, 0) ZAFJE, 
+		               NVL(ZHIB.RUCRLRZC, 0) RUCRLRZC,
+		               NVL(ZHIB.MEIZBML, 0) MEIZBML, 
+		               NVL(ZHIB.RANYL, 0) RANYL, 
+		               NVL(ZHIB.RANYDJ, 0) RANYDJ, 
+		               NVL(ZHIB.BIAOMLHJ, 0) BIAOMLHJ, 
+		               ROUND(DECODE((NVL(JIH_REZ, 0) - NVL(RUCRLRZC, 0)),0,0,NVL(JIH_DAOCJ, 0) * 29.271 /(NVL(JIH_REZ, 0) - NVL(RUCRLRZC, 0))),2) MEIZBMDJ 
+		          FROM (SELECT SUM(JIH_SL) JIHSL, 
+		                       DECODE(SUM(JIH_SL),0,0,SUM(JIH_SL * JIH_REZ) / SUM(JIH_SL)) JIH_REZ, 
+		                       DECODE(SUM(JIH_SL),0,0,SUM(JIH_SL * (decode(JIH_MEIJBHS,0,het_meij/1.17,JIH_MEIJBHS) + decode(JIH_YUNJBHS,0,het_yunj/1.11,JIH_YUNJBHS) +JIH_ZAFBHS+JIH_QITBHS)) / SUM(JIH_SL)) JIH_DAOCJ 
+		                  FROM NIANDJH_CAIG 
+		                 WHERE DIANCXXB_ID = #{diancid}
+		                   AND to_char(RIQ, 'yyyy') = '${riq}' ) CGJH, 
+		               (SELECT SUM(YUCJE) ZAFJE 
+		                  FROM NIANDJH_ZAF 
+		                 WHERE DIANCXXB_ID = #{diancid}
+		                   AND to_char(RIQ, 'yyyy') = '${riq}' ) ZAF, 
+		               (SELECT RUCRLRZC, MEIZBML, RANYL, RANYDJ, BIAOMLHJ 
+		                  FROM NIANDJH_ZHIB 
+		                 WHERE DIANCXXB_ID = #{diancid}
+		                   AND to_char(RIQ, 'yyyy') = '${riq}' ) ZHIB) SJ     
+    </select>
+    <update id="updateThreeDate" flushCache="true">
+    	update niandjh_zhib set    meizbmdj =${MEIZBMDJ},
+    								qitfy =${ZAFJE},
+    								rlzhbmdj =${RULZHBMDJ}
+    				where to_char(riq,'yyyy')= '${riq}' and diancxxb_id=${diancid}
+    				
+    </update>
+    <insert id="addniandjhzhib"  useGeneratedKeys="true" keyProperty="id">
+ 		INSERT INTO niandjh_zhib(id,riq,diancxxb_id,${ZIDM}) values(XL_YUEDJH_CAIG_ID.nextval,to_date('${riq}-01-01','yyyy-MM-dd'),${diancid},${ZHI})
+	</insert>
+	<delete id="delByRiqAndDiancid"  flushCache="true">  
+        delete from niandjh_zhib where diancxxb_id = ${diancid} and to_char(riq,'yyyy')= '${riq}' 
+    </delete>
+    <select id="getLastYearData"  resultType="com.zhiren.fuelmis.dc.entity.jih.NiandzhibycBean">
+			 select XL_YUEDJH_CAIG_ID.nextval as id,
+						${diancid} as diancid,
+			 			'${riq}' as riq,
+						   fadl,
+						   gongdmh,
+						   fadcydl,
+						   fadbml,
+						   gongrl,
+						   gongrmh,
+						   gongrbml,
+						   biaomlhj,
+						   rucrlrzc,
+						   meizbml,
+						   meizbmdj,
+						   ranyl,
+						   youzbml,
+						   ranydj ,
+						   youzbmdj,
+						   qitfy,
+						   rlzhbmdj,
+						   liucztb_id,
+						   liucgzid
+						FROM niandjh_zhib 
+			           WHERE DIANCXXB_ID = ${diancid}
+			            AND to_char(riq,'yyyy') ='${lastyear}'
+	</select>
+	<delete id="DelThisYearData" parameterType="java.lang.String" flushCache="true">  
+        delete from niandjh_zhib where DIANCXXB_ID =#{diancid} AND  to_char(riq,'yyyy')= '${riq}'
+    </delete>
+</mapper>

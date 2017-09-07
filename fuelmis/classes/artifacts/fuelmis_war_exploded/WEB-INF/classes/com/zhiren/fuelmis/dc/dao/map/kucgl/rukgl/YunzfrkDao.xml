@@ -1,0 +1,367 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiren.fuelmis.dc.dao.kucgl.rukgl.YunzfrkDao">
+	<select id="getChurkdList" resultType="java.util.Map">
+			select
+			C.RUKDBH,t.mingc KUCZZ,W.WUZMC HUOZ,sum(C.JINE) JINE,sum(C.TIAOZJE) TIAOZJE,Y.LEIXMC
+			YEWLX,sum(C.YUNDSL) YUNDSL,sum(C.YANSSL) YANSSL,sum(C.RUKSL)
+			RUKSL,sum(C.JIESSL) JIESSL,
+			case C.ZHUANGT when -1 then '未入库' else '已入库' end ZHUANGT
+			from RL_KC_CHURKDB C,GY_DM_CHURKYWLXDMB Y ,RL_KC_KUCWLB W ,
+			(select g.rukdbh,min(g.yuandj_id) yuandj_id,gy.mingc from GX_CHURKDB_YUNSDJ
+			g,rl_ys_chepb c,gongysb gy
+			where g.yuandj_id = c.id and c.gongysb_id = gy.id and g.yuandjlx = 1
+			group by g.rukdbh,gy.mingc) t
+			where C.YEWLX = Y.ID
+			and C.KUCWL = W.ID and t.rukdbh = c.rukdbh
+			and C.YEWLX=2 in 
+	</select>
+
+	<select id="getChurkdList2" resultType="java.util.Map">
+		select
+		C.RUKDBH,Z.KUCZZMC KUCZZ,D.MINGC HUOZ,
+		sum(nvl(C.JINE,0)) JINE, sum(nvl(C.TIAOZJE,0)) TIAOZJE,
+		Y.LEIXMC YEWLX,
+		sum(nvl(C.YUNDSL,0)) YUNDSL, sum(nvl(C.YANSSL,0)) YANSSL,
+		sum(nvl(C.RUKSL,0)) RUKSL, sum(nvl(C.JIESSL,0)) JIESSL,
+		case C.ZHUANGT when 0 then '未出库' else '已出库' end ZHUANGT
+		from RL_KC_CHURKDB C,DIANCXXB D,RL_KC_KUCZZB Z,GY_DM_CHURKYWLXDMB Y
+		where C.HUOZ=D.ID and C.KUCZZ = Z.ID and C.YEWLX = Y.ID
+		and C.YEWLX in ( select id from gy_dm_churkywlxdmb d where d.leixdm = -1
+		)
+		<if test='rukdbh!=null and rukdbh!="" '>
+			and C.RUKDBH like #{rukdbh}
+		</if>
+		and C.YEWRQ <![CDATA[>=]]> #{sDate}
+		and C.YEWRQ <![CDATA[<=]]> #{eDate}
+		group by C.RUKDBH,Z.KUCZZMC,D.MINGC,Y.LEIXMC,C.ZHUANGT
+	</select>
+
+	<select id="getYansmx" resultType="java.util.Map">
+		<!-- select C.ID,C.CHEPH,C.CAOZSJ,(C.MAOZ-C.PIZ) JINGZ,C.PIAOZ from RL_YS_CHEPB 
+			C,RL_YS_CHEPB_QC Q where C.ID not in( select YUANDJ_ID from GX_CHURKDB_YUNSDJ 
+			where YUANDJLX = 2 and RUKDBH in (select RUKDBH from RL_KC_CHURKDB where 
+			YEWLX = #{yewlx}) ) and C.ID = Q.CHEPB_ID and C.ID in (select CHEPB_ID from 
+			RL_YS_CHEPB_SP) <if test=' sDate!=null and sDate!="" '> and Q.QINGCSJ <![CDATA[>=]]> 
+			#{sDate} </if> <if test=' eDate!=null and eDate!="" '> and Q.QINGCSJ <![CDATA[<=]]> 
+			#{eDate} </if> order by C.CAOZSJ desc -->
+		select GONGYSMC,min(CHEPH) B_CHEPH,max(CHEPH)
+		E_CHEPH,CAOZSJ,sum(JINGZ) JINGZ,sum(PIAOZ) PIAOZ,SAMCODE,count(1) CHES
+		from(
+		select C.CHEPH,substr(Q.QINGCSJ,0,10) CAOZSJ,(C.MAOZ-C.PIZ-c.zongkd)
+		JINGZ,C.PIAOZ,C.SAMCODE,G.MINGC GONGYSMC
+		from RL_YS_CHEPB C,RL_YS_CHEPB_QC Q,GONGYSB G where C.ID not in(
+		select YUANDJ_ID from GX_CHURKDB_YUNSDJ where YUANDJLX = 1 and RUKDBH in
+		(select RUKDBH from RL_KC_CHURKDB where YEWLX = #{yewlx})
+		) and C.ID = Q.CHEPB_ID and C.GONGYSB_ID = G.ID and C.ID in (select
+		CHEPB_ID from RL_YS_CHEPB_SP)
+		<if test=' sDate!=null and sDate!="" '>
+			and Q.QINGCSJ <![CDATA[>=]]>
+			#{sDate}
+		</if>
+		<if test=' eDate!=null and eDate!="" '>
+			and Q.QINGCSJ <![CDATA[<=]]>
+			#{eDate}
+		</if>
+		order by Q.QINGCSJ desc
+		) group by CAOZSJ,SAMCODE,GONGYSMC order by CAOZSJ desc
+	</select>
+
+	<select id="getYansmxMX" resultType="java.util.Map">
+		select G.MINGC GONGYSMC,C.CHEPH,substr(Q.QINGCSJ,0,10) CAOZSJ,(C.MAOZ-C.PIZ-c.zongkd)
+		JINGZ,C.PIAOZ from RL_YS_CHEPB C,RL_YS_CHEPB_QC Q,GONGYSB G where C.ID
+		not in(
+		select YUANDJ_ID from GX_CHURKDB_YUNSDJ where YUANDJLX = 1 and RUKDBH in
+		(select RUKDBH from RL_KC_CHURKDB where YEWLX = #{yewlx})
+		) and C.ID =
+		Q.CHEPB_ID and C.GONGYSB_ID = G.ID and C.ID in (select CHEPB_ID from
+		RL_YS_CHEPB_SP) and C.SAMCODE = #{samcode}
+		order by Q.QINGCSJ desc
+	</select>
+
+	<select id="getCaigddList" resultType="java.util.Map">
+		select
+		C.ID,C.BIANH,G.MINGC GONGYS,C.KAISSJ,C.JIESSJ,J.MINGC
+		JIHKJ,C.CAIGDDLX,W.WUZMC YUNSFS
+		from RL_HT_CAIGDDB C,GONGYSB G,JIHKJB J,RL_HT_CAIGDDB_SUB S,RL_KC_KUCWLB W
+		where C.GONGYS_ID = G.ID and C.KOUJ_ID = J.ID and S.HUOW_ID = W.ID and
+		C.ID = S.CAIGDDB_ID
+	</select>
+	<delete id="deleteMeikSub">
+		delete from RL_KC_RUK_MEIK_SUB
+		where INV_RECEIVE_ID=(select max(id) from RL_KC_RUK_MEIK where INV_NUMBER=#{0})
+	</delete>
+	<delete id="deleteMeik">
+		delete from RL_KC_RUK_MEIK where INV_NUMBER=#{0}
+	</delete>
+	<insert id="insertMeik">
+	 insert into RL_KC_RUK_MEIK
+	   (INV_NUMBER,
+		AUDIT_STATUS,
+		CREATED_BY_USERNAME,
+		CREATED_BY_USERID,
+		CREATION_DATE,
+		ID,
+		INV_TRANSACTION_TYPE_ID,
+		ORGID,
+		TRANSACTION_DATE)
+	   (select k.rukdbh,
+			   'A',
+			   '${caozr}',
+			   '${caozrid}',
+			   to_char(sysdate, 'yyyy-mm-dd hh24:mi:ss'),
+			   max(k.id),
+			   k.yewlx,
+			   k.zuz,
+			   k.yewrq
+		  from rl_kc_churkdb k
+		 where k.rukdbh = '${rukdbh}'
+		 group by k.yewlx, k.zuz, k.yewrq,k.rukdbh)
+
+	</insert>
+	<insert id="insertMeikSub">
+	insert into rl_kc_ruk_meik_sub(
+	  id,
+	  inv_receive_id,
+	  zuz,
+	  huoz,
+	  kuczz,
+	  kucwz,
+	  kucwl,
+	  sup_id,
+	  ruksl,
+	  transaction_amount,
+	  ticket_weight,
+	  gross_weight,
+	  tare,
+	  net_weight,
+	  QNETAR,
+	  MT,
+	  SULFUR_NAME,
+	  SULFUR_VALUE,
+	  TRANSACTION_AMOUNT_TAX,
+	  TRANSACTION_AMOUNT_NOT_TAX,
+	  FREIGHT_INCIDENTAL_AMOUNT,
+	  FREIGHT_INCIDENTAL_NOT_TAX,
+	  FEE_INCIDENTAL_AMOUNT,
+	  FEE_INCIDENTAL_TAX,
+	  FEE_INCIDENTAL_NOT_TAX,
+	  TOTAL_AMOUNT,
+	  TOTAL_AMOUNT_TAX,
+	  TOTAL_AMOUNT_NOT_TAX
+	)(
+		  select
+		k.id,(select id from rl_kc_ruk_meik where INV_NUMBER=#{0}),
+		k.zuz,k.huoz,k.kuczz,k.kucwz,k.kucwl,k.gongysb_id,nvl(k.yanssl,0),nvl(k.hansje,0),nvl(k.piaoz,0),nvl(k.MAOZ,0),nvl(k.PIZ,0),nvl(k.maoz,0)-nvl(k.PIZ,0),
+		nvl(h.QNET_AR,0),nvl(h.MT,0),'star',nvl(h.STAR,0),nvl(k.hansje,0)-nvl(k.jine,0),nvl(k.jine,0),nvl(k.HANSYF,0),nvl(k.BUHSYF,0),
+	nvl(k.hanszf,0),nvl(k.hanszf,0)-nvl(k.buhszf,0),nvl(k.buhszf,0),nvl(k.hansje,0)+nvl(k.hansyf,0)+nvl(k.hanszf,0),
+	nvl(k.hansje,0)+nvl(k.hansyf,0)+nvl(k.hanszf,0)-nvl(k.jine,0)-nvl(k.buhsyf,0)-nvl(k.buhszf,0),
+	nvl(k.jine,0)+nvl(k.buhsyf,0)+nvl(k.buhszf,0)
+	  from rl_kc_churkdb k left join RL_KC_HUAYBGB h on k.RUKDBH=h.RUKDH
+	  where k.rukdbh=#{0}
+)
+	</insert>
+<insert id="insertChurkmxhzb">
+
+insert into 
+rl_kc_churkmxhzb(
+id, 
+inv_org_id, 
+document_line_id, 
+document_number, 
+inv_transaction_type_id, 
+inv_item_id, 
+inv_subinventory, 
+inv_power_unit_id, 
+transaction_date, 
+inv_operation, 
+quantity, 
+price, 
+amount,
+ 
+balance_flag, 
+balance_date, 
+procure_cost_flag, 
+fuel_cost__flag, 
+quantity_flag, 
+money_flag, 
+period_date, 
+period_id, 
+created_by_userid, 
+created_by_username, 
+creation_date, 
+last_updated_by_userid, 
+last_updated_by_username, 
+last_update_date, 
+out_inv_subinventory, 
+org_id, 
+inv_subinventory_id, 
+car_name, 
+car_num, 
+sup_name, 
+sup_id, 
+carrier_unit, 
+way_mode, 
+delivery_date, 
+arrival_date, 
+coal_mine, 
+coal_mine_area, 
+coal, 
+start_sta, 
+bill_num, 
+period_type, 
+ticket_weight, 
+net_weight, 
+buckle_gangue, 
+buckle_water, 
+profitalbe_tones, 
+lose_tones, 
+tra_loss, 
+report_code, 
+test_date, 
+mt, 
+mad, 
+aad, 
+aar, 
+ad, 
+vad, 
+vdaf, 
+stad, 
+std, 
+had, 
+qnetar, 
+qnetar_j, 
+var, 
+vd, 
+star, 
+fcad, 
+dt, 
+st, 
+ft, 
+ht, 
+fee_item_name, 
+po_sub_id, 
+basic_price, 
+adjust_price, 
+settlement_quantity, 
+transaction_amount, 
+transaction_amount_tax, 
+transaction_amount_not_tax, 
+freight_incidental_name, 
+freight_incidental_quantity, 
+freight_incidental_amount, 
+freight_incidental_tax, 
+freight_incidental_not_tax, 
+fee_incidental_amount, 
+fee_incidental_tax, 
+fee_incidental_not_tax, 
+total_amount, 
+total_amount_tax, 
+inv_power_unit, 
+inv_team_unit)
+(
+select 
+seq_churkmxhzb_id.nextval,
+k.kuczz,
+k.id,
+k.rukdbh,
+k.yewlx,
+k.kucwl,
+k.kuczz,
+k.jiz_id,
+k.yewrq,
+decode(k.churklx,'入库',1,-1),
+nvl(k.ruksl,0)+nvl(k.yanssl,0),
+round(k.jine/(nvl(k.ruksl,0)+nvl(k.yanssl,0)),2),
+k.jine,0,
+'',
+'',
+'',
+'',
+'',
+'',
+'',
+'${caozrid}',
+'${caozr}',
+to_char(sysdate,'yyyy-mm-dd hh24:mi:ss'),
+'',
+'',
+'',
+'',
+k.zuz,
+'',
+'',
+'',
+'',
+g.mingc,
+k.gongysb_id,
+'',
+'汽车',
+'',
+'',
+'',
+'',
+k.kucwl,
+'',
+'',
+'',
+k.piaoz,
+k.maoz-k.piz,
+'',
+'',
+'',
+'',
+
+'',
+'',
+h.mt,
+h.mad,
+h.aad,
+h.aar,
+h.ad,
+h.vad,
+h.vdaf,
+h.stad,
+h.std,
+h.had,
+h.qnet_ar,
+round(h.qnet_ar*4.182/1000,2),
+h.var,
+'',
+h.star,
+h.fcad,
+'',
+'',
+'',
+'',
+
+'',
+'',
+'',
+'',
+'',
+k.hansje,
+k.hansje-k.jine,
+k.jine,
+
+'',
+'',
+k.hansyf,
+k.hansyf-k.buhsyf,
+k.buhsyf,
+
+k.hanszf,
+k.hanszf-k.buhszf,
+k.buhszf,
+
+k.hansje+k.hansyf+k.hanszf,
+k.hansje+k.hansyf+k.hanszf-k.jine-k.buhsyf-k.buhszf,
+k.jiz_id,
+k.banz_id
+from rl_kc_churkdb k left join rl_kc_huaybgb h on k.rukdbh=h.rukdh
+left join gongysb g on k.gongysb_id=g.id
+where k.rukdbh='${rukdbh}'
+)
+</insert>
+
+</mapper>

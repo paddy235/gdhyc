@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.zhiren.fuelmis.dc.dao.gongyspg.kaohzb.KaohzbDao">
+	<resultMap id="BaseResultMap" type="kaohzb">
+		<id column="ID" property="id" jdbcType="NUMERIC" />
+		<result column="DIANCXXB_ID" property="diancxxb_id" jdbcType="NUMERIC" />
+		<result column="ZHIBMC" property="zhibmc" jdbcType="VARCHAR" />
+		<result column="ZHIBDM" property="zhibdm" jdbcType="VARCHAR" />
+		<result column="ZHIBDW" property="zhibdw" jdbcType="VARCHAR" />
+		<result column="BEIZ" property="beiz" jdbcType="VARCHAR" />
+		<result column="ZHUANGT" property="zhuangt" jdbcType="NUMERIC" />
+		<result column="LEIB" property="leib" jdbcType="NUMERIC" />
+	</resultMap>
+
+	<insert id="addKaohzb" parameterType="kaohzb">
+	   insert into rl_gys_zhibdyb
+         (id, zhibmc, zhibdm, zhibdw, beiz, zhuangt, leib, diancxxb_id)
+       values
+         (SEQ_Kaohzb.NEXTVAL, #{zhibmc,jdbcType=VARCHAR}, #{zhibdm,jdbcType=VARCHAR}, #{zhibdw,jdbcType=VARCHAR},#{beiz,jdbcType=VARCHAR}, #{zhuangt,jdbcType=NUMERIC}, #{leib,jdbcType=NUMERIC}, #{diancxxb_id,jdbcType=NUMERIC})       
+	</insert>
+	
+	<sql id="Base_Column_List">
+		ID, ZHIBMC, ZHIBDM, ZHIBDW, BEIZ, ZHUANGT, LEIB, DIANCXXB_ID
+	</sql>
+	
+	<select id="getKaohzbById" resultMap="BaseResultMap">
+		select <include refid="Base_Column_List"></include> from rl_gys_zhibdyb
+		<if test="id != null">
+			where id = #{id}
+		</if>
+	</select>
+	
+	
+	
+	<select id="getKaohzbList" resultType="java.util.LinkedHashMap">
+		select a.ID,
+	       a.ZHIBMC,
+	       a.ZHIBDM,
+	       a.ZHIBDW,
+	       a.BEIZ,
+	       decode(ZHUANGT, '1', '启用', '0', '禁用') as zhuangt,
+	       decode(LEIB, '1', '数量指标', '2', '质量指标', '3', '其他指标') as leib,
+	       b.mingc as DIANCXXB_ID
+	  from rl_gys_zhibdyb a
+	  left join diancxxb b
+	    on a.diancxxb_id = b.id
+	</select>
+	
+	
+	<delete id="delKaohzb" parameterType="java.util.Map">
+	    delete from rl_gys_zhibdyb where ID = #{id}
+	</delete>
+	
+	
+	<update id="updateKaohzb" parameterType="Kaohzb">
+	    update rl_gys_zhibdyb 
+	    <trim prefix="SET" suffixOverrides=",">
+			<if test="zhibmc != null">ZHIBMC=#{zhibmc},</if>
+			<if test="zhibdm != null">ZHIBDM=#{zhibdm},</if>
+			<if test="zhibdw != null">ZHIBDW=#{zhibdw},</if>
+			<if test="beiz != null">BEIZ=#{beiz},</if>
+			<if test="zhuangt != null">ZHUANGT=#{zhuangt},</if>
+			<if test="leib != null">LEIB=#{leib},</if>
+			<if test="diancxxb_id != null">DIANCXXB_ID=#{diancxxb_id},</if>
+		</trim>
+		where ID=#{id}
+	</update>
+	
+	
+</mapper>

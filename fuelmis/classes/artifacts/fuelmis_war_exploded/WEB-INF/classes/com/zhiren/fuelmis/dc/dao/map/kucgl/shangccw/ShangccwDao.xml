@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiren.fuelmis.dc.dao.kucgl.shangccw.ShangccwDao">
+    <select id="getJiesdList" resultType="java.util.Map">
+        SELECT
+          j.id,
+          jiesbh                              jiesdh,
+          j.hetbh,                            hetbh,
+          g.mingc                             gonghr,
+          g.mingc                             shoukdw,
+          jiessl,
+          jiesjg                              danj,
+          jiesje                              hansje,
+          meikje                              buhsje,
+          decode(jieslx,'杂费结算','杂费结算','煤款结算' )         shuil,
+          shuik,
+          decode(shangccwzt, 1, '已上传', '未上传') zhuangt
+        FROM rl_js_yuejsdb j LEFT JOIN gongysb g ON j.gongysb_id = g.id
+        WHERE substr(j.caozrq, 0, 7) = '${riq}'
+        ORDER BY zhuangt
+	</select>
+    <select id="getHaoyList" resultType="java.util.Map">
+	select d.kucwl,(select wuzmc from rl_kc_kucwlb where id=d.kucwl) mingc, 
+   nvl(byfdhysl,0) byfdhysl,nvl(byfdhyje,0) byfdhyje,nvl(bygrhysl,0) bygrhysl,nvl(bygrhyje,0) bygrhyje,nvl(bycssl,0) bycssl,nvl(bycsje,0) bycsje
+   from 
+      (select kucwl,
+      sum(nvl(QUANTITY, 0)) as byfdhysl,
+      sum(nvl(AMOUNT, 0)) as byfdhyje
+      from RL_KC_CHURKMXHZB mx inner join  gy_dm_churkywlxDmb g on mx.inv_transaction_type_id=g.id
+      where PERIOD_ID = (select id from rl_kc_kuaijrqb where kuaijrq='${riq}')
+      and INV_OPERATION = -1 and g.id=6
+      group by  kucwl ) d left join 
+      
+     (select kucwl,
+      sum(nvl(QUANTITY, 0)) as bygrhysl,
+      sum(nvl(AMOUNT, 0)) as bygrhyje
+      from RL_KC_CHURKMXHZB mx inner join  gy_dm_churkywlxDmb g on mx.inv_transaction_type_id=g.id
+      where PERIOD_ID = (select id from rl_kc_kuaijrqb where kuaijrq='${riq}')
+      and INV_OPERATION = -1 and g.id=7
+      group by  kucwl) r on d.kucwl=r.kucwl left join 
+      
+           (select kucwl,
+      sum(nvl(QUANTITY, 0)) as bycssl,
+      sum(nvl(AMOUNT, 0)) as bycsje
+      from RL_KC_CHURKMXHZB mx inner join  gy_dm_churkywlxDmb g on mx.inv_transaction_type_id=g.id
+      where PERIOD_ID = (select id from rl_kc_kuaijrqb where kuaijrq='${riq}')
+      and INV_OPERATION = -1 and g.id!=7 and g.id!=6
+      group by  kucwl) c  on d.kucwl=c.kucwl 
+	</select>
+    <!-- 查询暂估到页面 -->
+    <select id="getZangList" resultType="java.util.Map">
+      select kucwl,(select wuzmc from rl_kc_kucwlb where id=kucwl) mingc,
+      round(sum(estimate_quantity),2) zang_sl,
+      round(sum(estimate_amount),2) zang_je
+      from rl_kc_month_total 
+      where period_id=(select id from rl_kc_kuaijrqb where kuaijrq='${riq}')
+       group by  kucwl
+	</select>
+    <update id="updateJiesdShangccwzt">
+		update rl_js_yuejsdb set shangccwzt=1 where id in (${ids})
+	</update>
+    <select id="getList4Xml" resultType="java.util.Map">
+        <if test="leix==0">
+            select distinct d.bianm compid,
+            '国电新疆红雁池发电有限公司' compname,
+            j.jiesbh djbh,
+            substr(h.fujmc, 0, length(h.fujmc) - 4) hetong,
+            '结算乌鲁木齐市'||g.quanc||decode(j.jieslx,'杂费结算','杂费结算','燃煤款') zhaiyao,
+            j.hetbh htbh,
+            '汽' zydd,
+            g.zuzjgdm ghdwbm,
+            g.quanc ghdwmc,
+            '783006563' shdwbm,
+            '国电新疆红雁池发电有限公司' shdwmc,
+            '' htwb,
+            g.zuzjgdm jsdwbm,
+            g.quanc jsdwmc,
+            (select k.id
+            from pinzb p
+            inner join rl_kc_kucwlb k
+            on p.mingc = k.wuzmc
+            where p.id = j.pinzb_id) mtpz,
+            round(j.jingz,0) fhsl,
+            j.ches cheshu,
+            replace(substr(j.shijd,0,10),'-','') fhrq,
+            replace(substr(j.shijd,0,10),'-','') ysrq,
+            replace(substr(j.shijd,12,10),'-','') ysrqjs ,
+            replace(substr(j.shijd,12,10),'-','') fhrqjs ,
+            j.jiesje yfkje,
+            j.jiesrz zlysxx_rl,
+            j.jieslf zlysxx_lf,
+            round(j.jingz,0) slysxx_yhsl,
+            round(j.jiessl,0) jssl,
+            j.hetjg htdj,
+            round(j.meikje/round(j.jiessl,0),2) bhsdj,
+            j.meikje bhsje,
+            decode(j.jieslx,'杂费结算','00000003','00000002') shuilv,
+            j.shuik shuie,
+            j.jiesjg hsdj,
+            j.jiesje jshj,
+            j.jieslx,
+            j.yzfxm
+            from rl_js_yuejsdb j
+            left join gongysb g
+            on j.gongysb_id = g.id
+            left join diancxxb d
+            on j.diancxxb_id = d.id
+            left join rl_ht_hetb h
+            on j.hetbh = h.hetbh
+            where j.id in (${ids})
+        </if>
+        <if test="leix==1">
+            select
+       /*     (select wuzmc from rl_kc_kucwlb where id=kucwl)||'暂估' rmcght,
+            '燃煤暂估' jsdwbm,
+            '燃煤暂估' jsdw,*/
+            decode(kucwl,4,'RMZG-002',5,'RMZG-003',6,'RMZG-001','RMZG-003') htbm,
+            kucwl meizhong,(select wuzmc from rl_kc_kucwlb where id=kucwl) mingc,
+            round(sum(estimate_quantity),2) bylmgjsl,
+            round(sum(estimate_amount),2) bylmgjmkje
+            from rl_kc_month_total
+            where period_id=(select id from rl_kc_kuaijrqb where kuaijrq='${riq}')
+            and kucwl in (${ids})
+            group by kucwl
+        </if>
+        <if test="leix==2">
+            select d.kucwl meizhong,
+            nvl(byfdhysl,0) byfdhysl,nvl(byfdhyje,0) byfdhyje,nvl(bygrhysl,0) bygrhysl,nvl(bygrhyje,0)
+            bygrhyje,nvl(bycssl,0) bycssl,nvl(bycsje,0) bycsje
+            from
+            (select kucwl,
+            sum(nvl(QUANTITY, 0)) as byfdhysl,
+            sum(nvl(AMOUNT, 0)) as byfdhyje
+            from RL_KC_CHURKMXHZB mx inner join gy_dm_churkywlxDmb g on mx.inv_transaction_type_id=g.id
+            where PERIOD_ID = (select kuaijq_id from gx_kuaijq_zuz where zhuangt='启用')
+            and INV_OPERATION = -1 and g.id=6
+            group by kucwl ) d left join
+
+            (select kucwl,
+            sum(nvl(QUANTITY, 0)) as bygrhysl,
+            sum(nvl(AMOUNT, 0)) as bygrhyje
+            from RL_KC_CHURKMXHZB mx inner join gy_dm_churkywlxDmb g on mx.inv_transaction_type_id=g.id
+            where PERIOD_ID = (select kuaijq_id from gx_kuaijq_zuz where zhuangt='启用')
+            and INV_OPERATION = -1 and g.id=7
+            group by kucwl) r on d.kucwl=r.kucwl left join
+
+            (select kucwl,
+            sum(nvl(QUANTITY, 0)) as bycssl,
+            sum(nvl(AMOUNT, 0)) as bycsje
+            from RL_KC_CHURKMXHZB mx inner join gy_dm_churkywlxDmb g on mx.inv_transaction_type_id=g.id
+            where PERIOD_ID = (select kuaijq_id from gx_kuaijq_zuz where zhuangt='启用')
+            and INV_OPERATION = -1 and g.id!=7 and g.id!=6
+            group by kucwl) c on d.kucwl=c.kucwl
+            where d.kucwl in (${ids})
+        </if>
+    </select>
+    <select id="getZangHejList" resultType="java.util.Map">
+	select 'ZG'||replace(kuaijrq,'-','')||substr(to_char(seq_danjbh.nextval,'0000000'),7,2) djbh from rl_kc_kuaijrqb where id=(select id from rl_kc_kuaijrqb where kuaijrq='${riq}')
+	</select>
+    <select id="getHaoyHead" resultType="java.util.Map">
+	select 'HY'||replace(kuaijrq,'-','')||substr(to_char(seq_danjbh.nextval,'0000000'),7,2) djbh from rl_kc_kuaijrqb where id=(select id from rl_kc_kuaijrqb where kuaijrq='${riq}')
+	</select>
+    <update id="updateMonthTotalShangccwzt">
+		update rl_kc_month_total set shangccwzt=1 where id in(${ids})
+	</update>
+</mapper>

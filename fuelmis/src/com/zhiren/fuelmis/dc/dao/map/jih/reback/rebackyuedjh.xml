@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiren.fuelmis.dc.dao.jih.reback.RebackYuedJhDao" >
+	<insert id="addAdviceHistory"  useGeneratedKeys="true" keyProperty="id">
+		insert into LISHTYJ(id,yewlx,huitlc_id,year,month,rebacker,diancxxb_id,rebackdate,advice)
+				values(${ID},'${yewlx}',${huitlc_id},'${year}','${month}','${rebacker}',${diancxxb_id},sysdate,'${advice}')			
+	</insert>
+	<update id="updateYuedjhZhib" flushCache="true">  
+		  UPDATE YUEDJH_ZHIB ZIB 
+			     SET ZIB.sanj_zt = #{zhuangt}
+			   WHERE ZIB.RIQ = to_date( #{riq},'yyyy-mm-dd')
+			     AND ZIB.DIANCXXB_ID =  #{diancxxb_id}
+    </update>
+    <update id="updateYuedjhZaf" flushCache="true">  
+    	  UPDATE YUEDJH_CAIG CG
+			     SET CG.sanj_zt = #{zhuangt}
+			   WHERE CG.RIQ =  to_date( #{riq},'yyyy-mm-dd')
+			     AND CG.DIANCXXB_ID = #{diancxxb_id} 
+    </update>
+    <update id="updateYuedjhCaig" flushCache="true"> 
+    	  UPDATE YUEDJH_ZAF ZAF
+			     SET ZAF.sanj_zt = #{zhuangt}
+			   WHERE ZAF.RIQ = to_date( #{riq},'yyyy-mm-dd')
+			     AND ZAF.DIANCXXB_ID =  #{diancxxb_id}
+    </update>
+   <!-- 添加合同意见历史 -->
+    <insert id="addHetAdviceHistory" >
+		insert into LISHTYJ
+	  		(id,  hetid, huitlc_id, rebacker, advice,rebackdate)
+		values
+	  		('${id}',  '${hetb_id}', '${huitlc_id}', '${rebacker}', '${advice}','${rebackdate}')
+	</insert>
+</mapper>

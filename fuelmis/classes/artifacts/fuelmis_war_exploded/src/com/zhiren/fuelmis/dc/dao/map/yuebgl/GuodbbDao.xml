@@ -1,0 +1,2740 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiren.fuelmis.dc.dao.yuebgl.GuodbbDao">
+	<select id="getMeishcbb" resultType="java.util.LinkedHashMap">
+		SELECT DECODE(GROUPING(Z.TJKJ),
+
+              1,
+              '总计',
+              DECODE(GROUPING(JIHKJB.MINGC),
+                     1,
+                     '*' || Z.TJKJ,
+                     DECODE(GROUPING(z.QUANC),
+                            1,
+                            '#' || decode(JIHKJB.MINGC,
+                                          '市场采购',
+                                          '地方矿',
+                                          JIHKJB.MINGC) || '小计',
+                            DECODE(GROUPING(Z.DQMC),
+                                   1,
+                                   <![CDATA['<I>'||z.QUANC|| '</I>',]]> DECODE(GROUPING(yunsfsb.MINGC),
+                                              1,
+                                              Z.DQMC || '小计',
+                                              yunsfsb.MINGC))))) AS KUANGB,
+       DECODE(GROUPING(PINZB.MINGC), 1, '－', PINZB.MINGC) AS MEIZ,
+       Z.FENX,
+       ROUND(SUM(decode(z.diancxxb_id, 215, QICKC * 0.4, QICKC)), 0) AS QICKC,
+       ROUND(SUM(decode(z.diancxxb_id,
+                        215,
+                        (JINGZ + YUNS) * 0.4,
+                        (JINGZ + YUNS))),
+             0) AS JINGZ,
+       ROUND(SUM(decode(z.diancxxb_id, 215, YUNS * 0.4, YUNS)), 0) AS YUNS,
+       ROUND(SUM(decode(z.diancxxb_id, 215, HEJ * 0.4, HEJ)), 0) AS HAOYHJ,
+       ROUND(SUM(decode(z.diancxxb_id, 215, FADY * 0.4, FADY)), 0) AS FADY,
+       ROUND(SUM(decode(z.diancxxb_id, 215, GONGRY * 0.4, GONGRY)), 0) AS GONGRY,
+       ROUND(SUM(decode(z.diancxxb_id, 215, QITH * 0.4, QITH)), 0) AS QITY,
+       ROUND(SUM(decode(z.diancxxb_id, 215, SUNH * 0.4, SUNH)), 0) AS SUNH,
+       ROUND(SUM(decode(z.diancxxb_id, 215, DIAOCL * 0.4, DIAOCL)), 0) AS DIAOCL,
+       ROUND(SUM(decode(z.diancxxb_id, 215, SHUIFTZ * 0.4, SHUIFTZ)), 0) AS SHUIFTZ,
+       ROUND(SUM(decode(z.diancxxb_id, 215, PANYK * 0.4, PANYK)), 0) AS PANYK,
+       ROUND(SUM(decode(z.diancxxb_id, 215, KUC * 0.4, KUC)), 0) AS KUC
+  FROM (SELECT K.ID,
+                       DQ.DQID,
+                       DQ.DQMC,
+                       K.GONGYSB_ID,
+                       K.JIHKJB_ID,
+                       K.PINZB_ID,
+                       K.YUNSFSB_ID,
+                       K.DIANCXXB_ID,
+                       NVL('本月', '') AS FENX                
+                  FROM YUETJKJB K left join VWGONGYSDQ DQ on DQ.ID = K.GONGYSB_ID
+                 WHERE substr(K.RIQ,0,7) = '${riq}'    
+                   AND K.DIANCXXB_ID = ${dianc}
+                union
+                SELECT K.ID,
+                       DQ.DQID,
+                       DQ.DQMC,
+                       K.GONGYSB_ID,
+                       K.JIHKJB_ID,
+                       K.PINZB_ID,
+                       K.YUNSFSB_ID,
+                       K.DIANCXXB_ID,
+                       NVL('累计', '') AS FENX
+                  FROM YUETJKJB K left join VWGONGYSDQ DQ on DQ.ID = K.GONGYSB_ID
+                 WHERE substr(K.RIQ,0,7) = '${riq}'  
+                   AND K.DIANCXXB_ID = ${dianc}) KJ 
+                 left join  YUESLB SL on KJ.ID = SL.YUETJKJB_ID AND KJ.FENX = SL.FENX
+               left join JIHKJB J on KJ.JIHKJB_ID = J.ID
+               left join MEIKDQB on KJ.DQID = MEIKDQB.ID 
+               left join YUEHCB HC on KJ.FENX = HC.FENX
+               left join SHENGFB on MEIKDQB.SHENGFB_ID = SHENGFB.ID) Z,
+       GONGYSB,
+       JIHKJB,
+       PINZB,
+       yunsfsb
+ WHERE Z.GONGYSB_ID = GONGYSB.ID
+   AND Z.JIHKJB_ID = JIHKJB.ID
+   AND Z.PINZB_ID = PINZB.ID
+   and z.yunsfsb_id = yunsfsb.id
+ GROUP BY ROLLUP(Z.FENX,
+                 Z.TJKJ,
+                 JIHKJB.MINGC,
+                 z.QUANC,
+                 Z.DQMC,
+                 yunsfsb.mingc,
+                 GONGYSB.MINGC,
+                 PINZB.MINGC)
+HAVING GROUPING(GONGYSB.MINGC) + GROUPING(Z.FENX) = 1
+ ORDER BY Z.TJKJ DESC,
+          JIHKJB.MINGC DESC,
+          z.QUANC DESC,
+          GROUPING(Z.DQMC) DESC,
+          Z.DQMC,
+          grouping(GONGYSB.MINGC) DESC,
+          GONGYSB.MINGC,
+          grouping(PINZB.MINGC) desc,
+          PINZB.MINGC,
+          grouping(yunsfsb.mingc) desc,
+          yunsfsb.mingc,
+          grouping(FENX) desc,
+          FENX
+
+
+		1,'总计',
+		DECODE(GROUPING(JIHKJB.MINGC),
+		1,'*' || Z.TJKJ,
+		DECODE(GROUPING(z.QUANC),
+		1,
+		'#' ||
+		decode(JIHKJB.MINGC,'市场采购','地方矿',JIHKJB.MINGC) || '小计',
+		DECODE(GROUPING(Z.DQMC),
+		1,
+		<![CDATA['<I>'||z.QUANC||'</I>',]]>
+		DECODE(GROUPING(yunsfsb.MINGC),
+		1,
+		Z.DQMC || '小计',
+		yunsfsb.MINGC)))))
+		AS
+		KUANGB,
+		DECODE(GROUPING(PINZB.MINGC), 1, '－', PINZB.MINGC) AS MEIZ,
+		Z.FENX,
+		ROUND(SUM(decode(z.diancxxb_id,215,QICKC*0.4,QICKC)), 0) AS
+		QICKC,
+		ROUND(SUM(decode(z.diancxxb_id,215,(JINGZ+YUNS)*0.4,(JINGZ+YUNS))), 0)
+		AS JINGZ,
+		ROUND(SUM(decode(z.diancxxb_id,215,YUNS*0.4,YUNS)), 0) AS
+		YUNS,
+		ROUND(SUM(decode(z.diancxxb_id,215,HEJ*0.4,HEJ)), 0) AS HAOYHJ,
+		ROUND(SUM(decode(z.diancxxb_id,215,FADY*0.4,FADY)), 0) AS FADY,
+		ROUND(SUM(decode(z.diancxxb_id,215,GONGRY*0.4,GONGRY)), 0) AS GONGRY,
+		ROUND(SUM(decode(z.diancxxb_id,215,QITH*0.4,QITH)), 0) AS QITY,
+		ROUND(SUM(decode(z.diancxxb_id,215,SUNH*0.4,SUNH)), 0) AS SUNH,
+		ROUND(SUM(decode(z.diancxxb_id,215,DIAOCL*0.4,DIAOCL)), 0) AS DIAOCL,
+		ROUND(SUM(decode(z.diancxxb_id,215,SHUIFTZ*0.4,SHUIFTZ)), 0) AS
+		SHUIFTZ,
+		ROUND(SUM(decode(z.diancxxb_id,215,PANYK*0.4,PANYK)), 0) AS
+		PANYK,
+		ROUND(SUM(decode(z.diancxxb_id,215,KUC*0.4,KUC)), 0) AS KUC
+		FROM
+		(SELECT KJ.GONGYSB_ID,
+		KJ.DQID,
+		KJ.DQMC,
+		SHENGFB.QUANC QUANC,
+		DECODE(KJ.JIHKJB_ID, 1, '重点订货', 3, '重点订货', J.MINGC) TJKJ,
+		KJ.JIHKJB_ID,
+		KJ.PINZB_ID,
+		YUNSFSB_ID,
+		DIANCXXB_ID,
+		KJ.FENX,
+		SL.JINGZ AS
+		JINGZ,
+		SL.YUNS,
+		decode(KJ.FENX,'本月',HC.QICKC,GETQICKCLJ(KJ.ID))QICKC,
+		HC.FADY + HC.GONGRY + HC.QITH + HC.SUNH AS HEJ,
+		HC.FADY,
+		HC.GONGRY,
+		HC.QITH,
+		HC.SUNH,
+		-HC.DIAOCL DIAOCL,
+		HC.SHUIFCTZ SHUIFTZ,
+		HC.PANYK,
+		HC.KUC
+		FROM YUESLB SL,
+		YUEHCB HC,
+		(SELECT K.ID,
+		DQ.DQID,
+		DQ.DQMC,
+		K.GONGYSB_ID,
+		K.JIHKJB_ID,
+		K.PINZB_ID,
+		K.YUNSFSB_ID,
+		K.DIANCXXB_ID,
+		NVL('本月', '') AS
+		FENX
+		FROM YUETJKJB K, VWGONGYSDQ DQ
+		WHERE
+		to_char(to_date(K.RIQ,'yyyy-MM-dd'),'yyyy-MM-dd') =#{riq}||'-01'
+		AND
+		DQ.ID = K.GONGYSB_ID
+		<if test='dianc != ""'>
+			AND K.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		</if>
+		union
+		SELECT K.ID,
+		DQ.DQID,
+		DQ.DQMC,
+		K.GONGYSB_ID,
+		K.JIHKJB_ID,
+		K.PINZB_ID,
+		K.YUNSFSB_ID,
+		K.DIANCXXB_ID,
+		NVL('累计', '') AS FENX
+		FROM YUETJKJB K,
+		VWGONGYSDQ DQ
+		WHERE to_char(to_date(K.RIQ,'yyyy-MM-dd'),'yyyy-MM-dd') =
+		#{riq}||'-01'
+		AND
+		DQ.ID
+		= K.GONGYSB_ID
+		<if test='dianc != ""'>
+			AND K.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		</if>
+		) KJ,
+		JIHKJB J,
+		MEIKDQB,
+		SHENGFB
+		WHERE KJ.ID = SL.YUETJKJB_ID(+)
+		AND
+		KJ.FENX = SL.FENX(+)
+		AND KJ.ID = HC.YUETJKJB_ID(+)
+		AND KJ.FENX =
+		HC.FENX(+)
+		AND KJ.JIHKJB_ID = J.ID
+		AND KJ.DQID = MEIKDQB.ID
+		AND
+		MEIKDQB.SHENGFB_ID = SHENGFB.ID) Z,GONGYSB,JIHKJB,PINZB,yunsfsb
+		WHERE
+		Z.GONGYSB_ID = GONGYSB.ID
+		AND Z.JIHKJB_ID = JIHKJB.ID
+		AND Z.PINZB_ID =
+		PINZB.ID
+		and z.yunsfsb_id=yunsfsb.id
+		GROUP BY
+		ROLLUP(Z.FENX,Z.TJKJ,JIHKJB.MINGC,z.QUANC,Z.DQMC,yunsfsb.mingc,GONGYSB.MINGC,PINZB.MINGC)
+		HAVING GROUPING(GONGYSB.MINGC) + GROUPING(Z.FENX) = 1
+		ORDER BY Z.TJKJ
+		DESC,JIHKJB.MINGC DESC,z.QUANC DESC, GROUPING(Z.DQMC)
+		DESC,Z.DQMC,grouping(GONGYSB.MINGC)DESC,
+		GONGYSB.MINGC
+		,grouping(PINZB.MINGC)desc,PINZB.MINGC,grouping(yunsfsb.mingc)desc,yunsfsb.mingc,grouping(FENX)desc,FENX
+	</select>
+
+	<select id="getShulysbb" resultType="java.util.LinkedHashMap">
+		SELECT DECODE(GROUPING(Z.TJKJ),
+		1,
+		'总计',
+		DECODE(GROUPING(JIHKJB.MINGC),
+		1,
+		'*' || Z.TJKJ,
+		DECODE(GROUPING(Z.QUANC),
+		1,
+		'#' || DECODE(JIHKJB.MINGC,
+		'市场采购',
+		'地方矿',
+		JIHKJB.MINGC) || '小计',
+		DECODE(GROUPING(Z.DQMC),
+		1,
+		<![CDATA['<I>' || Z.QUANC || '</I>',]]>
+		DECODE(GROUPING(yunsfsb.mingc),
+		1,
+		Z.DQMC || '小计',
+		yunsfsb.mingc)))))
+		AS
+		KUANGB,
+		Z.FENX,
+		round(SUM(DECODE(Z.DIANCXXB_ID, 215, JINCML * 0.4,
+		JINCML)), 0) AS JINCML,
+		round(SUM(DECODE(Z.DIANCXXB_ID, 215, HEJ * 0.4,
+		HEJ)), 0) AS HEJ,
+		round(SUM(DECODE(Z.DIANCXXB_ID, 215, JIANJL * 0.4,
+		JIANJL)), 0) AS
+		GUOHSL,
+		round(SUM(DECODE(Z.DIANCXXB_ID,
+		215,
+		(HEJ -
+		JIANJL) * 0.4,
+		(HEJ - JIANJL))),
+		0) AS JIANCSL,
+		round(DECODE(SUM(DECODE(Z.DIANCXXB_ID, 215, JINCML * 0.4, JINCML)),
+		0,
+		0,
+		ROUND(SUM(DECODE(Z.DIANCXXB_ID,
+		215,
+		JIANJL * 0.4,
+		JIANJL)) /
+		SUM(DECODE(Z.DIANCXXB_ID,
+		215,
+		JINCML * 0.4,
+		JINCML)) * 100,
+		2)),
+		2) AS
+		GUOHL,
+		round(DECODE(SUM(DECODE(Z.DIANCXXB_ID, 215, JINCML * 0.4,
+		JINCML)),
+		0,
+		0,
+		ROUND(SUM(DECODE(Z.DIANCXXB_ID,
+		215,
+		JIANCL * 0.4,
+		JIANCL))
+		/
+		SUM(DECODE(Z.DIANCXXB_ID,
+		215,
+		JINCML * 0.4,
+		JINCML)) * 100,
+		2)),
+		2) AS
+		JIANCL,
+		round(SUM(DECODE(Z.DIANCXXB_ID,
+		215,
+		(NVL(YINGD, 0) - NVL(KUID,
+		0)) * 0.4,
+		(NVL(YINGD, 0) - NVL(KUID, 0)))),
+		0) AS YINGK,
+		round(SUM(DECODE(Z.DIANCXXB_ID,
+		215,
+		(NVL(YINGD, 0) - NVL(KUID, 0)) *
+		0.4,
+		(NVL(YINGD, 0) - NVL(KUID, 0)))),
+		0) AS GUOHYK,
+		0 AS JIANCYK,
+		round(SUM(DECODE(Z.DIANCXXB_ID,
+		215,
+		(NVL(KUIDZJE, 0)) * 0.4,
+		NVL(KUIDZJE, 0))),
+		2) AS KUIDZJE,
+		round(SUM(DECODE(Z.DIANCXXB_ID,
+		215,
+		NVL(SUOPJE, 0) * 0.4,
+		NVL(SUOPJE, 0))),
+		2) AS SUOPJE,
+		round(DECODE(SUM(DECODE(Z.DIANCXXB_ID, 215, KUIDZJE * 0.4, KUIDZJE)),
+		0,
+		0,
+		ROUND(SUM(NVL(DECODE(Z.DIANCXXB_ID,
+		215,
+		SUOPJE * 0.4,
+		SUOPJE),
+		0)) /
+		SUM(DECODE(Z.DIANCXXB_ID,
+		215,
+		KUIDZJE * 0.4,
+		KUIDZJE)) * 100,
+		2)),
+		2) AS
+		SUOPL
+		FROM (SELECT KJ.GONGYSB_ID,
+		KJ.DQID,
+		KJ.DQMC,
+		SHENGFB.QUANC QUANC,
+		DECODE(KJ.JIHKJB_ID, 1, '重点订货', 3, '重点订货', J.MINGC) TJKJ,
+		KJ.JIHKJB_ID,
+		KJ.PINZB_ID,
+		KJ.YUNSFSB_ID,
+		DIANCXXB_ID,
+		KJ.FENX,
+		SL.JINGZ +
+		sl.yuns AS JINCML,
+		SL.JINGZ + sl.yuns AS HEJ,
+		SL.JINGZ + sl.yuns AS
+		JIANJL,
+		0 AS JIANCL,
+		0 YINGD,
+		0 YINGDZJE,
+		0 KUID,
+		SL.KUIDZJE,
+		SL.SUOPSL,
+		SL.SUOPJE
+		FROM YUESLB SL,
+		(SELECT K.ID,
+		DQ.DQID,
+		DQ.DQMC,
+		K.GONGYSB_ID,
+		K.JIHKJB_ID,
+		K.PINZB_ID,
+		K.YUNSFSB_ID,
+		K.DIANCXXB_ID,
+		NVL('本月', '') AS
+		FENX
+		FROM YUETJKJB K, VWMEIKDQ DQ
+		WHERE SUBSTR(K.RIQ,0,7) = #{riq}
+		AND
+		DQ.ID = K.GONGYSB_ID
+		AND K.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		UNION
+		SELECT K.ID,
+		DQ.DQID,
+		DQ.DQMC,
+		K.GONGYSB_ID,
+		K.JIHKJB_ID,
+		K.PINZB_ID,
+		K.YUNSFSB_ID,
+		K.DIANCXXB_ID,
+		NVL('累计', '') AS FENX
+		FROM YUETJKJB K,
+		VWMEIKDQ DQ
+		WHERE SUBSTR(K.RIQ,0,7) = #{riq}
+		AND DQ.ID = K.GONGYSB_ID
+		AND K.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}) KJ,
+		JIHKJB J,
+		MEIKDQB,
+		SHENGFB
+		WHERE KJ.ID = SL.YUETJKJB_ID(+)
+		AND KJ.FENX = SL.FENX(+)
+		AND
+		KJ.JIHKJB_ID = J.ID
+		AND KJ.DQID = MEIKDQB.ID
+		AND MEIKDQB.SHENGFB_ID =
+		SHENGFB.ID) Z,
+		meikxxb,
+		JIHKJB,
+		PINZB,
+		yunsfsb
+		WHERE Z.GONGYSB_ID =
+		meikxxb.ID
+		AND Z.JIHKJB_ID = JIHKJB.ID
+		AND Z.PINZB_ID = PINZB.ID
+		and
+		Z.yunsfsb_id = yunsfsb.id
+		GROUP BY ROLLUP(Z.FENX,
+		Z.TJKJ,
+		JIHKJB.MINGC,
+		z.QUANC,
+		Z.DQMC,
+		yunsfsb.mingc,
+		meikxxb.MINGC)
+		HAVING
+		GROUPING(meikxxb.MINGC) + GROUPING(Z.FENX) = 1
+		ORDER BY Z.TJKJ DESC,
+		JIHKJB.MINGC DESC,
+		z.QUANC DESC,
+		GROUPING(Z.DQMC) DESC,
+		Z.DQMC,
+		grouping(meikxxb.MINGC) DESC,
+		meikxxb.MINGC,
+		grouping(yunsfsb.mingc)
+		desc,
+		yunsfsb.mingc,
+		grouping(FENX) desc,
+		FENX
+	</select>
+
+	<select id="getShulysbbFkmx" resultType="java.util.LinkedHashMap">
+		SELECT DECODE(GROUPING(Z.TJKJ),
+		1,
+		'总计',
+		DECODE(GROUPING(JIHKJB.MINGC),
+		1,
+		'*' || Z.TJKJ,
+		DECODE(GROUPING(Z.QUANC),
+		1,
+		'#' || DECODE(JIHKJB.MINGC,
+		'市场采购',
+		'地方矿',
+		JIHKJB.MINGC) || '小计',
+		DECODE(GROUPING(Z.DQMC),
+		1,
+        <![CDATA['<I>' || Z.QUANC || '</I>',]]>
+		DECODE(GROUPING(meikxxb.MINGC),
+		1,
+		Z.DQMC || '小计',
+		decode(grouping(yunsfsb.mingc),
+		1,
+		meikxxb.MINGC,
+		yunsfsb.mingc)))))) AS
+		KUANGB,
+		--DECODE(GROUPING(PINZB.MINGC), 1, '－', PINZB.MINGC) AS MEIZ,
+		Z.FENX,
+		round(SUM(DECODE(Z.DIANCXXB_ID, 215, JINCML * 0.4, JINCML)), 0)
+		AS JINCML,
+		round(SUM(DECODE(Z.DIANCXXB_ID, 215, HEJ * 0.4, HEJ)), 0) AS
+		HEJ,
+		round(SUM(DECODE(Z.DIANCXXB_ID, 215, JIANJL * 0.4, JIANJL)), 0) AS
+		GUOHSL,
+		round(SUM(DECODE(Z.DIANCXXB_ID,
+		215,
+		(HEJ - JIANJL) * 0.4,
+		(HEJ -
+		JIANJL))),
+		0) AS JIANCSL,
+		round(DECODE(SUM(DECODE(Z.DIANCXXB_ID, 215,
+		JINCML * 0.4, JINCML)),
+		0,
+		0,
+		ROUND(SUM(DECODE(Z.DIANCXXB_ID,
+		215,
+		JIANJL *
+		0.4,
+		JIANJL)) /
+		SUM(DECODE(Z.DIANCXXB_ID,
+		215,
+		JINCML * 0.4,
+		JINCML)) *
+		100,
+		2)),
+		2) AS GUOHL,
+		round(DECODE(SUM(DECODE(Z.DIANCXXB_ID, 215, JINCML
+		* 0.4, JINCML)),
+		0,
+		0,
+		ROUND(SUM(DECODE(Z.DIANCXXB_ID,
+		215,
+		JIANCL * 0.4,
+		JIANCL)) /
+		SUM(DECODE(Z.DIANCXXB_ID,
+		215,
+		JINCML * 0.4,
+		JINCML)) * 100,
+		2)),
+		2) AS JIANCL,
+		round(SUM(DECODE(Z.DIANCXXB_ID,
+		215,
+		(NVL(YINGD, 0) -
+		NVL(KUID, 0)) * 0.4,
+		(NVL(YINGD, 0) - NVL(KUID, 0)))),
+		0) AS YINGK,
+		round(SUM(DECODE(Z.DIANCXXB_ID,
+		215,
+		(NVL(YINGD, 0) - NVL(KUID, 0)) *
+		0.4,
+		(NVL(YINGD, 0) - NVL(KUID, 0)))),
+		0) AS GUOHYK,
+		0 AS JIANCYK,
+		round(SUM(DECODE(Z.DIANCXXB_ID,
+		215,
+		(NVL(KUIDZJE, 0)) * 0.4,
+		NVL(KUIDZJE, 0))),
+		2) AS KUIDZJE,
+		round(SUM(DECODE(Z.DIANCXXB_ID,
+		215,
+		NVL(SUOPJE, 0) * 0.4,
+		NVL(SUOPJE, 0))),
+		2) AS SUOPJE,
+		round(DECODE(SUM(DECODE(Z.DIANCXXB_ID, 215, KUIDZJE * 0.4, KUIDZJE)),
+		0,
+		0,
+		ROUND(SUM(NVL(DECODE(Z.DIANCXXB_ID,
+		215,
+		SUOPJE * 0.4,
+		SUOPJE),
+		0)) /
+		SUM(DECODE(Z.DIANCXXB_ID,
+		215,
+		KUIDZJE * 0.4,
+		KUIDZJE)) * 100,
+		2)),
+		2) AS
+		SUOPL
+		FROM (SELECT KJ.GONGYSB_ID,
+		KJ.DQID,
+		KJ.DQMC,
+		SHENGFB.QUANC QUANC,
+		DECODE(KJ.JIHKJB_ID, 1, '重点订货', 3, '重点订货', J.MINGC) TJKJ,
+		KJ.JIHKJB_ID,
+		KJ.PINZB_ID,
+		KJ.YUNSFSB_ID,
+		DIANCXXB_ID,
+		KJ.FENX,
+		SL.JINGZ +
+		sl.yuns AS JINCML,
+		SL.JINGZ + sl.yuns AS HEJ,
+		SL.JINGZ + sl.yuns AS
+		JIANJL,
+		0 AS JIANCL,
+		0 YINGD,
+		0 YINGDZJE,
+		0 KUID,
+		SL.KUIDZJE,
+		SL.SUOPSL,
+		SL.SUOPJE
+		FROM YUESLB SL,
+		(SELECT K.ID,
+		DQ.DQID,
+		DQ.DQMC,
+		K.GONGYSB_ID,
+		K.JIHKJB_ID,
+		K.PINZB_ID,
+		K.YUNSFSB_ID,
+		K.DIANCXXB_ID,
+		NVL('本月', '') AS
+		FENX
+		FROM YUETJKJB K, VWMEIKDQ DQ
+		WHERE SUBSTR(K.RIQ,0,7) = #{riq}
+		AND
+		DQ.ID = K.GONGYSB_ID
+		AND K.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		UNION
+		SELECT K.ID,
+		DQ.DQID,
+		DQ.DQMC,
+		K.GONGYSB_ID,
+		K.JIHKJB_ID,
+		K.PINZB_ID,
+		K.YUNSFSB_ID,
+		K.DIANCXXB_ID,
+		NVL('累计', '') AS FENX
+		FROM YUETJKJB K,
+		VWMEIKDQ DQ
+		WHERE SUBSTR(K.RIQ,0,7) = #{riq}
+		AND DQ.ID = K.GONGYSB_ID
+		AND K.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}) KJ,
+		JIHKJB J,
+		MEIKDQB,
+		SHENGFB
+		WHERE KJ.ID = SL.YUETJKJB_ID(+)
+		AND KJ.FENX = SL.FENX(+)
+		AND
+		KJ.JIHKJB_ID = J.ID
+		AND KJ.DQID = MEIKDQB.ID
+		AND MEIKDQB.SHENGFB_ID =
+		SHENGFB.ID) Z,
+		meikxxb,
+		JIHKJB,
+		PINZB,
+		yunsfsb
+		WHERE Z.GONGYSB_ID =
+		meikxxb.ID
+		AND Z.JIHKJB_ID = JIHKJB.ID
+		AND Z.PINZB_ID = PINZB.ID
+		and
+		Z.yunsfsb_id = yunsfsb.id
+		GROUP BY ROLLUP(Z.FENX,
+		Z.TJKJ,
+		JIHKJB.MINGC,
+		z.QUANC,
+		Z.DQMC,
+		meikxxb.MINGC,
+		yunsfsb.mingc)
+		HAVING NOT GROUPING(FENX) =
+		1
+		ORDER BY Z.TJKJ DESC,
+		JIHKJB.MINGC DESC,
+		z.QUANC DESC,
+		GROUPING(Z.DQMC)
+		DESC,
+		Z.DQMC,
+		grouping(meikxxb.MINGC) DESC,
+		meikxxb.MINGC,
+		grouping(yunsfsb.mingc) desc,
+		yunsfsb.mingc,
+		grouping(FENX) desc,
+		FENX
+	</select>
+
+	<select id="getZhilysbb" resultType="java.util.LinkedHashMap">
+		SELECT DECODE(GROUPING(Z.TJKJ),
+		1,
+		'总计',
+		DECODE(GROUPING(JIHKJB.MINGC),
+		1,
+		'*' || Z.TJKJ,
+		DECODE(GROUPING(Z.QUANC),
+		1,
+		'#' || DECODE(JIHKJB.MINGC,
+		'市场采购',
+		'地方矿',
+		JIHKJB.MINGC) || '小计',
+		DECODE(GROUPING(Z.DQMC),
+		1,
+		<![CDATA['<I>' || Z.QUANC || '</I>',]]>
+		DECODE(GROUPING(yunsfsb.mingc),
+		1,
+		Z.DQMC || '小计',
+		yunsfsb.mingc)))))
+		AS
+		KUANGB,
+		FX,
+		round(SUM(DECODE(Z.DIANCXXB_ID,215,JINCML*0.4,JINCML)),0) AS
+		JINML,
+		round(SUM(DECODE(Z.DIANCXXB_ID,215,YANSML*0.4,YANSML)),0) AS
+		YANSSL,
+		DECODE(SUM(DECODE(Z.DIANCXXB_ID,215,JINCML*0.4,JINCML)),0,0,ROUND(SUM(DECODE(Z.DIANCXXB_ID,215,JINCML*0.4,JINCML))
+		/ SUM(DECODE(Z.DIANCXXB_ID,215,JINCML*0.4,JINCML)) * 100, 2)) AS
+		JIANZL,
+		DECODE(SUM(DECODE(Z.DIANCXXB_ID,215,JINCML*0.4,JINCML)),0,0,ROUND_NEW(SUM(DECODE(Z.DIANCXXB_ID,215,JINCML*0.4,JINCML)
+		* MT_KF) / SUM(DECODE(Z.DIANCXXB_ID,215,JINCML*0.4,JINCML)), 1)) AS
+		MT_KF,
+		DECODE(SUM(DECODE(Z.DIANCXXB_ID,215,JINCML*0.4,JINCML)),0,0,ROUND_NEW(SUM(DECODE(Z.DIANCXXB_ID,215,JINCML*0.4,JINCML)
+		* AAR_KF) / SUM(DECODE(Z.DIANCXXB_ID,215,JINCML*0.4,JINCML)), 2)) AS
+		AAR_KF,
+		DECODE(SUM(DECODE(Z.DIANCXXB_ID,215,JINCML*0.4,JINCML)),0,0,ROUND_NEW(SUM(DECODE(Z.DIANCXXB_ID,215,JINCML*0.4,JINCML)
+		* Vdaf_KF) / SUM(DECODE(Z.DIANCXXB_ID,215,JINCML*0.4,JINCML)), 2)) AS
+		Vdaf_KF,
+		DECODE(SUM(DECODE(Z.DIANCXXB_ID,215,JINCML*0.4,JINCML)),0,0,ROUND_NEW(SUM(DECODE(Z.DIANCXXB_ID,215,JINCML*0.4,JINCML)
+		* QNET_AR_KF) / SUM(DECODE(Z.DIANCXXB_ID,215,JINCML*0.4,JINCML)), 2))
+		AS QNET_AR_KF,
+		DECODE(SUM(DECODE(Z.DIANCXXB_ID,215,JINCML*0.4,JINCML)),0,0,ROUND_NEW(SUM(DECODE(Z.DIANCXXB_ID,215,JINCML*0.4,JINCML)
+		* STD_KF) / SUM(DECODE(Z.DIANCXXB_ID,215,JINCML*0.4,JINCML)), 2)) AS
+		ST_D_KF,
+		DECODE(SUM(DECODE(Z.DIANCXXB_ID,215,JINCML*0.4,JINCML)),0,0,ROUND_NEW(SUM(DECODE(Z.DIANCXXB_ID,215,JINCML*0.4,JINCML)
+		* MT) / SUM(DECODE(Z.DIANCXXB_ID,215,JINCML*0.4,JINCML)), 1)) AS Mar,
+		DECODE(SUM(DECODE(Z.DIANCXXB_ID,215,JINCML*0.4,JINCML)),0,0,ROUND_NEW(SUM(DECODE(Z.DIANCXXB_ID,215,JINCML*0.4,JINCML)
+		* AAD) / SUM(DECODE(Z.DIANCXXB_ID,215,JINCML*0.4,JINCML)), 2)) AS AAD,
+		DECODE(SUM(DECODE(Z.DIANCXXB_ID,215,JINCML*0.4,JINCML)),0,0,ROUND_NEW(SUM(DECODE(Z.DIANCXXB_ID,215,JINCML*0.4,JINCML)
+		* AD) / SUM(DECODE(Z.DIANCXXB_ID,215,JINCML*0.4,JINCML)), 2)) AS AD,
+		DECODE(SUM(DECODE(Z.DIANCXXB_ID,215,JINCML*0.4,JINCML)),0,0,ROUND_NEW(SUM(DECODE(Z.DIANCXXB_ID,215,JINCML*0.4,JINCML)
+		* Vdaf) / SUM(DECODE(Z.DIANCXXB_ID,215,JINCML*0.4,JINCML)), 2)) AS
+		Vdaf,
+		ROUND_NEW(DECODE(SUM(DECODE(Z.DIANCXXB_ID,215,JINCML*0.4,JINCML)),0,0,ROUND_NEW(SUM(DECODE(Z.DIANCXXB_ID,215,JINCML*0.4,JINCML)
+		* QNET_AR) / SUM(DECODE(Z.DIANCXXB_ID,215,JINCML*0.4,JINCML)), 3)),2)
+		AS QNET_AR,
+		DECODE(SUM(DECODE(Z.DIANCXXB_ID,215,JINCML*0.4,JINCML)), 0,
+		0, ROUND_NEW(SUM(DECODE(Z.DIANCXXB_ID,215,JINCML*0.4,JINCML) *
+		STD) /
+		SUM(DECODE(Z.DIANCXXB_ID,215,JINCML*0.4,JINCML)), 2)) AS ST_D,
+		SUM(DECODE(Z.DIANCXXB_ID,215,NVL(ZHIJBFJE, 0)*0.4,NVL(ZHIJBFJE, 0)))
+		AS JZ_HEJ,
+		SUM(DECODE(Z.DIANCXXB_ID,215,NVL(ZHIJBFJE_M,
+		0)*0.4,NVL(ZHIJBFJE_M, 0))) AS JZ_SHUIF,
+		SUM(DECODE(Z.DIANCXXB_ID,215,NVL(ZHIJBFJE_A, 0)*0.4,NVL(ZHIJBFJE_A,
+		0))) AS JZ_HUIF,
+		SUM(DECODE(Z.DIANCXXB_ID,215,NVL(ZHIJBFJE_V,
+		0)*0.4,NVL(ZHIJBFJE_V, 0))) AS JZ_HUIFF,
+		SUM(DECODE(Z.DIANCXXB_ID,215,NVL(ZHIJBFJE_Q, 0)*0.4,NVL(ZHIJBFJE_Q,
+		0))) AS JZ_FARL,
+		SUM(DECODE(Z.DIANCXXB_ID,215,NVL(ZHIJBFJE_S,
+		0)*0.4,NVL(ZHIJBFJE_S, 0))) AS JZ_LIUF,
+		SUM(DECODE(Z.DIANCXXB_ID,215,NVL(ZHIJBFJE_T, 0)*0.4,NVL(ZHIJBFJE_T,
+		0))) AS JZ_HUIRD,
+		SUM(DECODE(Z.DIANCXXB_ID,215,NVL(SUOPJE,
+		0)*0.4,NVL(SUOPJE, 0))) AS SUOPJE,
+		decode(SUM(DECODE(Z.DIANCXXB_ID,215,NVL(ZHIJBFJE, 0)*0.4,NVL(ZHIJBFJE,
+		0))),0,0,round(SUM(DECODE(Z.DIANCXXB_ID,215,NVL(SUOPJE,
+		0)*0.4,NVL(SUOPJE, 0)))/ SUM(DECODE(Z.DIANCXXB_ID,215,NVL(ZHIJBFJE,
+		0)*0.4,NVL(ZHIJBFJE, 0)))*100,2)) AS SUOPL
+		FROM (SELECT KJ.GONGYSB_ID,
+		KJ.DQID,
+		KJ.DQMC,
+		SHENGFB.QUANC QUANC,
+		DECODE(KJ.JIHKJB_ID, 1, '重点订货', 3,
+		'重点订货', J.MINGC) TJKJ,
+		KJ.JIHKJB_ID,
+		KJ.PINZB_ID,
+		KJ.YUNSFSB_ID,
+		DIANCXXB_ID,
+		KJ.FENX AS FX,
+		SL.JINGZ+sl.yuns AS JINCML,
+		SL.JINGZ AS
+		YANSML,
+		ZL.*
+		FROM YUESLB SL,
+		YUEZLB ZL,
+		(SELECT K.ID,
+		DQ.DQID,
+		DQ.DQMC,
+		K.GONGYSB_ID,
+		K.JIHKJB_ID,
+		K.PINZB_ID,
+		K.YUNSFSB_ID,
+		K.DIANCXXB_ID,
+		NVL('本月', '') AS FENX
+		FROM YUETJKJB K, VWGONGYSDQ DQ
+		WHERE
+		to_char(to_date(K.RIQ,'yyyy-MM-dd'),'yyyy-MM-dd') = #{riq}||'-01'
+		AND
+		DQ.ID = K.GONGYSB_ID
+		<if test='dianc != ""'>
+			AND K.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		</if>
+		union
+		SELECT K.ID,
+		DQ.DQID,
+		DQ.DQMC,
+		K.GONGYSB_ID,
+		K.JIHKJB_ID,
+		K.PINZB_ID,
+		K.YUNSFSB_ID,
+		K.DIANCXXB_ID,
+		NVL('累计', '') AS FENX
+		FROM YUETJKJB K,
+		VWGONGYSDQ DQ
+		WHERE to_char(to_date(K.RIQ,'yyyy-MM-dd'),'yyyy-MM-dd') =
+		#{riq}||'-01'
+		AND
+		DQ.ID
+		= K.GONGYSB_ID
+		<if test='dianc != ""'>
+			AND K.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		</if>
+		) KJ,
+		JIHKJB J,
+		MEIKDQB,
+		SHENGFB
+		WHERE KJ.ID = SL.YUETJKJB_ID(+)
+		AND
+		KJ.FENX = SL.FENX(+)
+		AND KJ.ID = ZL.YUETJKJB_ID(+)
+		AND KJ.FENX =
+		ZL.FENX(+)
+		AND KJ.JIHKJB_ID = J.ID
+		AND KJ.DQID = MEIKDQB.ID
+		AND
+		MEIKDQB.SHENGFB_ID = SHENGFB.ID)Z,GONGYSB,JIHKJB,PINZB,yunsfsb
+		WHERE
+		Z.GONGYSB_ID = GONGYSB.ID
+		AND Z.JIHKJB_ID = JIHKJB.ID
+		AND Z.PINZB_ID =
+		PINZB.ID
+		and Z.yunsfsb_id = yunsfsb.id
+		GROUP BY
+		ROLLUP(FX,Z.TJKJ,JIHKJB.MINGC,z.QUANC,Z.DQMC,yunsfsb.mingc,GONGYSB.MINGC)
+		HAVING GROUPING(GONGYSB.MINGC)+ GROUPING(FX) = 1
+		ORDER BY Z.TJKJ
+		DESC,JIHKJB.MINGC DESC,z.QUANC DESC, GROUPING(Z.DQMC)
+		DESC,Z.DQMC,
+		grouping(GONGYSB.MINGC)DESC,GONGYSB.MINGC,grouping(yunsfsb.mingc)desc,
+		yunsfsb.mingc,grouping(FX)desc,FX
+	</select>
+
+	<select id="getRucbmdjbb" resultType="java.util.LinkedHashMap">
+		SELECT
+		SR.DQMC,
+		SR.FENX,
+		SR.JIESL,
+		SR.MEIJ+SR.YUNJ+SR.ZAF
+		ZONGHJ,
+		SR.MEIJ,
+		SR.YUNJ,
+		SR.ZAF,
+		ROUND((SR.MEIJ/1.17 + SR.YUNJ-SR.YUNJS +
+		SR.ZAF-SR.ZAFS),2) ZONGHJBHS,
+		round_new(SR.QNET_AR,2) QNET_AR,
+		ROUND(decode(SR.QNET_AR,0,0,ROUND((SR.MEIJ/1.17 +SR.YUNJ-SR.YUNJS
+		+SR.ZAF-SR.ZAFS),2)*29.271/SR.QNET_AR),2) BUHSBMDJ,
+		ROUND(decode(SR.QNET_AR,0,0,(SR.MEIJ +SR.YUNJ
+		+SR.ZAF)*29.271/SR.QNET_AR),2) BIAOMDJM
+		FROM
+		(SELECT
+		DECODE(GROUPING(T.TJKJ),
+		1,
+		'总计',
+		DECODE(GROUPING(JIHKJB.MINGC),
+		1,
+		'*' ||
+		T.TJKJ,
+		DECODE(GROUPING(T.SMC),
+		1,
+		'#' || DECODE(JIHKJB.MINGC,
+		'市场采购',
+		'地方矿',
+		JIHKJB.MINGC) || '小计',
+		DECODE(GROUPING(T.DQMC),
+		1,
+		<![CDATA['<I>' || T.SMC || '</I>',]]>
+		DECODE(GROUPING(T.YUNSFSB_ID),
+		1,
+		T.DQMC || '小计',
+		T.YUNSFSB_ID)))))
+		DQMC,
+		Y.FENX,
+		round(SUM(DECODE(T.DIANCXXB_ID,215,JIESL*0.4,JIESL)),0)
+		JIESL,
+		round(DECODE(SUM(DECODE(T.DIANCXXB_ID,215,JIESL*0.4,JIESL)),
+		0,
+		0,
+		SUM((Y.MEIJ + Y.YUNJ + Y.DAOZZF +Y.KUANGQYF+ Y.QIT + Y.ZAF) *
+		DECODE(T.DIANCXXB_ID,215,JIESL*0.4,JIESL)) /
+		SUM(DECODE(T.DIANCXXB_ID,215,JIESL*0.4,JIESL))),2) ZONGHJ,
+		round(DECODE(SUM(DECODE(T.DIANCXXB_ID,215,JIESL*0.4,JIESL)), 0, 0,
+		SUM(Y.MEIJ * DECODE(T.DIANCXXB_ID,215,JIESL*0.4,JIESL)) /
+		SUM(DECODE(T.DIANCXXB_ID,215,JIESL*0.4,JIESL))),2) MEIJ,
+		round(DECODE(SUM(DECODE(T.DIANCXXB_ID,215,JIESL*0.4,JIESL)), 0, 0,
+		SUM(Y.YUNJ * DECODE(T.DIANCXXB_ID,215,JIESL*0.4,JIESL)) /
+		SUM(DECODE(T.DIANCXXB_ID,215,JIESL*0.4,JIESL))),2) YUNJ,
+		round(DECODE(SUM(DECODE(T.DIANCXXB_ID,215,JIESL*0.4,JIESL)), 0, 0,
+		SUM((Y.ZAF+Y.DAOZZF+Y.QIT+Y.KUANGQYF) *
+		DECODE(T.DIANCXXB_ID,215,JIESL*0.4,JIESL)) /
+		SUM(DECODE(T.DIANCXXB_ID,215,JIESL*0.4,JIESL))),2) ZAF,
+		round_new(decode(sum(DECODE(T.DIANCXXB_ID,215,JIESL*0.4,JIESL)),0,0,sum((y.meij-y.meijs
+		+y.yunj-y.yunjs+
+		y.daozzf+y.kuangqyf+y.qit+y.zaf-y.zafs)*DECODE(T.DIANCXXB_ID,215,JIESL*0.4,JIESL))/sum(DECODE(T.DIANCXXB_ID,215,JIESL*0.4,JIESL))),2)
+		zonghjbhs,
+		round_new(DECODE(SUM(DECODE(T.DIANCXXB_ID,215,JIESL*0.4,JIESL)), 0, 0,
+		SUM(Y.QNET_AR * DECODE(T.DIANCXXB_ID,215,JIESL*0.4,JIESL)) /
+		SUM(DECODE(T.DIANCXXB_ID,215,JIESL*0.4,JIESL))),3) QNET_AR,
+		round(DECODE(SUM(DECODE(T.DIANCXXB_ID,215,JIESL*0.4,JIESL)), 0, 0,
+		SUM(Y.BUHSBMDJ * DECODE(T.DIANCXXB_ID,215,JIESL*0.4,JIESL)) /
+		SUM(DECODE(T.DIANCXXB_ID,215,JIESL*0.4,JIESL))),2) BUHSBMDJ,
+		round(DECODE(SUM(DECODE(T.DIANCXXB_ID,215,JIESL*0.4,JIESL)), 0, 0,
+		SUM(Y.BIAOMDJ * DECODE(T.DIANCXXB_ID,215,JIESL*0.4,JIESL)) /
+		SUM(DECODE(T.DIANCXXB_ID,215,JIESL*0.4,JIESL))),2) BIAOMDJ,
+		round(DECODE(SUM(DECODE(T.DIANCXXB_ID,215,JIESL*0.4,JIESL)), 0, 0,
+		SUM(Y.ZAFS * DECODE(T.DIANCXXB_ID,215,JIESL*0.4,JIESL)) /
+		SUM(DECODE(T.DIANCXXB_ID,215,JIESL*0.4,JIESL))),2) ZAFS,
+		round(DECODE(SUM(DECODE(T.DIANCXXB_ID,215,JIESL*0.4,JIESL)), 0, 0,
+		SUM(Y.YUNJS * DECODE(T.DIANCXXB_ID,215,JIESL*0.4,JIESL)) /
+		SUM(DECODE(T.DIANCXXB_ID,215,JIESL*0.4,JIESL))),2) YUNJS,
+		round(DECODE(SUM(DECODE(T.DIANCXXB_ID,215,JIESL*0.4,JIESL)), 0, 0,
+		SUM(Y.MEIJS * DECODE(T.DIANCXXB_ID,215,JIESL*0.4,JIESL)) /
+		SUM(DECODE(T.DIANCXXB_ID,215,JIESL*0.4,JIESL))),2) MEIJS,
+		round(DECODE(SUM(DECODE(T.DIANCXXB_ID,215,JIESL*0.4,JIESL)), 0, 0,
+		SUM(Y.QIT * DECODE(T.DIANCXXB_ID,215,JIESL*0.4,JIESL)) /
+		SUM(DECODE(T.DIANCXXB_ID,215,JIESL*0.4,JIESL))),2) QIT,
+		round(DECODE(SUM(DECODE(T.DIANCXXB_ID,215,JIESL*0.4,JIESL)), 0, 0,
+		SUM(Y.DAOZZF * DECODE(T.DIANCXXB_ID,215,JIESL*0.4,JIESL)) /
+		SUM(DECODE(T.DIANCXXB_ID,215,JIESL*0.4,JIESL))),2) DAOZZF,
+		round(DECODE(SUM(DECODE(T.DIANCXXB_ID,215,JIESL*0.4,JIESL)), 0, 0,
+		SUM(Y.KUANGQYF * DECODE(T.DIANCXXB_ID,215,JIESL*0.4,JIESL)) /
+		SUM(DECODE(T.DIANCXXB_ID,215,JIESL*0.4,JIESL))),2) KUANGQYF
+		FROM
+		YUEJSBMDJ Y, (SELECT T.ID,
+		Y.MINGC YUNSFSB_ID,
+		T.GONGYSB_ID,
+		V.SMC,
+		V.DQMC,
+		G.MINGC,
+		DECODE(T.JIHKJB_ID, 1, '重点订货', 3, '重点订货', J.MINGC)
+		TJKJ,
+		T.JIHKJB_ID,
+		T.RIQ,
+		T.DIANCXXB_ID
+		FROM YUETJKJB T, GONGYSB G, JIHKJB
+		J,YUNSFSB Y,(SELECT DISTINCT
+		ID,DQMC,SMC FROM VWGONGYSDQ) V
+		WHERE
+		T.GONGYSB_ID = G.ID
+		AND V.ID = G.ID
+		AND T.JIHKJB_ID = J.ID
+		AND
+		T.YUNSFSB_ID = Y.ID
+		<if test='dianc != ""'>
+			AND T.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		</if>
+		AND to_char(to_date(T.RIQ,'yyyy-MM-dd'),'yyyy-MM-dd') = #{riq}||'-01')
+		T,
+		JIHKJB
+		WHERE
+		Y.YUETJKJB_ID = T.ID
+		AND T.JIHKJB_ID = JIHKJB.ID
+		GROUP BY
+		ROLLUP(Y.FENX,
+		T.TJKJ, JIHKJB.MINGC, T.SMC, T.DQMC,T.YUNSFSB_ID,
+		T.MINGC)
+		HAVING
+		GROUPING(T.MINGC)+GROUPING(fenx)=1
+		ORDER BY
+		--GROUPING(T.TJKJ) DESC,
+		T.TJKJ DESC,
+		JIHKJB.MINGC DESC,
+		T.SMC DESC,
+		GROUPING(T.DQMC) DESC,
+		T.DQMC,
+		GROUPING(T.MINGC) DESC,
+		T.MINGC,
+		GROUPING(T.YUNSFSB_ID) DESC,
+		T.YUNSFSB_ID,
+		GROUPING(Y.FENX)DESC,
+		Y.FENX)
+		SR
+	</select>
+
+	<select id="getRanyshc" resultType="java.util.LinkedHashMap">
+		SELECT
+		DECODE(GROUPING(DC.MINGC), 1, '总计', DC.MINGC) DCMC,
+		DECODE(GROUPING(DC.MINGC) + GROUPING(P.MINGC),2,'-', 1, '小计', P.MINGC)
+		PZMC,
+		Y.FENX,
+		ROUND(SUM(DECODE(Y.DIANCXXB_ID,215,Y.QICKC*0.4,Y.QICKC)),
+		2) QICKC,
+		ROUND(SUM(DECODE(Y.DIANCXXB_ID,215,Y.SHOUYL*0.4,Y.SHOUYL)),
+		2) SHOUYL,
+		ROUND(DECODE(SUM(DECODE(Y.DIANCXXB_ID,215,Y.SHOUYL*0.4,Y.SHOUYL)),0,0,SUM(DECODE(Y.DIANCXXB_ID,215,Y.SHOUYL*0.4,Y.SHOUYL)
+		* Y.YOUJ) / SUM(DECODE(Y.DIANCXXB_ID,215,Y.SHOUYL*0.4,Y.SHOUYL))),2)
+		YOUJ,
+		ROUND(DECODE(SUM(DECODE(Y.DIANCXXB_ID,215,Y.SHOUYL*0.4,Y.SHOUYL)),0,0,SUM(DECODE(Y.DIANCXXB_ID,215,Y.SHOUYL*0.4,Y.SHOUYL)
+		* Y.YUNJ) / SUM(DECODE(Y.DIANCXXB_ID,215,Y.SHOUYL*0.4,Y.SHOUYL))),2)
+		YUNJ,
+		ROUND(SUM(DECODE(Y.DIANCXXB_ID,215,(Y.FADYY + Y.GONGRY +
+		Y.QITHY-Panyk+Sunh+Diaocl)*0.4,(Y.FADYY + Y.GONGRY +
+		Y.QITHY-Panyk+Sunh+Diaocl))), 2) XJ,
+		ROUND(SUM(DECODE(Y.DIANCXXB_ID,215,Y.FADYY*0.4,Y.FADYY)), 2) FADYY,
+		ROUND(SUM(DECODE(Y.DIANCXXB_ID,215,Y.GONGRY*0.4,Y.GONGRY)), 2) GONGRY,
+		ROUND(SUM(DECODE(Y.DIANCXXB_ID,215,Y.QITHY*0.4,Y.QITHY)), 2) QITHY,
+		ROUND(SUM(DECODE(Y.DIANCXXB_ID,215,Y.Panyk*0.4,Y.Panyk)), 2) Panyk,
+		ROUND(SUM(DECODE(Y.DIANCXXB_ID,215,Y.Sunh*0.4,Y.Sunh)), 2) Sunh,
+		ROUND(SUM(DECODE(Y.DIANCXXB_ID,215,Y.Diaocl*0.4,Y.Diaocl)), 2) Diaocl,
+		ROUND(SUM(DECODE(Y.DIANCXXB_ID,215,Y.KUC*0.4,Y.KUC)), 2) KUC
+		FROM
+		(SELECT DIANCXXB_ID,PINZB_ID,FENX,
+		DECODE(FENX,'累计',GETYOUQCKCLJ(ID),QICKC)QICKC,
+		SHOUYL,FADYY,GONGRY,QITHY,SUNH,DIAOCL,PANYK,KUC,
+		YOUJ,YUNJ
+		FROM YUESHCYB
+		WHERE to_char(to_date(RIQ,'yyyy-MM-dd'),'yyyy-MM-dd') = #{riq}||'-01'
+		) Y, PINZB P, DIANCXXB
+		DC
+		WHERE Y.PINZB_ID = P.ID
+		AND Y.DIANCXXB_ID =
+		DC.ID
+		<if test='dianc != ""'>
+			AND Y.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		</if>
+		GROUP BY ROLLUP(Y.FENX, (DC.MINGC,DC.XUH), P.MINGC)
+		HAVING NOT
+		GROUPING(Y.FENX) = 1
+		ORDER BY GROUPING(DC.XUH)
+		DESC,DC.XUH,GROUPING(P.MINGC) DESC,P.MINGC,FENX
+	</select>
+
+	<select id="getRulmrz" resultType="java.util.LinkedHashMap">
+		select 1 from dual where 1=1
+	</select>
+
+	<select id="getRanlcbbb" resultType="java.util.LinkedHashMap">
+		select * from (
+		select * from ( select nvl('发电供热燃料费','') fenl,
+		nvl(1,1)
+		lanh, nvl('发电供热总燃料费','') mingc,
+		nvl('元','') danw,
+		( select
+		sum(DECODE(Y.DIANCXXB_ID,215,(RANLCB_BHS)*0.4,RANLCB_BHS))
+		from yuezbb
+		y,diancxxb d where y.diancxxb_id=d.id
+		<if test='dianc != ""'>
+			AND Y.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		</if>
+		and to_char(to_date(Y.RIQ,'yyyy-MM-dd'),'yyyy-MM-dd')=#{riq}||'-01'
+		and fenx='本月' AND
+		(Y.ZHUANGT=1 or Y.ZHUANGT=3) ) benyz, ( select
+		sum(DECODE(Y.DIANCXXB_ID,215,(RANLCB_BHS)*0.4,RANLCB_BHS)) from yuezbb
+		y,diancxxb d where y.diancxxb_id=d.id
+		<if test='dianc != ""'>
+			AND Y.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		</if>
+		and to_char(to_date(Y.RIQ,'yyyy-MM-dd'),'yyyy-MM-dd')=#{riq}||'-01'
+		and fenx='累计' AND
+		(Y.ZHUANGT=1 or Y.ZHUANGT=3) ) leijz, '' beiz from
+		dual union
+		select
+		nvl('发电供热燃料费','') fenl,
+		nvl(2,1) lanh, nvl('其中：燃煤','')
+		mingc,
+		nvl('元','') danw,
+		( select
+		sum(DECODE(Y.DIANCXXB_ID,215,(y.FADMCB+y.GONGRMCB+
+		Y.QIZ_RANM)*0.4,(y.FADMCB+y.GONGRMCB+ Y.QIZ_RANM))) from yuezbb
+		y,diancxxb d where y.diancxxb_id=d.id
+		<if test='dianc != ""'>
+			AND Y.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		</if>
+		and to_char(to_date(Y.RIQ,'yyyy-MM-dd'),'yyyy-MM-dd')=#{riq}||'-01'
+		and fenx='本月' AND
+		(Y.ZHUANGT=1 or Y.ZHUANGT=3) ) benyz, ( select
+		sum(DECODE(Y.DIANCXXB_ID,215,(y.FADMCB+y.GONGRMCB+
+		Y.QIZ_RANM)*0.4,(y.FADMCB+y.GONGRMCB+ Y.QIZ_RANM))) from yuezbb
+		y,diancxxb d where y.diancxxb_id=d.id
+		<if test='dianc != ""'>
+			AND Y.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		</if>
+		and to_char(to_date(Y.RIQ,'yyyy-MM-dd'),'yyyy-MM-dd')=#{riq}||'-01'
+		and fenx='累计' AND
+		(Y.ZHUANGT=1 or Y.ZHUANGT=3) ) leijz, '' beiz from
+		dual union
+		select
+		nvl('发电供热燃料费','') fenl,
+		nvl(3,1) lanh, nvl('燃油','')
+		mingc,
+		nvl('元','')
+		danw,
+		( select
+		sum(DECODE(Y.DIANCXXB_ID,215,(y.FADYCB+y.GONGRYCB+Y.QIZ_RANY)*0.4,(y.FADYCB+y.GONGRYCB+Y.QIZ_RANY)))
+		from yuezbb y,diancxxb d where y.diancxxb_id=d.id
+		<if test='dianc != ""'>
+			AND Y.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		</if>
+		and to_char(to_date(Y.RIQ,'yyyy-MM-dd'),'yyyy-MM-dd')=#{riq}||'-01'
+		and fenx='本月' AND
+		(Y.ZHUANGT=1 or Y.ZHUANGT=3) ) benyz, ( select
+		sum(DECODE(Y.DIANCXXB_ID,215,(y.FADYCB+y.GONGRYCB+Y.QIZ_RANY)*0.4,(y.FADYCB+y.GONGRYCB+Y.QIZ_RANY)))
+		from yuezbb y,diancxxb d where y.diancxxb_id=d.id
+		<if test='dianc != ""'>
+			AND Y.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		</if>
+		and to_char(to_date(Y.RIQ,'yyyy-MM-dd'),'yyyy-MM-dd')=#{riq}||'-01'
+		and fenx='累计' AND
+		(Y.ZHUANGT=1 or Y.ZHUANGT=3) ) leijz, '' beiz from
+		dual union
+		select
+		nvl('发电供热燃料费','') fenl,
+		nvl(4,1) lanh, nvl('燃气','')
+		mingc,
+		nvl('元','')
+		danw,
+		( select
+		sum(DECODE(Y.DIANCXXB_ID,215,(y.FADRQCB+y.GONGRRQCB+
+		Y.QIZ_RANQ)*0.4,(y.FADRQCB+y.GONGRRQCB+ Y.QIZ_RANQ))) from yuezbb
+		y,diancxxb d where y.diancxxb_id=d.id
+		<if test='dianc != ""'>
+			AND Y.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		</if>
+		and to_char(to_date(Y.RIQ,'yyyy-MM-dd'),'yyyy-MM-dd')=#{riq}||'-01'
+		and fenx='本月' AND
+		(Y.ZHUANGT=1 or Y.ZHUANGT=3) ) benyz, ( select
+		sum(DECODE(Y.DIANCXXB_ID,215,(y.FADRQCB+y.GONGRRQCB+
+		Y.QIZ_RANQ)*0.4,(y.FADRQCB+y.GONGRRQCB+ Y.QIZ_RANQ))) from yuezbb
+		y,diancxxb d where y.diancxxb_id=d.id
+		<if test='dianc != ""'>
+			AND Y.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		</if>
+		and to_char(to_date(Y.RIQ,'yyyy-MM-dd'),'yyyy-MM-dd')=#{riq}||'-01'
+		and fenx='累计' AND
+		(Y.ZHUANGT=1 or Y.ZHUANGT=3) ) leijz, '' beiz from
+		dual )
+		union
+		select *
+		from ( select nvl('发电燃料费','') fenl,
+		nvl(5,1)
+		lanh,
+		nvl('发电燃料费','')
+		mingc,
+		nvl('元','') danw,
+		( select
+		sum(DECODE(Y.DIANCXXB_ID,215,(y.FADMCB+y.FADYCB+y.FADRQCB)*0.4,y.FADMCB+y.FADYCB+y.FADRQCB))
+		from yuezbb y,diancxxb d where y.diancxxb_id=d.id
+		<if test='dianc != ""'>
+			AND Y.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		</if>
+		and to_char(to_date(Y.RIQ,'yyyy-MM-dd'),'yyyy-MM-dd')=#{riq}||'-01'
+		and fenx='本月' AND
+		(Y.ZHUANGT=1 or Y.ZHUANGT=3) ) benyz, ( select
+		sum(DECODE(Y.DIANCXXB_ID,215,(y.FADMCB+y.FADYCB+y.FADRQCB)*0.4,y.FADMCB+y.FADYCB+y.FADRQCB))
+		from yuezbb y,diancxxb d where y.diancxxb_id=d.id
+		<if test='dianc != ""'>
+			AND Y.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		</if>
+		and to_char(to_date(Y.RIQ,'yyyy-MM-dd'),'yyyy-MM-dd')=#{riq}||'-01'
+		and fenx='累计' AND
+		(Y.ZHUANGT=1 or Y.ZHUANGT=3) ) leijz, '' beiz from
+		dual union
+		select
+		nvl('发电燃料费','') fenl,
+		nvl(6,1) lanh, nvl('其中：燃煤','')
+		mingc,
+		nvl('元','')
+		danw,
+		( select
+		sum(DECODE(Y.DIANCXXB_ID,215,y.FADMCB*0.4,y.FADMCB))
+		from
+		yuezbb
+		y,diancxxb d where y.diancxxb_id=d.id
+		<if test='dianc != ""'>
+			AND Y.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		</if>
+		and to_char(to_date(Y.RIQ,'yyyy-MM-dd'),'yyyy-MM-dd')=#{riq}||'-01'
+		and fenx='本月' AND
+		(Y.ZHUANGT=1 or Y.ZHUANGT=3) ) benyz, ( select
+		sum(DECODE(Y.DIANCXXB_ID,215,y.FADMCB*0.4,y.FADMCB)) from yuezbb
+		y,diancxxb d where y.diancxxb_id=d.id
+		<if test='dianc != ""'>
+			AND Y.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		</if>
+		and to_char(to_date(Y.RIQ,'yyyy-MM-dd'),'yyyy-MM-dd')=#{riq}||'-01'
+		and fenx='累计' AND
+		(Y.ZHUANGT=1 or Y.ZHUANGT=3) ) leijz, '' beiz from
+		dual union
+		select
+		nvl('发电燃料费','') fenl,
+		nvl(7,1) lanh, nvl('燃油','')
+		mingc,
+		nvl('元','')
+		danw,
+		( select
+		sum(DECODE(Y.DIANCXXB_ID,215,y.FADYCB*0.4,y.FADYCB))
+		from
+		yuezbb
+		y,diancxxb d where y.diancxxb_id=d.id
+		<if test='dianc != ""'>
+			AND Y.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		</if>
+		and to_char(to_date(Y.RIQ,'yyyy-MM-dd'),'yyyy-MM-dd')=#{riq}||'-01'
+		and fenx='本月' AND
+		(Y.ZHUANGT=1 or Y.ZHUANGT=3) ) benyz, ( select
+		sum(DECODE(Y.DIANCXXB_ID,215,y.FADYCB*0.4,y.FADYCB)) from yuezbb
+		y,diancxxb d where y.diancxxb_id=d.id
+		<if test='dianc != ""'>
+			AND Y.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		</if>
+		and to_char(to_date(Y.RIQ,'yyyy-MM-dd'),'yyyy-MM-dd')=#{riq}||'-01'
+		and fenx='累计' AND
+		(Y.ZHUANGT=1 or Y.ZHUANGT=3) ) leijz, '' beiz from
+		dual union
+		select
+		nvl('发电燃料费','') fenl,
+		nvl(8,1) lanh, nvl('燃气','')
+		mingc,
+		nvl('元','')
+		danw,
+		( select
+		sum(DECODE(Y.DIANCXXB_ID,215,y.FADRQCB*0.4,y.FADRQCB))
+		from
+		yuezbb
+		y,diancxxb d where y.diancxxb_id=d.id
+		<if test='dianc != ""'>
+			AND Y.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		</if>
+		and to_char(to_date(Y.RIQ,'yyyy-MM-dd'),'yyyy-MM-dd')=#{riq}||'-01'
+		and fenx='本月' AND
+		(Y.ZHUANGT=1 or Y.ZHUANGT=3) ) benyz, ( select
+		sum(DECODE(Y.DIANCXXB_ID,215,y.FADRQCB*0.4,y.FADRQCB)) from yuezbb
+		y,diancxxb d where y.diancxxb_id=d.id
+		<if test='dianc != ""'>
+			AND Y.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		</if>
+		and to_char(to_date(Y.RIQ,'yyyy-MM-dd'),'yyyy-MM-dd')=#{riq}||'-01'
+		and fenx='累计' AND
+		(Y.ZHUANGT=1 or Y.ZHUANGT=3) ) leijz, '' beiz from
+		dual )
+		union
+		select *
+		from ( select nvl('供热用燃料费','') fenl,
+		nvl(9,1)
+		lanh,
+		nvl('供热用燃料费','')
+		mingc,
+		nvl('元','') danw,
+		( select
+		sum(DECODE(Y.DIANCXXB_ID,215,(y.GONGRMCB+y.GONGRYCB+y.GONGRRQCB)*0.4,(y.GONGRMCB+y.GONGRYCB+y.GONGRRQCB)))
+		from yuezbb y,diancxxb d where y.diancxxb_id=d.id
+		<if test='dianc != ""'>
+			AND Y.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		</if>
+		and to_char(to_date(Y.RIQ,'yyyy-MM-dd'),'yyyy-MM-dd')=#{riq}||'-01'
+		and fenx='本月' AND
+		(Y.ZHUANGT=1 or Y.ZHUANGT=3) ) benyz, ( select
+		sum(DECODE(Y.DIANCXXB_ID,215,(y.GONGRMCB+y.GONGRYCB+y.GONGRRQCB)*0.4,(y.GONGRMCB+y.GONGRYCB+y.GONGRRQCB)))
+		from yuezbb y,diancxxb d where y.diancxxb_id=d.id
+		<if test='dianc != ""'>
+			AND Y.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		</if>
+		and to_char(to_date(Y.RIQ,'yyyy-MM-dd'),'yyyy-MM-dd')=#{riq}||'-01'
+		and fenx='累计' AND
+		(Y.ZHUANGT=1 or Y.ZHUANGT=3) ) leijz, '' beiz from
+		dual union
+		select
+		nvl('供热用燃料费','') fenl,
+		nvl(10,1) lanh, nvl('其中：燃煤','')
+		mingc,
+		nvl('元','') danw,
+		( select
+		sum(DECODE(Y.DIANCXXB_ID,215,y.GONGRMCB*0.4,y.GONGRMCB)) from
+		yuezbb
+		y,diancxxb d where y.diancxxb_id=d.id
+		<if test='dianc != ""'>
+			AND Y.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		</if>
+		and to_char(to_date(Y.RIQ,'yyyy-MM-dd'),'yyyy-MM-dd')=#{riq}||'-01'
+		and fenx='本月' AND
+		(Y.ZHUANGT=1 or Y.ZHUANGT=3) ) benyz, ( select
+		sum(DECODE(Y.DIANCXXB_ID,215,y.GONGRMCB*0.4,y.GONGRMCB)) from yuezbb
+		y,diancxxb d where y.diancxxb_id=d.id
+		<if test='dianc != ""'>
+			AND Y.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		</if>
+		and to_char(to_date(Y.RIQ,'yyyy-MM-dd'),'yyyy-MM-dd')=#{riq}||'-01'
+		and fenx='累计' AND
+		(Y.ZHUANGT=1 or Y.ZHUANGT=3) ) leijz, '' beiz from
+		dual union
+		select
+		nvl('供热用燃料费','') fenl,
+		nvl(11,1) lanh, nvl('燃油','')
+		mingc,
+		nvl('元','')
+		danw,
+		( select
+		sum(DECODE(Y.DIANCXXB_ID,215,y.GONGRYCB*0.4,y.GONGRYCB))
+		from
+		yuezbb
+		y,diancxxb d where y.diancxxb_id=d.id
+		<if test='dianc != ""'>
+			AND Y.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		</if>
+		and to_char(to_date(Y.RIQ,'yyyy-MM-dd'),'yyyy-MM-dd')=#{riq}||'-01'
+		and fenx='本月' AND
+		(Y.ZHUANGT=1 or Y.ZHUANGT=3) ) benyz, ( select
+		sum(DECODE(Y.DIANCXXB_ID,215,y.GONGRYCB*0.4,y.GONGRYCB)) from yuezbb
+		y,diancxxb d where y.diancxxb_id=d.id
+		<if test='dianc != ""'>
+			AND Y.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		</if>
+		and to_char(to_date(Y.RIQ,'yyyy-MM-dd'),'yyyy-MM-dd')=#{riq}||'-01'
+		and fenx='累计' AND
+		(Y.ZHUANGT=1 or Y.ZHUANGT=3) ) leijz, '' beiz from
+		dual union
+		select
+		nvl('供热用燃料费','') fenl,
+		nvl(12,1) lanh, nvl('燃气','')
+		mingc,
+		nvl('元','')
+		danw,
+		( select
+		sum(DECODE(Y.DIANCXXB_ID,215,y.GONGRRQCB*0.4,y.GONGRRQCB))
+		from yuezbb
+		y,diancxxb d where y.diancxxb_id=d.id
+		<if test='dianc != ""'>
+			AND Y.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		</if>
+		and to_char(to_date(Y.RIQ,'yyyy-MM-dd'),'yyyy-MM-dd')=#{riq}||'-01'
+		and fenx='本月' AND
+		(Y.ZHUANGT=1 or Y.ZHUANGT=3) ) benyz, ( select
+		sum(DECODE(Y.DIANCXXB_ID,215,y.GONGRRQCB*0.4,y.GONGRRQCB)) from yuezbb
+		y,diancxxb d where y.diancxxb_id=d.id
+		<if test='dianc != ""'>
+			AND Y.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		</if>
+		and to_char(to_date(Y.RIQ,'yyyy-MM-dd'),'yyyy-MM-dd')=#{riq}||'-01'
+		and fenx='累计' AND
+		(Y.ZHUANGT=1 or Y.ZHUANGT=3) ) leijz, '' beiz from
+		dual )
+		union
+		select *
+		from ( select nvl('供热用电分摊燃料费','') fenl,
+		nvl(13,1)
+		lanh,
+		nvl('供热用电分摊燃料费','') mingc,
+		nvl('元','') danw,
+		( select
+		sum(DECODE(Y.DIANCXXB_ID,215,(y.GONGRCYDFTRLF)*0.4,(y.GONGRCYDFTRLF)))
+		from yuezbb y,diancxxb d where y.diancxxb_id=d.id
+		<if test='dianc != ""'>
+			AND Y.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		</if>
+		and to_char(to_date(Y.RIQ,'yyyy-MM-dd'),'yyyy-MM-dd')=#{riq}||'-01'
+		and fenx='本月' AND
+		(Y.ZHUANGT=1 or Y.ZHUANGT=3) ) benyz, ( select
+		sum(DECODE(Y.DIANCXXB_ID,215,(y.GONGRCYDFTRLF)*0.4,(y.GONGRCYDFTRLF)))
+		from yuezbb y,diancxxb d where y.diancxxb_id=d.id
+		<if test='dianc != ""'>
+			AND Y.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		</if>
+		and to_char(to_date(Y.RIQ,'yyyy-MM-dd'),'yyyy-MM-dd')=#{riq}||'-01'
+		and fenx='累计' AND
+		(Y.ZHUANGT=1 or Y.ZHUANGT=3) ) leijz, '' beiz from
+		dual union
+		select
+		nvl('供热用电分摊燃料费','') fenl,
+		nvl(14,1) lanh,
+		nvl('其中：燃煤','') mingc,
+		nvl('元','') danw,
+		( select
+		sum(DECODE(Y.DIANCXXB_ID,215,(y.QIZ_RANM)*0.4,y.QIZ_RANM))
+		from yuezbb
+		y,diancxxb d where y.diancxxb_id=d.id
+		<if test='dianc != ""'>
+			AND Y.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		</if>
+		and to_char(to_date(Y.RIQ,'yyyy-MM-dd'),'yyyy-MM-dd')=#{riq}||'-01'
+		and fenx='本月' AND
+		(Y.ZHUANGT=1 or Y.ZHUANGT=3) ) benyz, ( select
+		sum(DECODE(Y.DIANCXXB_ID,215,(y.QIZ_RANM)*0.4,y.QIZ_RANM)) from yuezbb
+		y,diancxxb d where y.diancxxb_id=d.id
+		<if test='dianc != ""'>
+			AND Y.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		</if>
+		and to_char(to_date(Y.RIQ,'yyyy-MM-dd'),'yyyy-MM-dd')=#{riq}||'-01'
+		and fenx='累计' AND
+		(Y.ZHUANGT=1 or Y.ZHUANGT=3) ) leijz, '' beiz from
+		dual union
+		select
+		nvl('供热用电分摊燃料费','') fenl,
+		nvl(15,1) lanh, nvl('燃油','')
+		mingc,
+		nvl('元','') danw,
+		( select
+		sum(DECODE(Y.DIANCXXB_ID,215,(y.QIZ_RANY)*0.4,y.QIZ_RANY))
+		from yuezbb
+		y,diancxxb d where y.diancxxb_id=d.id
+		<if test='dianc != ""'>
+			AND Y.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		</if>
+		and to_char(to_date(Y.RIQ,'yyyy-MM-dd'),'yyyy-MM-dd')=#{riq}||'-01'
+		and fenx='本月' AND
+		(Y.ZHUANGT=1 or Y.ZHUANGT=3) ) benyz, ( select
+		sum(DECODE(Y.DIANCXXB_ID,215,(y.QIZ_RANY)*0.4,y.QIZ_RANY)) from yuezbb
+		y,diancxxb d where y.diancxxb_id=d.id
+		<if test='dianc != ""'>
+			AND Y.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		</if>
+		and to_char(to_date(Y.RIQ,'yyyy-MM-dd'),'yyyy-MM-dd')=#{riq}||'-01'
+		and fenx='累计' AND
+		(Y.ZHUANGT=1 or Y.ZHUANGT=3) ) leijz, '' beiz from
+		dual union
+		select
+		nvl('供热用电分摊燃料费','') fenl,
+		nvl(16,1) lanh, nvl('燃气','')
+		mingc,
+		nvl('元','') danw,
+		( select
+		sum(DECODE(Y.DIANCXXB_ID,215,(y.QIZ_RANQ)*0.4,y.QIZ_RANQ))
+		from yuezbb
+		y,diancxxb d where y.diancxxb_id=d.id
+		<if test='dianc != ""'>
+			AND Y.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		</if>
+		and to_char(to_date(Y.RIQ,'yyyy-MM-dd'),'yyyy-MM-dd')=#{riq}||'-01'
+		and fenx='本月' AND
+		(Y.ZHUANGT=1 or Y.ZHUANGT=3) ) benyz, ( select
+		sum(DECODE(Y.DIANCXXB_ID,215,(y.QIZ_RANQ)*0.4,y.QIZ_RANQ)) from yuezbb
+		y,diancxxb d where y.diancxxb_id=d.id
+		<if test='dianc != ""'>
+			AND Y.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		</if>
+		and to_char(to_date(Y.RIQ,'yyyy-MM-dd'),'yyyy-MM-dd')=#{riq}||'-01'
+		and fenx='累计' AND
+		(Y.ZHUANGT=1 or Y.ZHUANGT=3) ) leijz, '' beiz from
+		dual )
+		union
+		select *
+		from ( select nvl('发电供热总标煤量','') fenl,
+		nvl(17,1)
+		lanh,
+		nvl('发电供热总标煤量','') mingc,
+		nvl('吨','') danw,
+		( select
+		sum(DECODE(Y.DIANCXXB_ID,215,(y.FADMZBML+y.FADYZBZML+y.FADQZBZML+y.GONGRMZBML+y.GONGRYZBZML+y.GONGRQZBZML)*0.4,(y.FADMZBML+y.FADYZBZML+y.FADQZBZML+y.GONGRMZBML+y.GONGRYZBZML+y.GONGRQZBZML)))
+		from yuezbb y,diancxxb d where y.diancxxb_id=d.id
+		<if test='dianc != ""'>
+			AND Y.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		</if>
+		and to_char(to_date(Y.RIQ,'yyyy-MM-dd'),'yyyy-MM-dd')=#{riq}||'-01'
+		and fenx='本月' AND
+		(Y.ZHUANGT=1 or Y.ZHUANGT=3) ) benyz, ( select
+		sum(DECODE(Y.DIANCXXB_ID,215,(y.FADMZBML+y.FADYZBZML+y.FADQZBZML+y.GONGRMZBML+y.GONGRYZBZML+y.GONGRQZBZML)*0.4,(y.FADMZBML+y.FADYZBZML+y.FADQZBZML+y.GONGRMZBML+y.GONGRYZBZML+y.GONGRQZBZML)))
+		from yuezbb y,diancxxb d where y.diancxxb_id=d.id
+		<if test='dianc != ""'>
+			AND Y.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		</if>
+		and to_char(to_date(Y.RIQ,'yyyy-MM-dd'),'yyyy-MM-dd')=#{riq}||'-01'
+		and fenx='累计' AND
+		(Y.ZHUANGT=1 or Y.ZHUANGT=3) ) leijz, '' beiz from
+		dual union
+		select
+		nvl('发电供热总标煤量','') fenl,
+		nvl(18,1) lanh,
+		nvl('其中：煤折标煤量','') mingc,
+		nvl('吨','') danw,
+		( select
+		sum(DECODE(Y.DIANCXXB_ID,215,(y.FADMZBML+y.GONGRMZBML)*0.4,(y.FADMZBML+y.GONGRMZBML)))
+		from yuezbb y,diancxxb d where y.diancxxb_id=d.id
+		<if test='dianc != ""'>
+			AND Y.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		</if>
+		and to_char(to_date(Y.RIQ,'yyyy-MM-dd'),'yyyy-MM-dd')=#{riq}||'-01'
+		and fenx='本月' AND
+		(Y.ZHUANGT=1 or Y.ZHUANGT=3) ) benyz, ( select
+		sum(DECODE(Y.DIANCXXB_ID,215,(y.FADMZBML+y.GONGRMZBML)*0.4,(y.FADMZBML+y.GONGRMZBML)))
+		from yuezbb y,diancxxb d where y.diancxxb_id=d.id
+		<if test='dianc != ""'>
+			AND Y.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		</if>
+		and to_char(to_date(Y.RIQ,'yyyy-MM-dd'),'yyyy-MM-dd')=#{riq}||'-01'
+		and fenx='累计' AND
+		(Y.ZHUANGT=1 or Y.ZHUANGT=3) ) leijz, '' beiz from
+		dual union
+		select
+		nvl('发电供热总标煤量','') fenl,
+		nvl(19,1) lanh,
+		nvl('油折标煤量','') mingc,
+		nvl('吨','') danw,
+		( select
+		sum(DECODE(Y.DIANCXXB_ID,215,(y.FADYZBZML+y.GONGRYZBZML)*0.4,(y.FADYZBZML+y.GONGRYZBZML)))
+		from yuezbb y,diancxxb d where y.diancxxb_id=d.id
+		<if test='dianc != ""'>
+			AND Y.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		</if>
+		and to_char(to_date(Y.RIQ,'yyyy-MM-dd'),'yyyy-MM-dd')=#{riq}||'-01'
+		and fenx='本月' AND
+		(Y.ZHUANGT=1 or Y.ZHUANGT=3) ) benyz, ( select
+		sum(DECODE(Y.DIANCXXB_ID,215,(y.FADYZBZML+y.GONGRYZBZML)*0.4,(y.FADYZBZML+y.GONGRYZBZML)))
+		from yuezbb y,diancxxb d where y.diancxxb_id=d.id
+		<if test='dianc != ""'>
+			AND Y.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		</if>
+		and to_char(to_date(Y.RIQ,'yyyy-MM-dd'),'yyyy-MM-dd')=#{riq}||'-01'
+		and fenx='累计' AND
+		(Y.ZHUANGT=1 or Y.ZHUANGT=3) ) leijz, '' beiz from
+		dual union
+		select
+		nvl('发电供热总标煤量','') fenl,
+		nvl(20,1) lanh,
+		nvl('气折标煤量','') mingc,
+		nvl('吨','') danw,
+		( select
+		sum(DECODE(Y.DIANCXXB_ID,215,(y.FADQZBZML+y.GONGRQZBZML)*0.4,(y.FADQZBZML+y.GONGRQZBZML)))
+		from yuezbb y,diancxxb d where y.diancxxb_id=d.id
+		<if test='dianc != ""'>
+			AND Y.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		</if>
+		and to_char(to_date(Y.RIQ,'yyyy-MM-dd'),'yyyy-MM-dd')=#{riq}||'-01'
+		and fenx='本月' AND
+		(Y.ZHUANGT=1 or Y.ZHUANGT=3) ) benyz, ( select
+		sum(DECODE(Y.DIANCXXB_ID,215,(y.FADQZBZML+y.GONGRQZBZML)*0.4,(y.FADQZBZML+y.GONGRQZBZML)))
+		from yuezbb y,diancxxb d where y.diancxxb_id=d.id
+		<if test='dianc != ""'>
+			AND Y.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		</if>
+		and to_char(to_date(Y.RIQ,'yyyy-MM-dd'),'yyyy-MM-dd')=#{riq}||'-01'
+		and fenx='累计' AND
+		(Y.ZHUANGT=1 or Y.ZHUANGT=3) ) leijz, '' beiz from
+		dual )
+		union
+		select *
+		from ( select nvl('发电用标煤量','') fenl,
+		nvl(21,1) lanh,
+		nvl('发电用标煤量','')
+		mingc,
+		nvl('吨','') danw,
+		( select
+		sum(DECODE(Y.DIANCXXB_ID,215,(y.FADMZBML+y.FADYZBZML+y.FADQZBZML)*0.4,(y.FADMZBML+y.FADYZBZML+y.FADQZBZML)))
+		from yuezbb y,diancxxb d where y.diancxxb_id=d.id
+		<if test='dianc != ""'>
+			AND Y.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		</if>
+		and to_char(to_date(Y.RIQ,'yyyy-MM-dd'),'yyyy-MM-dd')=#{riq}||'-01'
+		and fenx='本月' AND
+		(Y.ZHUANGT=1 or Y.ZHUANGT=3) ) benyz, ( select
+		sum(DECODE(Y.DIANCXXB_ID,215,(y.FADMZBML+y.FADYZBZML+y.FADQZBZML)*0.4,(y.FADMZBML+y.FADYZBZML+y.FADQZBZML)))
+		from yuezbb y,diancxxb d where y.diancxxb_id=d.id
+		<if test='dianc != ""'>
+			AND Y.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		</if>
+		and to_char(to_date(Y.RIQ,'yyyy-MM-dd'),'yyyy-MM-dd')=#{riq}||'-01'
+		and fenx='累计' AND
+		(Y.ZHUANGT=1 or Y.ZHUANGT=3) ) leijz, '' beiz from
+		dual union
+		select
+		nvl('发电用标煤量','') fenl,
+		nvl(22,1) lanh,
+		nvl('其中：煤折标煤量','') mingc,
+		nvl('吨','') danw,
+		( select
+		sum(DECODE(Y.DIANCXXB_ID,215,y.FADMZBML*0.4,y.FADMZBML)) from
+		yuezbb
+		y,diancxxb d where y.diancxxb_id=d.id
+		<if test='dianc != ""'>
+			AND Y.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		</if>
+		and to_char(to_date(Y.RIQ,'yyyy-MM-dd'),'yyyy-MM-dd')=#{riq}||'-01'
+		and fenx='本月' AND
+		(Y.ZHUANGT=1 or Y.ZHUANGT=3) ) benyz, ( select
+		sum(DECODE(Y.DIANCXXB_ID,215,y.FADMZBML*0.4,y.FADMZBML)) from yuezbb
+		y,diancxxb d where y.diancxxb_id=d.id
+		<if test='dianc != ""'>
+			AND Y.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		</if>
+		and to_char(to_date(Y.RIQ,'yyyy-MM-dd'),'yyyy-MM-dd')=#{riq}||'-01'
+		and fenx='累计' AND
+		(Y.ZHUANGT=1 or Y.ZHUANGT=3) ) leijz, '' beiz from
+		dual union
+		select
+		nvl('发电用标煤量','') fenl,
+		nvl(23,1) lanh, nvl('油折标煤量','')
+		mingc,
+		nvl('吨','') danw,
+		( select
+		sum(DECODE(Y.DIANCXXB_ID,215,y.FADYZBZML*0.4,y.FADYZBZML))
+		from yuezbb
+		y,diancxxb d where y.diancxxb_id=d.id
+		<if test='dianc != ""'>
+			AND Y.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		</if>
+		and to_char(to_date(Y.RIQ,'yyyy-MM-dd'),'yyyy-MM-dd')=#{riq}||'-01'
+		and fenx='本月' AND
+		(Y.ZHUANGT=1 or Y.ZHUANGT=3) ) benyz, ( select
+		sum(DECODE(Y.DIANCXXB_ID,215,y.FADYZBZML*0.4,y.FADYZBZML)) from yuezbb
+		y,diancxxb d where y.diancxxb_id=d.id
+		<if test='dianc != ""'>
+			AND Y.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		</if>
+		and to_char(to_date(Y.RIQ,'yyyy-MM-dd'),'yyyy-MM-dd')=#{riq}||'-01'
+		and fenx='累计' AND
+		(Y.ZHUANGT=1 or Y.ZHUANGT=3) ) leijz, '' beiz from
+		dual union
+		select
+		nvl('发电用标煤量','') fenl,
+		nvl(24,1) lanh, nvl('气折标煤量','')
+		mingc,
+		nvl('吨','') danw,
+		( select
+		sum(DECODE(Y.DIANCXXB_ID,215,y.FADQZBZML*0.4,y.FADQZBZML))
+		from yuezbb
+		y,diancxxb d where y.diancxxb_id=d.id
+		<if test='dianc != ""'>
+			AND Y.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		</if>
+		and to_char(to_date(Y.RIQ,'yyyy-MM-dd'),'yyyy-MM-dd')=#{riq}||'-01'
+		and fenx='本月' AND
+		(Y.ZHUANGT=1 or Y.ZHUANGT=3) ) benyz, ( select
+		sum(DECODE(Y.DIANCXXB_ID,215,y.FADQZBZML*0.4,y.FADQZBZML)) from yuezbb
+		y,diancxxb d where y.diancxxb_id=d.id
+		<if test='dianc != ""'>
+			AND Y.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		</if>
+		and to_char(to_date(Y.RIQ,'yyyy-MM-dd'),'yyyy-MM-dd')=#{riq}||'-01'
+		and fenx='累计' AND
+		(Y.ZHUANGT=1 or Y.ZHUANGT=3) ) leijz, '' beiz from
+		dual )
+		union
+		select *
+		from ( select nvl('供热用标煤量','') fenl,
+		nvl(25,1) lanh,
+		nvl('供热用标煤量','')
+		mingc,
+		nvl('吨','') danw,
+		( select
+		sum(DECODE(Y.DIANCXXB_ID,215,(y.GONGRMZBML+y.GONGRYZBZML+y.GONGRQZBZML)*0.4,(y.GONGRMZBML+y.GONGRYZBZML+y.GONGRQZBZML)))
+		from yuezbb y,diancxxb d where y.diancxxb_id=d.id
+		<if test='dianc != ""'>
+			AND Y.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		</if>
+		and to_char(to_date(Y.RIQ,'yyyy-MM-dd'),'yyyy-MM-dd')=#{riq}||'-01'
+		and fenx='本月' AND
+		(Y.ZHUANGT=1 or Y.ZHUANGT=3) ) benyz, ( select
+		sum(DECODE(Y.DIANCXXB_ID,215,(y.GONGRMZBML+y.GONGRYZBZML+y.GONGRQZBZML)*0.4,(y.GONGRMZBML+y.GONGRYZBZML+y.GONGRQZBZML)))
+		from yuezbb y,diancxxb d where y.diancxxb_id=d.id
+		<if test='dianc != ""'>
+			AND Y.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		</if>
+		and to_char(to_date(Y.RIQ,'yyyy-MM-dd'),'yyyy-MM-dd')=#{riq}||'-01'
+		and fenx='累计' AND
+		(Y.ZHUANGT=1 or Y.ZHUANGT=3) ) leijz, '' beiz from
+		dual union
+		select
+		nvl('供热用标煤量','') fenl,
+		nvl(26,1) lanh,
+		nvl('其中：煤折标煤量','') mingc,
+		nvl('吨','') danw,
+		( select
+		sum(DECODE(Y.DIANCXXB_ID,215,y.GONGRMZBML*0.4,y.GONGRMZBML))
+		from
+		yuezbb y,diancxxb d where y.diancxxb_id=d.id
+		<if test='dianc != ""'>
+			AND Y.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		</if>
+		and to_char(to_date(Y.RIQ,'yyyy-MM-dd'),'yyyy-MM-dd')=#{riq}||'-01'
+		and fenx='本月' AND
+		(Y.ZHUANGT=1 or Y.ZHUANGT=3) ) benyz, ( select
+		sum(DECODE(Y.DIANCXXB_ID,215,y.GONGRMZBML*0.4,y.GONGRMZBML)) from
+		yuezbb y,diancxxb d where y.diancxxb_id=d.id
+		<if test='dianc != ""'>
+			AND Y.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		</if>
+		and to_char(to_date(Y.RIQ,'yyyy-MM-dd'),'yyyy-MM-dd')=#{riq}||'-01'
+		and fenx='累计' AND
+		(Y.ZHUANGT=1 or Y.ZHUANGT=3) ) leijz, '' beiz from
+		dual union
+		select
+		nvl('供热用标煤量','') fenl,
+		nvl(27,1) lanh, nvl('油折标煤量','')
+		mingc,
+		nvl('吨','') danw,
+		( select
+		sum(DECODE(Y.DIANCXXB_ID,215,y.GONGRYZBZML*0.4,y.GONGRYZBZML))
+		from
+		yuezbb y,diancxxb d where y.diancxxb_id=d.id
+		<if test='dianc != ""'>
+			AND Y.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		</if>
+		and to_char(to_date(Y.RIQ,'yyyy-MM-dd'),'yyyy-MM-dd')=#{riq}||'-01'
+		and fenx='本月' AND
+		(Y.ZHUANGT=1 or Y.ZHUANGT=3) ) benyz, ( select
+		sum(DECODE(Y.DIANCXXB_ID,215,y.GONGRYZBZML*0.4,y.GONGRYZBZML)) from
+		yuezbb y,diancxxb d where y.diancxxb_id=d.id
+		<if test='dianc != ""'>
+			AND Y.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		</if>
+		and to_char(to_date(Y.RIQ,'yyyy-MM-dd'),'yyyy-MM-dd')=#{riq}||'-01'
+		and fenx='累计' AND
+		(Y.ZHUANGT=1 or Y.ZHUANGT=3) ) leijz, '' beiz from
+		dual union
+		select
+		nvl('供热用标煤量','') fenl,
+		nvl(28,1) lanh, nvl('气折标煤量','')
+		mingc,
+		nvl('吨','') danw,
+		( select
+		sum(DECODE(Y.DIANCXXB_ID,215,y.GONGRQZBZML*0.4,y.GONGRQZBZML))
+		from
+		yuezbb y,diancxxb d where y.diancxxb_id=d.id
+		<if test='dianc != ""'>
+			AND Y.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		</if>
+		and to_char(to_date(Y.RIQ,'yyyy-MM-dd'),'yyyy-MM-dd')=#{riq}||'-01'
+		and fenx='本月' AND
+		(Y.ZHUANGT=1 or Y.ZHUANGT=3) ) benyz, ( select
+		sum(DECODE(Y.DIANCXXB_ID,215,y.GONGRQZBZML*0.4,y.GONGRQZBZML)) from
+		yuezbb y,diancxxb d where y.diancxxb_id=d.id
+		<if test='dianc != ""'>
+			AND Y.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		</if>
+		and to_char(to_date(Y.RIQ,'yyyy-MM-dd'),'yyyy-MM-dd')=#{riq}||'-01'
+		and fenx='累计' AND
+		(Y.ZHUANGT=1 or Y.ZHUANGT=3) ) leijz, '' beiz from
+		dual )
+		union
+		select *
+		from ( select nvl('入炉综合标煤单价','') fenl,
+		nvl(29,1)
+		lanh,
+		nvl('入炉综合标煤单价','') mingc,
+		nvl('元/吨','') danw,
+		( select
+		decode(sum(DECODE(Y.DIANCXXB_ID,215,nvl(Rulmzbzml+RULYZBZML+RULQZBZML,0)*0.4,nvl(Rulmzbzml+RULYZBZML+RULQZBZML,0))),0,0,round_new(sum(Y.RULZHBMDJ*DECODE(Y.DIANCXXB_ID,215,nvl(Rulmzbzml+RULYZBZML+RULQZBZML,0)*0.4,nvl(Rulmzbzml+RULYZBZML+RULQZBZML,0)))/sum(DECODE(Y.DIANCXXB_ID,215,nvl(Rulmzbzml+RULYZBZML+RULQZBZML,0)*0.4,nvl(Rulmzbzml+RULYZBZML+RULQZBZML,0))),2)
+		) from yuezbb y,diancxxb d where y.diancxxb_id=d.id
+		<if test='dianc != ""'>
+			AND Y.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		</if>
+		and to_char(to_date(Y.RIQ,'yyyy-MM-dd'),'yyyy-MM-dd')=#{riq}||'-01'
+		and fenx='本月' AND
+		(Y.ZHUANGT=1 or Y.ZHUANGT=3) ) benyz, ( select
+		decode(sum(DECODE(Y.DIANCXXB_ID,215,nvl(Rulmzbzml+RULYZBZML+RULQZBZML,0)*0.4,nvl(Rulmzbzml+RULYZBZML+RULQZBZML,0))),0,0,round_new(sum(Y.RULZHBMDJ*DECODE(Y.DIANCXXB_ID,215,nvl(Rulmzbzml+RULYZBZML+RULQZBZML,0)*0.4,nvl(Rulmzbzml+RULYZBZML+RULQZBZML,0)))/sum(DECODE(Y.DIANCXXB_ID,215,nvl(Rulmzbzml+RULYZBZML+RULQZBZML,0)*0.4,nvl(Rulmzbzml+RULYZBZML+RULQZBZML,0))),2)
+		) from yuezbb y,diancxxb d where y.diancxxb_id=d.id
+		<if test='dianc != ""'>
+			AND Y.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		</if>
+		and to_char(to_date(Y.RIQ,'yyyy-MM-dd'),'yyyy-MM-dd')=#{riq}||'-01'
+		and fenx='累计' AND
+		(Y.ZHUANGT=1 or Y.ZHUANGT=3) ) leijz, '' beiz from
+		dual union
+		select
+		nvl('入炉综合标煤单价','') fenl,
+		nvl(30,1) lanh,
+		nvl('其中：煤折标煤单价','') mingc,
+		nvl('元/吨','') danw,
+		( select decode(
+		sum(DECODE(Y.DIANCXXB_ID,215,nvl(y.FADMZBML+y.GONGRMZBML,0)*0.4,nvl(y.FADMZBML+y.GONGRMZBML,0))),0,0,
+		round_new(sum(DECODE(Y.DIANCXXB_ID,215,(Y.FADMCB + Y.GONGRMCB +
+		Y.QIZ_RANM)*0.4,(Y.FADMCB + Y.GONGRMCB +
+		Y.QIZ_RANM)))/sum(DECODE(Y.DIANCXXB_ID,215,(y.FADMZBML+y.GONGRMZBML)*0.4,y.FADMZBML+y.GONGRMZBML)),2)
+		) from yuezbb y,diancxxb d where y.diancxxb_id=d.id
+		<if test='dianc != ""'>
+			AND Y.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		</if>
+		and to_char(to_date(Y.RIQ,'yyyy-MM-dd'),'yyyy-MM-dd')=#{riq}||'-01'
+		and fenx='本月' AND
+		(Y.ZHUANGT=1 or Y.ZHUANGT=3) ) benyz, ( select
+		decode(
+		sum(DECODE(Y.DIANCXXB_ID,215,nvl(y.FADMZBML+y.GONGRMZBML,0)*0.4,nvl(y.FADMZBML+y.GONGRMZBML,0))),0,0,
+		round_new(sum(DECODE(Y.DIANCXXB_ID,215,(Y.FADMCB + Y.GONGRMCB +
+		Y.QIZ_RANM)*0.4,(Y.FADMCB + Y.GONGRMCB +
+		Y.QIZ_RANM)))/sum(DECODE(Y.DIANCXXB_ID,215,(y.FADMZBML+y.GONGRMZBML)*0.4,y.FADMZBML+y.GONGRMZBML)),2)
+		) from yuezbb y,diancxxb d where y.diancxxb_id=d.id
+		<if test='dianc != ""'>
+			AND Y.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		</if>
+		and to_char(to_date(Y.RIQ,'yyyy-MM-dd'),'yyyy-MM-dd')=#{riq}||'-01'
+		and fenx='累计' AND
+		(Y.ZHUANGT=1 or Y.ZHUANGT=3) ) leijz, '' beiz from
+		dual union
+		select
+		nvl('入炉综合标煤单价','') fenl,
+		nvl(31,1) lanh,
+		nvl('油折标煤单价','') mingc,
+		nvl('元/吨','') danw,
+		( select
+		decode(sum(DECODE(Y.DIANCXXB_ID,215,nvl(y.FADYZBZML+y.GONGRYZBZML,0)*0.4,nvl(y.FADYZBZML+y.GONGRYZBZML,0))),0,0,
+		round_new(sum(DECODE(Y.DIANCXXB_ID,215,(Y.FADYCB + Y.GONGRYCB
+		+Y.QIZ_RANY)*0.4,Y.FADYCB + Y.GONGRYCB
+		+Y.QIZ_RANY))/sum(DECODE(Y.DIANCXXB_ID,215,(y.FADYZBZML+y.GONGRYZBZML)*0.4,y.FADYZBZML+y.GONGRYZBZML)),2)
+		) from yuezbb y,diancxxb d where y.diancxxb_id=d.id
+		<if test='dianc != ""'>
+			AND Y.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		</if>
+		and to_char(to_date(Y.RIQ,'yyyy-MM-dd'),'yyyy-MM-dd')=#{riq}||'-01'
+		and fenx='本月' AND
+		(Y.ZHUANGT=1 or Y.ZHUANGT=3) ) benyz, ( select
+		decode(sum(DECODE(Y.DIANCXXB_ID,215,nvl(y.FADYZBZML+y.GONGRYZBZML,0)*0.4,nvl(y.FADYZBZML+y.GONGRYZBZML,0))),0,0,
+		round_new(sum(DECODE(Y.DIANCXXB_ID,215,(Y.FADYCB + Y.GONGRYCB
+		+Y.QIZ_RANY)*0.4,Y.FADYCB + Y.GONGRYCB
+		+Y.QIZ_RANY))/sum(DECODE(Y.DIANCXXB_ID,215,(y.FADYZBZML+y.GONGRYZBZML)*0.4,y.FADYZBZML+y.GONGRYZBZML)),2)
+		) from yuezbb y,diancxxb d where y.diancxxb_id=d.id
+		<if test='dianc != ""'>
+			AND Y.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		</if>
+		and to_char(to_date(Y.RIQ,'yyyy-MM-dd'),'yyyy-MM-dd')=#{riq}||'-01'
+		and fenx='累计' AND
+		(Y.ZHUANGT=1 or Y.ZHUANGT=3) ) leijz, '' beiz from
+		dual union
+		select
+		nvl('入炉综合标煤单价','') fenl,
+		nvl(32,1) lanh,
+		nvl('气折标煤单价','') mingc,
+		nvl('元/吨','') danw,
+		( select decode(
+		sum(DECODE(Y.DIANCXXB_ID,215,nvl(y.FADQZBZML+y.GONGRQZBZML,0)*0.4,nvl(y.FADQZBZML+y.GONGRQZBZML,0))),0,0,
+		round_new(sum(DECODE(Y.DIANCXXB_ID,215,(Y.FADRQCB + Y.GONGRRQCB +
+		Y.QIZ_RANQ)*0.4,(Y.FADRQCB + Y.GONGRRQCB +
+		Y.QIZ_RANQ)))/sum(DECODE(Y.DIANCXXB_ID,215,(y.FADQZBZML+y.GONGRQZBZML)*0.4,(y.FADQZBZML+y.GONGRQZBZML))),2)
+		) from yuezbb y,diancxxb d where y.diancxxb_id=d.id
+		<if test='dianc != ""'>
+			AND Y.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		</if>
+		and to_char(to_date(Y.RIQ,'yyyy-MM-dd'),'yyyy-MM-dd')=#{riq}||'-01'
+		and fenx='本月' AND
+		(Y.ZHUANGT=1 or Y.ZHUANGT=3) ) benyz, ( select
+		decode(
+		sum(DECODE(Y.DIANCXXB_ID,215,nvl(y.FADQZBZML+y.GONGRQZBZML,0)*0.4,nvl(y.FADQZBZML+y.GONGRQZBZML,0))),0,0,
+		round_new(sum(DECODE(Y.DIANCXXB_ID,215,(Y.FADRQCB + Y.GONGRRQCB +
+		Y.QIZ_RANQ)*0.4,(Y.FADRQCB + Y.GONGRRQCB +
+		Y.QIZ_RANQ)))/sum(DECODE(Y.DIANCXXB_ID,215,(y.FADQZBZML+y.GONGRQZBZML)*0.4,(y.FADQZBZML+y.GONGRQZBZML))),2)
+		) from yuezbb y,diancxxb d where y.diancxxb_id=d.id
+		<if test='dianc != ""'>
+			AND Y.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		</if>
+		and to_char(to_date(Y.RIQ,'yyyy-MM-dd'),'yyyy-MM-dd')=#{riq}||'-01'
+		and fenx='累计' AND
+		(Y.ZHUANGT=1 or Y.ZHUANGT=3) ) leijz, '' beiz from
+		dual )
+		union
+		select *
+		from ( select nvl('发电标煤单价','') fenl,
+		nvl(33,1) lanh,
+		nvl('发电标煤单价','')
+		mingc,
+		nvl('元/吨','') danw,
+		( select
+		decode(sum(DECODE(Y.DIANCXXB_ID,215,nvl(y.FADMZBML+y.FADYZBZML+y.FADQZBZML,0)*0.4,nvl(y.FADMZBML+y.FADYZBZML+y.FADQZBZML,0))),0,0,round_new(sum(FADBZMDJ*DECODE(Y.DIANCXXB_ID,215,nvl(y.FADMZBML+y.FADYZBZML+y.FADQZBZML,0)*0.4,nvl(y.FADMZBML+y.FADYZBZML+y.FADQZBZML,0)))/sum(DECODE(Y.DIANCXXB_ID,215,nvl(y.FADMZBML+y.FADYZBZML+y.FADQZBZML,0)*0.4,nvl(y.FADMZBML+y.FADYZBZML+y.FADQZBZML,0))),2))
+		from yuezbb y,diancxxb d where y.diancxxb_id=d.id
+		<if test='dianc != ""'>
+			AND Y.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		</if>
+		and to_char(to_date(Y.RIQ,'yyyy-MM-dd'),'yyyy-MM-dd')=#{riq}||'-01'
+		and fenx='本月' AND
+		(Y.ZHUANGT=1 or Y.ZHUANGT=3) ) benyz, ( select
+		decode(sum(DECODE(Y.DIANCXXB_ID,215,nvl(y.FADMZBML+y.FADYZBZML+y.FADQZBZML,0)*0.4,nvl(y.FADMZBML+y.FADYZBZML+y.FADQZBZML,0))),0,0,round_new(sum(FADBZMDJ*DECODE(Y.DIANCXXB_ID,215,nvl(y.FADMZBML+y.FADYZBZML+y.FADQZBZML,0)*0.4,nvl(y.FADMZBML+y.FADYZBZML+y.FADQZBZML,0)))/sum(DECODE(Y.DIANCXXB_ID,215,nvl(y.FADMZBML+y.FADYZBZML+y.FADQZBZML,0)*0.4,nvl(y.FADMZBML+y.FADYZBZML+y.FADQZBZML,0))),2))
+		from yuezbb y,diancxxb d where y.diancxxb_id=d.id
+		<if test='dianc != ""'>
+			AND Y.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		</if>
+		and to_char(to_date(Y.RIQ,'yyyy-MM-dd'),'yyyy-MM-dd')=#{riq}||'-01'
+		and fenx='累计' AND
+		(Y.ZHUANGT=1 or Y.ZHUANGT=3) ) leijz, '' beiz from
+		dual union
+		select
+		nvl('发电标煤单价','') fenl,
+		nvl(34,1) lanh,
+		nvl('其中：煤折标煤单价','') mingc,
+		nvl('元/吨','') danw,
+		( select
+		decode(sum(DECODE(Y.DIANCXXB_ID,215,nvl(y.FADMZBML,0)*0.4,nvl(y.FADMZBML,0))),0,0,round_new(sum(QIZ_MEIZBMDJ*DECODE(Y.DIANCXXB_ID,215,nvl(y.FADMZBML,0)*0.4,nvl(y.FADMZBML,0)))/sum(DECODE(Y.DIANCXXB_ID,215,nvl(y.FADMZBML,0)*0.4,nvl(y.FADMZBML,0))),2))
+		from yuezbb y,diancxxb d where y.diancxxb_id=d.id
+		<if test='dianc != ""'>
+			AND Y.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		</if>
+		and to_char(to_date(Y.RIQ,'yyyy-MM-dd'),'yyyy-MM-dd')=#{riq}||'-01'
+		and fenx='本月' AND
+		(Y.ZHUANGT=1 or Y.ZHUANGT=3) ) benyz, ( select
+		decode(sum(DECODE(Y.DIANCXXB_ID,215,nvl(y.FADMZBML,0)*0.4,nvl(y.FADMZBML,0))),0,0,round_new(sum(QIZ_MEIZBMDJ*DECODE(Y.DIANCXXB_ID,215,nvl(y.FADMZBML,0)*0.4,nvl(y.FADMZBML,0)))/sum(DECODE(Y.DIANCXXB_ID,215,nvl(y.FADMZBML,0)*0.4,nvl(y.FADMZBML,0))),2))
+		from yuezbb y,diancxxb d where y.diancxxb_id=d.id
+		<if test='dianc != ""'>
+			AND Y.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		</if>
+		and to_char(to_date(Y.RIQ,'yyyy-MM-dd'),'yyyy-MM-dd')=#{riq}||'-01'
+		and fenx='累计' AND
+		(Y.ZHUANGT=1 or Y.ZHUANGT=3) ) leijz, '' beiz from
+		dual union
+		select
+		nvl('发电标煤单价','') fenl,
+		nvl(35,1) lanh, nvl('油折标煤单价','')
+		mingc,
+		nvl('元/吨','') danw,
+		( select
+		decode(sum(DECODE(Y.DIANCXXB_ID,215,nvl(y.FADYZBZML,0)*0.4,nvl(y.FADYZBZML,0))),0,0,round_new(sum(QIZ_YOUZBMDJ*DECODE(Y.DIANCXXB_ID,215,nvl(y.FADYZBZML,0)*0.4,nvl(y.FADYZBZML,0)))/sum(DECODE(Y.DIANCXXB_ID,215,nvl(y.FADYZBZML,0)*0.4,nvl(y.FADYZBZML,0))),2))
+		from yuezbb y,diancxxb d where y.diancxxb_id=d.id
+		<if test='dianc != ""'>
+			AND Y.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		</if>
+		and to_char(to_date(Y.RIQ,'yyyy-MM-dd'),'yyyy-MM-dd')=#{riq}||'-01'
+		and fenx='本月' AND
+		(Y.ZHUANGT=1 or Y.ZHUANGT=3) ) benyz, ( select
+		decode(sum(DECODE(Y.DIANCXXB_ID,215,nvl(y.FADYZBZML,0)*0.4,nvl(y.FADYZBZML,0))),0,0,round_new(sum(QIZ_YOUZBMDJ*DECODE(Y.DIANCXXB_ID,215,nvl(y.FADYZBZML,0)*0.4,nvl(y.FADYZBZML,0)))/sum(DECODE(Y.DIANCXXB_ID,215,nvl(y.FADYZBZML,0)*0.4,nvl(y.FADYZBZML,0))),2))
+		from yuezbb y,diancxxb d where y.diancxxb_id=d.id
+		<if test='dianc != ""'>
+			AND Y.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		</if>
+		and to_char(to_date(Y.RIQ,'yyyy-MM-dd'),'yyyy-MM-dd')=#{riq}||'-01'
+		and fenx='累计' AND
+		(Y.ZHUANGT=1 or Y.ZHUANGT=3) ) leijz, '' beiz from
+		dual union
+		select
+		nvl('发电标煤单价','') fenl,
+		nvl(36,1) lanh, nvl('气折标煤单价','')
+		mingc,
+		nvl('元/吨','') danw,
+		( select
+		decode(sum(DECODE(Y.DIANCXXB_ID,215,nvl(y.FADQZBZML,0)*0.4,nvl(y.FADQZBZML,0))),0,0,round_new(sum(QIZ_QIZBMDJ*DECODE(Y.DIANCXXB_ID,215,nvl(y.FADQZBZML,0)*0.4,nvl(y.FADQZBZML,0)))/sum(DECODE(Y.DIANCXXB_ID,215,nvl(y.FADQZBZML,0)*0.4,nvl(y.FADQZBZML,0))),2))
+		from yuezbb y,diancxxb d where y.diancxxb_id=d.id
+		<if test='dianc != ""'>
+			AND Y.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		</if>
+		and to_char(to_date(Y.RIQ,'yyyy-MM-dd'),'yyyy-MM-dd')=#{riq}||'-01'
+		and fenx='本月' AND
+		(Y.ZHUANGT=1 or Y.ZHUANGT=3) ) benyz, ( select
+		decode(sum(DECODE(Y.DIANCXXB_ID,215,nvl(y.FADQZBZML,0)*0.4,nvl(y.FADQZBZML,0))),0,0,round_new(sum(QIZ_QIZBMDJ*DECODE(Y.DIANCXXB_ID,215,nvl(y.FADQZBZML,0)*0.4,nvl(y.FADQZBZML,0)))/sum(DECODE(Y.DIANCXXB_ID,215,nvl(y.FADQZBZML,0)*0.4,nvl(y.FADQZBZML,0))),2))
+		from yuezbb y,diancxxb d where y.diancxxb_id=d.id
+		<if test='dianc != ""'>
+			AND Y.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		</if>
+		and to_char(to_date(Y.RIQ,'yyyy-MM-dd'),'yyyy-MM-dd')=#{riq}||'-01'
+		and fenx='累计' AND
+		(Y.ZHUANGT=1 or Y.ZHUANGT=3) ) leijz, '' beiz from
+		dual )
+		union
+		select *
+		from ( select nvl('供热标煤单价','') fenl,
+		nvl(37,1) lanh,
+		nvl('供热标煤单价','')
+		mingc,
+		nvl('元/吨','') danw,
+		( select
+		decode(sum(DECODE(Y.DIANCXXB_ID,215,nvl(y.GONGRMZBML+y.GONGRYZBZML+y.GONGRQZBZML,0)*0.4,nvl(y.GONGRMZBML+y.GONGRYZBZML+y.GONGRQZBZML,0))),0,0,round_new(sum(GONGRBZMDJ*DECODE(Y.DIANCXXB_ID,215,nvl(y.GONGRMZBML+y.GONGRYZBZML+y.GONGRQZBZML,0)*0.4,nvl(y.GONGRMZBML+y.GONGRYZBZML+y.GONGRQZBZML,0)))/sum(DECODE(Y.DIANCXXB_ID,215,nvl(y.GONGRMZBML+y.GONGRYZBZML+y.GONGRQZBZML,0)*0.4,nvl(y.GONGRMZBML+y.GONGRYZBZML+y.GONGRQZBZML,0))),2))
+		from yuezbb y,diancxxb d where y.diancxxb_id=d.id
+		<if test='dianc != ""'>
+			AND Y.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		</if>
+		and to_char(to_date(Y.RIQ,'yyyy-MM-dd'),'yyyy-MM-dd')=#{riq}||'-01'
+		and fenx='本月' AND
+		(Y.ZHUANGT=1 or Y.ZHUANGT=3) ) benyz, ( select
+		decode(sum(DECODE(Y.DIANCXXB_ID,215,nvl(y.GONGRMZBML+y.GONGRYZBZML+y.GONGRQZBZML,0)*0.4,nvl(y.GONGRMZBML+y.GONGRYZBZML+y.GONGRQZBZML,0))),0,0,round_new(sum(GONGRBZMDJ*DECODE(Y.DIANCXXB_ID,215,nvl(y.GONGRMZBML+y.GONGRYZBZML+y.GONGRQZBZML,0)*0.4,nvl(y.GONGRMZBML+y.GONGRYZBZML+y.GONGRQZBZML,0)))/sum(DECODE(Y.DIANCXXB_ID,215,nvl(y.GONGRMZBML+y.GONGRYZBZML+y.GONGRQZBZML,0)*0.4,nvl(y.GONGRMZBML+y.GONGRYZBZML+y.GONGRQZBZML,0))),2))
+		from yuezbb y,diancxxb d where y.diancxxb_id=d.id
+		<if test='dianc != ""'>
+			AND Y.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		</if>
+		and to_char(to_date(Y.RIQ,'yyyy-MM-dd'),'yyyy-MM-dd')=#{riq}||'-01'
+		and fenx='累计' AND
+		(Y.ZHUANGT=1 or Y.ZHUANGT=3) ) leijz, '' beiz from
+		dual union
+		select
+		nvl('供热标煤单价','') fenl,
+		nvl(38,1) lanh,
+		nvl('其中：煤折标煤单价','') mingc,
+		nvl('元/吨','') danw,
+		( select
+		decode(sum(DECODE(Y.DIANCXXB_ID,215,nvl(y.GONGRMZBML,0)*0.4,nvl(y.GONGRMZBML,0))),0,0,round_new(sum(QIZ_MEIZBMDJ_GR*DECODE(Y.DIANCXXB_ID,215,nvl(y.GONGRMZBML,0)*0.4,nvl(y.GONGRMZBML,0)))/sum(DECODE(Y.DIANCXXB_ID,215,nvl(y.GONGRMZBML,0)*0.4,nvl(y.GONGRMZBML,0))),2))
+		from yuezbb y,diancxxb d where y.diancxxb_id=d.id
+		<if test='dianc != ""'>
+			AND Y.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		</if>
+		and to_char(to_date(Y.RIQ,'yyyy-MM-dd'),'yyyy-MM-dd')=#{riq}||'-01'
+		and fenx='本月' AND
+		(Y.ZHUANGT=1 or Y.ZHUANGT=3) ) benyz, ( select
+		decode(sum(DECODE(Y.DIANCXXB_ID,215,nvl(y.GONGRMZBML,0)*0.4,nvl(y.GONGRMZBML,0))),0,0,round_new(sum(QIZ_MEIZBMDJ_GR*DECODE(Y.DIANCXXB_ID,215,nvl(y.GONGRMZBML,0)*0.4,nvl(y.GONGRMZBML,0)))/sum(DECODE(Y.DIANCXXB_ID,215,nvl(y.GONGRMZBML,0)*0.4,nvl(y.GONGRMZBML,0))),2))
+		from yuezbb y,diancxxb d where y.diancxxb_id=d.id
+		<if test='dianc != ""'>
+			AND Y.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		</if>
+		and to_char(to_date(Y.RIQ,'yyyy-MM-dd'),'yyyy-MM-dd')=#{riq}||'-01'
+		and fenx='累计' AND
+		(Y.ZHUANGT=1 or Y.ZHUANGT=3) ) leijz, '' beiz from
+		dual union
+		select
+		nvl('供热标煤单价','') fenl,
+		nvl(39,1) lanh, nvl('油折标煤单价','')
+		mingc,
+		nvl('元/吨','') danw,
+		( select
+		decode(sum(DECODE(Y.DIANCXXB_ID,215,nvl(y.GONGRYZBZML,0)*0.4,nvl(y.GONGRYZBZML,0))),0,0,round_new(sum(QIZ_YOUZBMDJ_GR*DECODE(Y.DIANCXXB_ID,215,nvl(y.GONGRYZBZML,0)*0.4,nvl(y.GONGRYZBZML,0))
+		)/sum(DECODE(Y.DIANCXXB_ID,215,nvl(y.GONGRYZBZML,0)*0.4,nvl(y.GONGRYZBZML,0))),2))
+		from yuezbb y,diancxxb d where y.diancxxb_id=d.id
+		<if test='dianc != ""'>
+			AND Y.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		</if>
+		and to_char(to_date(Y.RIQ,'yyyy-MM-dd'),'yyyy-MM-dd')=#{riq}||'-01'
+		and fenx='本月' AND
+		(Y.ZHUANGT=1 or Y.ZHUANGT=3) ) benyz, ( select
+		decode(sum(DECODE(Y.DIANCXXB_ID,215,nvl(y.GONGRYZBZML,0)*0.4,nvl(y.GONGRYZBZML,0))),0,0,round_new(sum(QIZ_YOUZBMDJ_GR*DECODE(Y.DIANCXXB_ID,215,nvl(y.GONGRYZBZML,0)*0.4,nvl(y.GONGRYZBZML,0))
+		)/sum(DECODE(Y.DIANCXXB_ID,215,nvl(y.GONGRYZBZML,0)*0.4,nvl(y.GONGRYZBZML,0))),2))
+		from yuezbb y,diancxxb d where y.diancxxb_id=d.id
+		<if test='dianc != ""'>
+			AND Y.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		</if>
+		and to_char(to_date(Y.RIQ,'yyyy-MM-dd'),'yyyy-MM-dd')=#{riq}||'-01'
+		and fenx='累计' AND
+		(Y.ZHUANGT=1 or Y.ZHUANGT=3) ) leijz, '' beiz from
+		dual union
+		select
+		nvl('供热标煤单价','') fenl,
+		nvl(40,1) lanh, nvl('气折标煤单价','')
+		mingc,
+		nvl('元/吨','') danw,
+		( select
+		decode(sum(DECODE(Y.DIANCXXB_ID,215,nvl(y.GONGRQZBZML,0)*0.4,nvl(y.GONGRQZBZML,0))),0,0,round_new(sum(QIZ_QIZBMDJ_GR*DECODE(Y.DIANCXXB_ID,215,nvl(y.GONGRQZBZML,0)*0.4,nvl(y.GONGRQZBZML,0)))/sum(DECODE(Y.DIANCXXB_ID,215,nvl(y.GONGRQZBZML,0)*0.4,nvl(y.GONGRQZBZML,0))),2))
+		from yuezbb y,diancxxb d where y.diancxxb_id=d.id
+		<if test='dianc != ""'>
+			AND Y.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		</if>
+		and to_char(to_date(Y.RIQ,'yyyy-MM-dd'),'yyyy-MM-dd')=#{riq}||'-01'
+		and fenx='本月' AND
+		(Y.ZHUANGT=1 or Y.ZHUANGT=3) ) benyz, ( select
+		decode(sum(DECODE(Y.DIANCXXB_ID,215,nvl(y.GONGRQZBZML,0)*0.4,nvl(y.GONGRQZBZML,0))),0,0,round_new(sum(QIZ_QIZBMDJ_GR*DECODE(Y.DIANCXXB_ID,215,nvl(y.GONGRQZBZML,0)*0.4,nvl(y.GONGRQZBZML,0)))/sum(DECODE(Y.DIANCXXB_ID,215,nvl(y.GONGRQZBZML,0)*0.4,nvl(y.GONGRQZBZML,0))),2))
+		from yuezbb y,diancxxb d where y.diancxxb_id=d.id
+		<if test='dianc != ""'>
+			AND Y.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		</if>
+		and to_char(to_date(Y.RIQ,'yyyy-MM-dd'),'yyyy-MM-dd')=#{riq}||'-01'
+		and fenx='累计' AND
+		(Y.ZHUANGT=1 or Y.ZHUANGT=3) ) leijz, '' beiz from
+		dual )
+		union
+		select *
+		from ( select nvl('生产指标','') fenl,
+		nvl(41,1) lanh,
+		nvl('发电量','')
+		mingc,
+		nvl('万千瓦时','') danw,
+		( select
+		sum(DECODE(Y.DIANCXXB_ID,215,y.FADL*0.4,y.FADL)) from yuezbb
+		y,diancxxb d where y.diancxxb_id=d.id
+		<if test='dianc != ""'>
+			AND Y.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		</if>
+		and to_char(to_date(Y.RIQ,'yyyy-MM-dd'),'yyyy-MM-dd')=#{riq}||'-01'
+		and fenx='本月' AND
+		(Y.ZHUANGT=1 or Y.ZHUANGT=3) ) benyz, ( select
+		sum(DECODE(Y.DIANCXXB_ID,215,y.FADL*0.4,y.FADL)) from yuezbb
+		y,diancxxb d where y.diancxxb_id=d.id
+		<if test='dianc != ""'>
+			AND Y.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		</if>
+		and to_char(to_date(Y.RIQ,'yyyy-MM-dd'),'yyyy-MM-dd')=#{riq}||'-01'
+		and fenx='累计' AND
+		(Y.ZHUANGT=1 or Y.ZHUANGT=3) ) leijz, '' beiz from
+		dual union
+		select
+		nvl('生产指标','') fenl,
+		nvl(42,1) lanh, nvl('发电煤耗','')
+		mingc,
+		nvl('克/千瓦时','') danw,
+		( select Round(DECODE
+		(sum(DECODE(Y.DIANCXXB_ID,215,y.FADL*0.4,y.FADL))
+		,0,0,sum(DECODE(Y.DIANCXXB_ID,215,(y.FADYZBZML+y.FADMZBML)*0.4,y.FADYZBZML+y.FADMZBML))*100/
+		sum(DECODE(Y.DIANCXXB_ID,215,y.FADL*0.4,y.FADL))),2) from yuezbb
+		y,diancxxb d where y.diancxxb_id=d.id
+		<if test='dianc != ""'>
+			AND Y.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		</if>
+		and to_char(to_date(Y.RIQ,'yyyy-MM-dd'),'yyyy-MM-dd')=#{riq}||'-01'
+		and fenx='本月' AND
+		(Y.ZHUANGT=1 or Y.ZHUANGT=3) ) benyz, ( select
+		Round(DECODE
+		(sum(DECODE(Y.DIANCXXB_ID,215,y.FADL*0.4,y.FADL))
+		,0,0,sum(DECODE(Y.DIANCXXB_ID,215,(y.FADYZBZML+y.FADMZBML)*0.4,y.FADYZBZML+y.FADMZBML))*100/
+		sum(DECODE(Y.DIANCXXB_ID,215,y.FADL*0.4,y.FADL))),2) from yuezbb
+		y,diancxxb d where y.diancxxb_id=d.id
+		<if test='dianc != ""'>
+			AND Y.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		</if>
+		and to_char(to_date(Y.RIQ,'yyyy-MM-dd'),'yyyy-MM-dd')=#{riq}||'-01'
+		and fenx='累计' AND
+		(Y.ZHUANGT=1 or Y.ZHUANGT=3) ) leijz, '' beiz from
+		dual union
+		select
+		nvl('生产指标','') fenl,
+		nvl(43,1) lanh, nvl('供热量','')
+		mingc,
+		nvl('吉焦','')
+		danw,
+		( select
+		sum(DECODE(Y.DIANCXXB_ID,215,GONGRL*0.4,GONGRL)) from
+		yuezbb
+		y,diancxxb
+		d where y.diancxxb_id=d.id
+		<if test='dianc != ""'>
+			AND Y.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		</if>
+		and to_char(to_date(Y.RIQ,'yyyy-MM-dd'),'yyyy-MM-dd')=#{riq}||'-01'
+		and fenx='本月' AND
+		(Y.ZHUANGT=1 or Y.ZHUANGT=3) ) benyz, ( select
+		sum(DECODE(Y.DIANCXXB_ID,215,GONGRL*0.4,GONGRL)) from yuezbb
+		y,diancxxb d where y.diancxxb_id=d.id
+		<if test='dianc != ""'>
+			AND Y.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		</if>
+		and to_char(to_date(Y.RIQ,'yyyy-MM-dd'),'yyyy-MM-dd')=#{riq}||'-01'
+		and fenx='累计' AND
+		(Y.ZHUANGT=1 or Y.ZHUANGT=3) ) leijz, '' beiz from
+		dual union
+		select
+		nvl('生产指标','') fenl,
+		nvl(44,1) lanh, nvl('供热煤耗','')
+		mingc,
+		nvl('千克/吉焦','') danw,
+		( select
+		Round(DECODE(sum(DECODE(Y.DIANCXXB_ID,215,y.GONGRL*0.4,y.GONGRL)),0,0,
+		sum(DECODE(Y.DIANCXXB_ID,215,(y.GONGRMZBML+
+		y.GONGRYZBZML)*0.4,(y.GONGRMZBML+ y.GONGRYZBZML)))*1000/
+		sum(DECODE(Y.DIANCXXB_ID,215,y.GONGRL*0.4,y.GONGRL))),2) from yuezbb
+		y,diancxxb d where y.diancxxb_id=d.id
+		<if test='dianc != ""'>
+			AND Y.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		</if>
+		and to_char(to_date(Y.RIQ,'yyyy-MM-dd'),'yyyy-MM-dd')=#{riq}||'-01'
+		and fenx='本月' AND
+		(Y.ZHUANGT=1 or Y.ZHUANGT=3) ) benyz, ( select
+		Round(DECODE(sum(DECODE(Y.DIANCXXB_ID,215,y.GONGRL*0.4,y.GONGRL)),0,0,
+		sum(DECODE(Y.DIANCXXB_ID,215,(y.GONGRMZBML+
+		y.GONGRYZBZML)*0.4,(y.GONGRMZBML+ y.GONGRYZBZML)))*1000/
+		sum(DECODE(Y.DIANCXXB_ID,215,y.GONGRL*0.4,y.GONGRL))),2) from yuezbb
+		y,diancxxb d where y.diancxxb_id=d.id
+		<if test='dianc != ""'>
+			AND Y.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		</if>
+		and to_char(to_date(Y.RIQ,'yyyy-MM-dd'),'yyyy-MM-dd')=#{riq}||'-01'
+		and fenx='累计' AND
+		(Y.ZHUANGT=1 or Y.ZHUANGT=3) ) leijz, '' beiz from
+		dual )
+		union
+		SELECT
+		FENL, LANH, MINGC, DANW, BENYZ, LEIJZ, BEIZ
+		FROM
+		(SELECT
+		NVL('库存指标',
+		'')
+		FENL,
+		NVL(45, 1) LANH,
+		NVL('库存量', '') MINGC,
+		NVL('吨', '')
+		DANW,
+		(SELECT
+		SUM(DECODE(Y.DIANCXXB_ID, 215, H.KUC * 0.4,
+		H.KUC))
+		FROM
+		YUEZBB
+		Y,
+		DIANCXXB D, YUESHCHJB H
+		WHERE Y.DIANCXXB_ID = D.ID
+		AND
+		H.DIANCXXB_ID =
+		Y.DIANCXXB_ID
+		AND H.RIQ = Y.RIQ
+		AND H.FENX = Y.FENX
+		<if test='dianc != ""'>
+			AND Y.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		</if>
+		AND to_char(to_date(Y.RIQ,'yyyy-MM-dd'),'yyyy-MM-dd') =
+		TO_DATE(#{riq}||'-01','yyyy-MM-dd')
+		AND Y.FENX = '本月' AND
+		(Y.ZHUANGT=1
+		or Y.ZHUANGT=3)) BENYZ,
+		(SELECT SUM(DECODE(Y.DIANCXXB_ID,
+		215, H.KUC *
+		0.4, H.KUC))
+		FROM YUEZBB Y, DIANCXXB D, YUESHCHJB H
+		WHERE
+		Y.DIANCXXB_ID =
+		D.ID
+		AND H.DIANCXXB_ID = Y.DIANCXXB_ID
+		AND H.RIQ = Y.RIQ
+		AND H.FENX =
+		Y.FENX
+		<if test='dianc != ""'>
+			AND Y.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		</if>
+		AND to_char(to_date(Y.RIQ,'yyyy-MM-dd'),'yyyy-MM-dd') = #{riq}||'-01'
+		AND Y.FENX = '累计' AND
+		(Y.ZHUANGT=1 or Y.ZHUANGT=3)) LEIJZ,
+		'' BEIZ
+		FROM
+		DUAL
+		union
+		SELECT
+		NVL('库存指标', '') FENL,
+		NVL(46, 1) LANH,
+		NVL('库存天然煤热值', '')
+		MINGC,
+		NVL('兆焦/千克', '') DANW,
+		(SELECT
+		ROUND(DECODE(SUM(DECODE(Y.DIANCXXB_ID,
+		215, H.KUC * 0.4,
+		H.KUC)),0,0,SUM(DECODE(Y.DIANCXXB_ID, 215, H.KUC *
+		0.4,
+		H.KUC)*Y.KUCTRMRZ)/SUM(DECODE(Y.DIANCXXB_ID, 215, H.KUC * 0.4,
+		H.KUC))),2)KUCTRMRZ
+		FROM YUEZBB Y, DIANCXXB D, YUESHCHJB H
+		WHERE
+		Y.DIANCXXB_ID = D.ID
+		AND H.DIANCXXB_ID = Y.DIANCXXB_ID
+		AND H.RIQ = Y.RIQ
+		AND H.FENX = Y.FENX
+		<if test='dianc != ""'>
+			AND Y.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		</if>
+		AND to_char(to_date(Y.RIQ,'yyyy-MM-dd'),'yyyy-MM-dd') = #{riq}||'-01'
+		AND Y.FENX = '本月' AND
+		(Y.ZHUANGT=1 or Y.ZHUANGT=3)) BENYZ,
+		(SELECT
+		ROUND(DECODE(SUM(DECODE(Y.DIANCXXB_ID, 215, H.KUC * 0.4,
+		H.KUC)),0,0,SUM(DECODE(Y.DIANCXXB_ID, 215, H.KUC * 0.4,
+		H.KUC)*Y.KUCTRMRZ)/SUM(DECODE(Y.DIANCXXB_ID, 215, H.KUC * 0.4,
+		H.KUC))),2)KUCTRMRZ
+		FROM YUEZBB Y, DIANCXXB D, YUESHCHJB H
+		WHERE
+		Y.DIANCXXB_ID = D.ID
+		AND H.DIANCXXB_ID = Y.DIANCXXB_ID
+		AND H.RIQ = Y.RIQ
+		AND H.FENX = Y.FENX
+		<if test='dianc != ""'>
+			AND Y.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		</if>
+		AND to_char(to_date(Y.RIQ,'yyyy-MM-dd'),'yyyy-MM-dd') = #{riq}||'-01'
+		AND Y.FENX = '累计' AND
+		(Y.ZHUANGT=1 or Y.ZHUANGT=3)) LEIJZ,
+		'' BEIZ
+		FROM
+		DUAL
+		union
+		SELECT
+		NVL('库存指标', '') FENL,
+		NVL(47, 1) LANH,
+		NVL('库存天然煤单价(不含税)', '') MINGC,
+		NVL('元/吨', '') DANW,
+		(SELECT
+		ROUND(DECODE(SUM(DECODE(Y.DIANCXXB_ID,
+		215, H.KUC * 0.4,
+		H.KUC)),0,0,SUM(DECODE(Y.DIANCXXB_ID, 215, H.KUC *
+		0.4,
+		H.KUC)*Y.KUCTRMJ)/SUM(DECODE(Y.DIANCXXB_ID, 215, H.KUC * 0.4,
+		H.KUC))),2)KUCTRMJ
+		FROM YUEZBB Y, DIANCXXB D, YUESHCHJB H
+		WHERE
+		Y.DIANCXXB_ID = D.ID
+		AND H.DIANCXXB_ID = Y.DIANCXXB_ID
+		AND H.RIQ = Y.RIQ
+		AND H.FENX = Y.FENX
+		<if test='dianc != ""'>
+			AND Y.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		</if>
+		AND to_char(to_date(Y.RIQ,'yyyy-MM-dd'),'yyyy-MM-dd') = #{riq}||'-01'
+		AND Y.FENX = '本月' AND
+		(Y.ZHUANGT=1 or Y.ZHUANGT=3)) BENYZ,
+		(SELECT
+		ROUND(DECODE(SUM(DECODE(Y.DIANCXXB_ID, 215, H.KUC * 0.4,
+		H.KUC)),0,0,SUM(DECODE(Y.DIANCXXB_ID, 215, H.KUC * 0.4,
+		H.KUC)*Y.KUCTRMJ)/SUM(DECODE(Y.DIANCXXB_ID, 215, H.KUC * 0.4,
+		H.KUC))),2)KUCTRMJ
+		FROM YUEZBB Y, DIANCXXB D, YUESHCHJB H
+		WHERE
+		Y.DIANCXXB_ID = D.ID
+		AND H.DIANCXXB_ID = Y.DIANCXXB_ID
+		AND H.RIQ = Y.RIQ
+		AND H.FENX = Y.FENX
+		<if test='dianc != ""'>
+			AND Y.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		</if>
+		AND to_char(to_date(Y.RIQ,'yyyy-MM-dd'),'yyyy-MM-dd') = #{riq}||'-01'
+		AND Y.FENX = '累计' AND
+		(Y.ZHUANGT=1 or Y.ZHUANGT=3)) LEIJZ,
+		'' BEIZ
+		FROM
+		DUAL
+		union
+		SELECT
+		NVL('库存指标', '') FENL,
+		NVL(48, 1) LANH,
+		NVL('库存标煤单价(不含税)', '') MINGC,
+		NVL('元/吨', '') DANW,
+		(SELECT
+		ROUND(DECODE(ROUND(DECODE(SUM(DECODE(Y.DIANCXXB_ID, 215, H.KUC * 0.4,
+		H.KUC)),0,0,SUM(DECODE(Y.DIANCXXB_ID, 215, H.KUC * 0.4,
+		H.KUC)*Y.KUCTRMRZ)/SUM(DECODE(Y.DIANCXXB_ID, 215, H.KUC * 0.4,
+		H.KUC))),2),0,0,
+		ROUND(DECODE(SUM(DECODE(Y.DIANCXXB_ID, 215, H.KUC *
+		0.4, H.KUC)),0,0,SUM(DECODE(Y.DIANCXXB_ID, 215, H.KUC *
+		0.4,
+		H.KUC)*Y.KUCTRMJ)/SUM(DECODE(Y.DIANCXXB_ID, 215, H.KUC * 0.4,
+		H.KUC))),2)*29.271/
+		ROUND(DECODE(SUM(DECODE(Y.DIANCXXB_ID, 215, H.KUC *
+		0.4, H.KUC)),0,0,SUM(DECODE(Y.DIANCXXB_ID, 215, H.KUC *
+		0.4,
+		H.KUC)*Y.KUCTRMRZ)/SUM(DECODE(Y.DIANCXXB_ID, 215, H.KUC * 0.4,
+		H.KUC))),2)),2)BMDJ
+		FROM YUEZBB Y, DIANCXXB D, YUESHCHJB H
+		WHERE
+		Y.DIANCXXB_ID = D.ID
+		AND H.DIANCXXB_ID = Y.DIANCXXB_ID
+		AND H.RIQ = Y.RIQ
+		AND H.FENX = Y.FENX
+		<if test='dianc != ""'>
+			AND Y.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		</if>
+		AND to_char(to_date(Y.RIQ,'yyyy-MM-dd'),'yyyy-MM-dd') = #{riq}||'-01'
+		AND Y.FENX = '本月' AND
+		(Y.ZHUANGT=1 or Y.ZHUANGT=3)) BENYZ,
+		(SELECT
+		ROUND(DECODE(ROUND(DECODE(SUM(DECODE(Y.DIANCXXB_ID, 215, H.KUC * 0.4,
+		H.KUC)),0,0,SUM(DECODE(Y.DIANCXXB_ID, 215, H.KUC * 0.4,
+		H.KUC)*Y.KUCTRMRZ)/SUM(DECODE(Y.DIANCXXB_ID, 215, H.KUC * 0.4,
+		H.KUC))),2),0,0,
+		ROUND(DECODE(SUM(DECODE(Y.DIANCXXB_ID, 215, H.KUC *
+		0.4, H.KUC)),0,0,SUM(DECODE(Y.DIANCXXB_ID, 215, H.KUC *
+		0.4,
+		H.KUC)*Y.KUCTRMJ)/SUM(DECODE(Y.DIANCXXB_ID, 215, H.KUC * 0.4,
+		H.KUC))),2)*29.271/
+		ROUND(DECODE(SUM(DECODE(Y.DIANCXXB_ID, 215, H.KUC *
+		0.4, H.KUC)),0,0,SUM(DECODE(Y.DIANCXXB_ID, 215, H.KUC *
+		0.4,
+		H.KUC)*Y.KUCTRMRZ)/SUM(DECODE(Y.DIANCXXB_ID, 215, H.KUC * 0.4,
+		H.KUC))),2)),2)BMDJ
+		FROM YUEZBB Y, DIANCXXB D, YUESHCHJB H
+		WHERE
+		Y.DIANCXXB_ID = D.ID
+		AND H.DIANCXXB_ID = Y.DIANCXXB_ID
+		AND H.RIQ = Y.RIQ
+		AND H.FENX = Y.FENX
+		<if test='dianc != ""'>
+			AND Y.DIANCXXB_ID = #{dianc,jdbcType=VARCHAR}
+		</if>
+		AND to_char(to_date(Y.RIQ,'yyyy-MM-dd'),'yyyy-MM-dd') = #{riq}||'-01'
+		AND Y.FENX = '累计' AND
+		(Y.ZHUANGT=1 or Y.ZHUANGT=3)) LEIJZ,
+		'' BEIZ
+		FROM
+		DUAL)
+		) order by lanh
+		asc
+	</select>
+
+	<select id="getChangnfycx" resultType="java.util.LinkedHashMap">
+		SELECT decode(grouping(je.fuid) + grouping(je.mc),
+    2,
+    '公司合计',
+    getLinkZaf(min(je.diancxxb_id),
+    decode(grouping(je.fuid) + grouping(je.mc),
+    2,
+    '公司合计',
+    je.mc))) dc,
+    nvl('小计', '') zf,
+    sum(jine_bq_by) jine_bq_by,
+    round(decode(nvl(sum(ml.bbyml), 0),
+    0,
+    0,
+    sum(jine_bq_by) / sum(ml.bbyml)),
+    2) bbydmfy,
+    sum(jine_tq_by) jine_tq_by,
+    round(decode(nvl(sum(ml.tbyml), 0),
+    0,
+    0,
+    sum(jine_tq_by) / sum(ml.tbyml)),
+    2) tbydmfy,
+    (sum(nvl(jine_bq_by, 0)) - sum(nvl(jine_tq_by, 0))) jine_tb_by,
+    round(decode(nvl(sum(ml.bbyml), 0),
+    0,
+    0,
+    sum(jine_bq_by) / sum(ml.bbyml)),
+    2) - round(decode(nvl(sum(ml.tbyml), 0),
+    0,
+    0,
+    sum(jine_tq_by) / sum(ml.tbyml)),
+    2) bbydmfytb,
+    sum(jine_bq_lj) jine_bq_lj,
+    round(decode(nvl(sum(ml.bljml), 0),
+    0,
+    0,
+    sum(jine_bq_lj) / sum(ml.bljml)),
+    2) bljdmfy,
+    sum(jine_tq_lj) jine_tq_lj,
+    round(decode(nvl(sum(ml.tljml), 0),
+    0,
+    0,
+    sum(jine_tq_lj) / sum(ml.tljml)),
+    2) tljdmfy,
+    (sum(nvl(jine_bq_lj, 0)) - sum(nvl(jine_tq_lj, 0))) jine_tb_lj,
+    round(decode(nvl(sum(ml.bljml), 0),
+    0,
+    0,
+    sum(jine_bq_lj) / sum(ml.bljml)),
+    2) - round(decode(nvl(sum(ml.tljml), 0),
+    0,
+    0,
+    sum(jine_tq_lj) / sum(ml.tljml)),
+    2) bljdmfytb
+    FROM (SELECT min(dc.id) diancxxb_id,
+    dc.mingc,
+    sum(benq_by.jine) jine_bq_by,
+    sum(tongq_by.jine) jine_tq_by,
+    sum(benq_lj.jine) jine_bq_lj,
+    sum(tongq_lj.jine) jine_tq_lj,
+    (dc.fuid) fuid,
+    (dc.mingc) mc,
+    (dc.xuh) xuh,
+    grouping(dc.fuid) + grouping(dc.mingc) gp
+    from (select diancxxb_id, zf.mingc zfmc
+    from (select distinct diancxxb_id, z.mingc
+    from zafb z
+    where substr(z.riq,0,7) between '${lsriq}' and '{leriq}'
+   
+    
+    
+    ) zf
+    WHERE zf.diancxxb_id IN (#{dianc,jdbcType=VARCHAR})) fx,
+    (select z.diancxxb_id, z.mingc zafmc, sum(z.jine) jine
+    from zafb z
+    where substr(z.riq,0,7) = '${eriq}'
+    group by z.diancxxb_id, z.mingc) benq_by,
+    (select z.diancxxb_id, z.mingc zafmc, sum(z.jine) jine
+    from zafb z
+    where substr(z.riq,0,7) between '${sriq}' and '${eriq}'
+   
+    group by z.diancxxb_id, z.mingc) benq_lj,
+    (select z.diancxxb_id, z.mingc zafmc, sum(z.jine) jine
+    from zafb z
+    where substr(z.riq,0,7) = '${leriq}'
+   
+    group by z.diancxxb_id, z.mingc) tongq_by,
+    (select z.diancxxb_id, z.mingc zafmc, sum(z.jine) jine
+    from zafb z
+    where substr(z.riq,0,7) between '${lsriq}' and '${leriq}'
+    group by z.diancxxb_id, z.mingc) tongq_lj,
+    diancxxb dc
+    where fx.diancxxb_id = benq_by.diancxxb_id(+)
+    and fx.diancxxb_id = benq_lj.diancxxb_id(+)
+    and fx.diancxxb_id = tongq_by.diancxxb_id(+)
+    and fx.diancxxb_id = tongq_lj.diancxxb_id(+)
+    and fx.zfmc = benq_by.zafmc(+)
+    and fx.zfmc = benq_lj.zafmc(+)
+    and fx.zfmc = tongq_by.zafmc(+)
+    and fx.zfmc = tongq_lj.zafmc(+)
+    and fx.diancxxb_id = dc.id(+)
+    group by (dc.fuid, dc.xuh, dc.mingc)) je,
+    (SELECT fx.diancxxb_id,
+    bby.rulml bbyml,
+    blj.rulml bljml,
+    tby.rulml tbyml,
+    tlj.rulml tljml
+    FROM (select distinct diancxxb_id
+    from yuezbb z
+     where substr(z.riq,0,7) between '${lsriq}' and '${leriq}') fx,
+    (SELECT YZ.DIANCXXB_ID, SUM(YZ.FADYTRML + YZ.GONGRYTRML) RULML
+    FROM YUEZBB YZ
+    WHERE FENX = '本月'
+    AND substr(YZ.RIQ,0,7) = '${eriq}'
+    GROUP BY YZ.DIANCXXB_ID) bby,
+
+    (SELECT YZ.DIANCXXB_ID, SUM(YZ.FADYTRML + YZ.GONGRYTRML) RULML
+    FROM YUEZBB YZ
+    WHERE FENX = '本月'
+    AND substr(yz.riq,0,7) between '${sriq}' and '${eriq}'
+    GROUP BY YZ.DIANCXXB_ID) blj,
+
+    (SELECT YZ.DIANCXXB_ID, SUM(YZ.FADYTRML + YZ.GONGRYTRML) RULML
+    FROM YUEZBB YZ
+    WHERE FENX = '本月'
+    AND substr(yz.riq,0,7) = '${leriq}'
+   
+    GROUP BY YZ.DIANCXXB_ID) tby,
+
+    (SELECT YZ.DIANCXXB_ID, SUM(YZ.FADYTRML + YZ.GONGRYTRML) RULML
+    FROM YUEZBB YZ
+    WHERE FENX = '本月'
+    AND substr(yz.riq,0,7) between '${lsriq}' and '${leriq}'
+    GROUP BY YZ.DIANCXXB_ID) tlj
+    WHERE fx.diancxxb_id = bby.diancxxb_id(+)
+    AND fx.diancxxb_id = blj.diancxxb_id(+)
+    AND fx.diancxxb_id = tby.diancxxb_id(+)
+    AND fx.diancxxb_id = tlj.diancxxb_id(+)) ml
+    WHERE ml.diancxxb_id = je.diancxxb_id
+    group by ROLLUP(je.fuid, je.xuh, je.mc)
+    having not grouping(je.fuid) + grouping(je.mingc) = 1
+    order by grouping(je.fuid) desc,
+    je.fuid,
+    grouping(je.xuh) desc,
+    je.xuh,
+    grouping(je.mingc) desc,
+    je.mingc
+	</select>
+
+	<select id="getChangnfycxMX" resultType="java.util.LinkedHashMap">
+		select decode(grouping(dc.mingc) + grouping(fx.zfmc),
+              1,
+              dc.mingc || '合计',
+              dc.mingc) dc,
+       decode(grouping(fx.zfmc), 1, '小计', fx.zfmc) zf,
+       decode(sum(benq_by.jine),null,0,sum(benq_by.jine)) jine_bq_by,
+       sum(tongq_by.jine) jine_tq_by,
+       (sum(nvl(benq_by.jine, 0)) - sum(nvl(tongq_by.jine, 0))) jine_tb_by,
+       decode(sum(benq_lj.jine),null,0,sum(benq_lj.jine)) jine_bq_lj,
+       sum(tongq_lj.jine) jine_tq_lj,
+       (sum(nvl(benq_lj.jine, 0)) - sum(nvl(tongq_lj.jine, 0))) jine_tb_lj
+			  from (select diancxxb_id, zf.mingc zfmc
+			          from (select distinct diancxxb_id, z.mingc
+			                  from zafb z
+			                 where (
+                       (substr(z.riq,0,7) between '${sriq}' and  '${eriq}') 
+                       or
+			                 (substr(z.riq,0,7) between '${lsriq}' and  '${leriq}')
+                             
+                             
+                             )) zf) fx,
+			       (select z.diancxxb_id, z.mingc zafmc, sum(z.jine) jine
+			          from zafb z
+			         where substr(z.riq,0,7) = '${eriq}'
+			         group by z.diancxxb_id, z.mingc) benq_by,
+			       (select z.diancxxb_id, z.mingc zafmc, sum(z.jine) jine
+			         from zafb z
+			         where substr(z.riq,0,7) between '${sriq}' and  '${eriq}'
+			         group by z.diancxxb_id, z.mingc) benq_lj,
+			       (select z.diancxxb_id, z.mingc zafmc, sum(z.jine) jine
+			          from zafb z
+			         where substr(z.riq,0,7) =  '${leriq}'
+			         group by z.diancxxb_id, z.mingc) tongq_by,
+			       (select z.diancxxb_id, z.mingc zafmc, sum(z.jine) jine
+			          from zafb z
+			         where substr(z.riq,0,7) between '${lsriq}' and  '${leriq}'
+			         group by z.diancxxb_id, z.mingc) tongq_lj,diancxxb dc
+			 where fx.diancxxb_id = benq_by.diancxxb_id(+)
+			   and fx.diancxxb_id = benq_lj.diancxxb_id(+)
+			   and fx.diancxxb_id = tongq_by.diancxxb_id(+)
+			   and fx.diancxxb_id = tongq_lj.diancxxb_id(+)
+			   and fx.zfmc = benq_by.zafmc(+)
+			   and fx.zfmc = benq_lj.zafmc(+)
+			   and fx.zfmc = tongq_by.zafmc(+)
+			   and fx.zfmc = tongq_lj.zafmc(+)
+			   and (dc.id in(515))
+			   and fx.diancxxb_id = dc.id(+)
+			 group by rollup((dc.mingc, dc.xuh), fx.zfmc)
+			having not grouping(dc.mingc) + grouping(fx.zfmc) = 2
+			 order by grouping(dc.mingc) desc,dc.mingc,grouping(fx.zfmc) desc,fx.zfmc
+	</select>
+
+	<select id="getRanlzbqkb" resultType="java.util.LinkedHashMap">
+		SELECT mingc,fenx,decode(laiml,null,0,laiml) as laiml,decode(haoyl,null,0,haoyl) as haoyl,decode(kuc,null,0,kuc) as kuc,decode(youhyl,null,0,youhyl) as youhyl ,
+			decode(round_new(rez,2),null,0,round_new(rez,2)) as REZ,decode(rulrz,null,0,rulrz) as rulrz,decode(round_new(rez,2)-rulrz,null,0,round_new(rez,2)-rulrz) as  rezc,
+			decode(jiesl,null,0,jiesl) as jiesl,decode(round_new(qnet_ar,2),null,0,round_new(qnet_ar,2)) as qnet_ar,decode(meij,null,0,meij) as meij,decode(yunj,null,0,yunj) as yunj,
+			decode(zaf,null,0,zaf) as zaf,decode((meij+yunj+zaf),null,0,(meij+yunj+zaf)) as  zonghdj,decode(round(DECODE(qnet_ar,0,0,(meij+yunj+zaf)* 29.271/qnet_ar),2),null,0,round(DECODE(qnet_ar,0,0,(meij+yunj+zaf)* 29.271/qnet_ar),2)) as biaomdj,
+			decode(round(DECODE(qnet_ar,0,0,ROUND((meij/1.17+yunj-yunjs+zaf-zafs),2)* 29.271/qnet_ar),2),null,0,round(DECODE(qnet_ar,0,0,ROUND((meij/1.17+yunj-yunjs+zaf-zafs),2)* 29.271/qnet_ar),2)) as buhsbmdj,
+			decode(rulbml,null,0,rulbml) as rulbml,decode(rulbmdj,null,0,rulbmdj) as rulbmdj,decode((round(DECODE(qnet_ar,0,0,ROUND((meij/1.17+yunj-yunjs+zaf-zafs),2)* 29.271/qnet_ar),2) -rulbmdj),null,0,(round(DECODE(qnet_ar,0,0,ROUND((meij/1.17+yunj-yunjs+zaf-zafs),2)* 29.271/qnet_ar),2) -rulbmdj)) as  chaz,
+			decode(kuctrmj,null,0,kuctrmj) as kuctrmj,decode(kuctrmrz,null,0,kuctrmrz) as kuctrmrz,decode(round(DECODE(kuctrmrz,0,0,kuctrmj* 29.271/kuctrmrz),2),null,0,round(DECODE(kuctrmrz,0,0,kuctrmj* 29.271/kuctrmrz),2)) as kucbmdj
+			from(select decode(grouping(dianc.mingc)+grouping(dianc.fuid), 2, '总计',1 ,'小计',dianc.mingc)  mingc,
+			dianc.fenx,
+			round(sum(shul.laiml), 0) laiml,
+			round(sum(shul.haoyl), 0) haoyl,
+			round(sum(shul.kuc), 0) kuc,
+			round(sum(haoy.haoyl), 0) youhyl,
+			round_new(decode(sum(shul.jincml),0,0,sum(shul.rez * shul.jincml) / sum(shul.jincml)),3) rez,
+			round_new(decode(sum(zhibb.fadgrytrml),0,0,sum(zhibb.rultrmpjfrl*decode(dianc.id,215,zhibb.fadgrytrml * 0.4,zhibb.fadgrytrml)) /sum(decode(dianc.id,215,zhibb.fadgrytrml * 0.4,zhibb.fadgrytrml))),2) rulrz,
+			--round_new(nvl(decode(sum(shul.jincml),0,0,sum(shul.rez * shul.jincml) /sum(shul.jincml)),0),2) -
+			--round_new(decode(sum(zhibb.fadgrytrml),0,0,sum(zhibb.rultrmpjfrl*decode(dianc.id,215,zhibb.fadgrytrml * 0.4,zhibb.fadgrytrml)) /sum(decode(dianc.id,215,zhibb.fadgrytrml * 0.4,zhibb.fadgrytrml))),2) rezc,
+			round_new(sum(jiesbm.jiesl), 0) jiesl,
+			round_new(decode(sum(jiesbm.jiesl),0,0,sum(jiesbm.qnet_ar * jiesbm.jiesl) /sum(jiesbm.jiesl)),3) qnet_ar,
+			round_new(decode(sum(jiesbm.jiesl),0,0,sum(jiesbm.meij * jiesbm.jiesl) / sum(jiesbm.jiesl)),2) meij,
+			round_new(decode(sum(jiesbm.jiesl),0,0,sum(jiesbm.yunj * jiesbm.jiesl) / sum(jiesbm.jiesl)),2) yunj,
+			round_new(decode(sum(jiesbm.jiesl),0,0,sum(jiesbm.yunjs * jiesbm.jiesl) / sum(jiesbm.jiesl)),2) yunjs,
+			round_new(decode(sum(jiesbm.jiesl),0,0,sum(jiesbm.zaf * jiesbm.jiesl) / sum(jiesbm.jiesl)),2) zaf,
+			round_new(decode(sum(jiesbm.jiesl),0,0,sum(jiesbm.zafs * jiesbm.jiesl) / sum(jiesbm.jiesl)),2) zafs,
+			--round_new(decode(sum(jiesbm.jiesl),0,0,sum(jiesbm.zonghdj * jiesbm.jiesl) /sum(jiesbm.jiesl)),2) zonghdj,
+			--round_new(decode(sum(jiesbm.jiesl),0,0,sum(jiesbm.biaomdj * jiesbm.jiesl) /sum(jiesbm.jiesl)),2) biaomdj,
+			--round_new(decode(sum(jiesbm.jiesl),0,0,sum(jiesbm.buhsbmdj * jiesbm.jiesl) /sum(jiesbm.jiesl)),2) buhsbmdj,
+			round_new(sum(decode(dianc.id,215,zhibb.rulbml * 0.4,zhibb.rulbml)), 0)rulbml,
+			round_new(decode(sum(zhibb.rulbml),0,0,sum(zhibb.bmdj*decode(dianc.id,215,zhibb.rulbml * 0.4,zhibb.rulbml)) /sum(decode(dianc.id,215,zhibb.rulbml * 0.4,zhibb.rulbml))),2)rulbmdj, 
+			round_new(decode(sum(shul.kuc),0,0,sum(zhibb.kuctrmj * shul.kuc) / sum(shul.kuc)),2) kuctrmj,
+			round_new(decode(sum(shul.kuc),0,0,sum(zhibb.kuctrmrz * shul.kuc) / sum(shul.kuc)),2) kuctrmrz
+			from 
+			--建立表头
+			(SELECT ID,
+			      MINGC MINGC,
+			      MIN(XUH) XUH,
+			      MAX(FUID) FUID,
+			      NVL('本月', '') FENX
+			 FROM DIANCXXB
+			where id in(#{dianc})
+			 GROUP BY ID,
+			          MINGC
+			UNION
+			SELECT ID,
+			       MINGC,
+			       MIN(XUH) XUH,
+			       MAX(FUID) FUID,
+			       NVL('累计', '') FENX
+			  FROM DIANCXXB
+			where id in(#{dianc})
+			 GROUP BY ID,
+			          MINGC
+			UNION
+			SELECT ID,
+			       MINGC,
+			       MIN(XUH) XUH,
+			       MAX(FUID) FUID,
+			       NVL('同期累计', '') FENX
+			  FROM DIANCXXB
+			where id in(#{dianc})
+			 GROUP BY ID,
+			          MINGC
+			) dianc,
+			(SELECT DC.ID DIANCXXB_ID,
+			       DC.FENX,
+			       NVL(LM.LAIML, 0) LAIML,
+			       NVL(HC.HAOYL, 0) HAOYL,
+			       NVL(HC.KUC, 0) KUC, NVL(LM.JINCML, 0) JINCML, NVL(LM.REZ, 0) REZ
+			FROM (SELECT KJ.DIANCXXB_ID DIANCXXB_ID,
+               sl.fenx fenx,
+               SUM(DECODE(KJ.DIANCXXB_ID, 215, (SL.JINGZ+SL.YUNS) * 0.4, (SL.JINGZ+SL.YUNS))) LAIML,
+               sum(decode(diancxxb_id, 215, (sl.jingz+SL.YUNS) * 0.4, (sl.jingz+SL.YUNS))) jincml,
+               ROUND_NEW(decode(sum(sl.jingz+SL.YUNS),0,0,sum(zl.qnet_ar *decode(diancxxb_id, 215, (sl.jingz+SL.YUNS) * 0.4, (sl.jingz+SL.YUNS))) /sum(decode(diancxxb_id, 215, (sl.jingz+SL.YUNS) * 0.4, (sl.jingz+SL.YUNS)))),3) rez
+			FROM YUESLB SL,YUEZLB ZL,
+               (SELECT ID,
+                       DIANCXXB_ID,
+                       Y.GONGYSB_ID,
+                       Y.JIHKJB_ID,
+                       Y.PINZB_ID
+                  FROM YUETJKJB Y
+                 WHERE RIQ = '${riq}')kj
+           WHERE KJ.ID = SL.YUETJKJB_ID
+           AND KJ.ID=ZL.YUETJKJB_ID AND SL.FENX = ZL.FENX
+           GROUP BY KJ.DIANCXXB_ID, sl.FENX
+           UNION
+             SELECT KJ.DIANCXXB_ID DIANCXXB_ID,
+               NVL('同期累计', '') FENX,
+               SUM(DECODE(KJ.DIANCXXB_ID, 215, (SL.JINGZ+SL.YUNS) * 0.4, (SL.JINGZ+SL.YUNS))) LAIML,
+               sum(decode(diancxxb_id, 215, (sl.jingz+SL.YUNS) * 0.4, (sl.jingz+SL.YUNS))) jincml,
+               ROUND_NEW(decode(sum(sl.jingz+SL.YUNS),0,0,sum(zl.qnet_ar *decode(diancxxb_id, 215, (sl.jingz+SL.YUNS) * 0.4, (sl.jingz+SL.YUNS))) /sum(decode(diancxxb_id, 215, (sl.jingz+SL.YUNS) * 0.4, (sl.jingz+SL.YUNS)))),3) rez
+               FROM YUESLB SL, YUEZLB ZL,
+                (SELECT ID,
+                       DIANCXXB_ID,
+                       NVL('累计', '') AS FENX,
+                       Y.GONGYSB_ID,
+                       Y.JIHKJB_ID,
+                       Y.PINZB_ID
+                  FROM YUETJKJB Y
+                 WHERE RIQ = '${lastriq}') KJ
+         WHERE KJ.ID = SL.YUETJKJB_ID
+           AND KJ.ID=ZL.YUETJKJB_ID
+           AND KJ.FENX = SL.FENX AND KJ.FENX = ZL.FENX
+         GROUP BY KJ.DIANCXXB_ID) LM,
+       (SELECT HC.DIANCXXB_ID DIANCXXB_ID,
+               NVL('同期累计', '') FENX,
+               SUM(DECODE(HC.DIANCXXB_ID,
+                          215,
+                          (HC.FADY + HC.GONGRY + HC.QITH + HC.SUNH) * 0.4,
+                          HC.FADY + HC.GONGRY + HC.QITH + HC.SUNH)) HAOYL,
+               SUM(DECODE(HC.DIANCXXB_ID, 215, HC.KUC * 0.4, HC.KUC)) KUC
+          FROM YUESHCHJB HC
+         WHERE HC.RIQ = '${lastriq}'
+           AND HC.FENX = '累计'
+         GROUP BY HC.DIANCXXB_ID
+        UNION
+        SELECT HC.DIANCXXB_ID DIANCXXB_ID,
+               HC.FENX FENX,
+               SUM(DECODE(HC.DIANCXXB_ID,
+                          215,
+                          (HC.FADY + HC.GONGRY + HC.QITH + HC.SUNH) * 0.4,
+                          HC.FADY + HC.GONGRY + HC.QITH + HC.SUNH)) HAOYL,
+               DECODE(HC.FENX,'累计', sum(Hc.kuc),SUM(DECODE(HC.DIANCXXB_ID, 215, HC.KUC * 0.4, HC.KUC))) KUC
+          FROM YUESHCHJB HC
+         WHERE HC.RIQ ='${riq}' 
+         GROUP BY HC.DIANCXXB_ID, HC.FENX) HC,
+       (SELECT DISTINCT DC.ID ID, FX.FENX
+          FROM DIANCXXB DC,
+               (SELECT NVL('本月', '') FENX
+                  FROM DUAL
+                UNION
+                SELECT NVL('累计', '') FENX
+                  FROM DUAL
+                UNION
+                SELECT NVL('同期累计', '') FENX FROM DUAL) FX) DC
+			 WHERE DC.ID = HC.DIANCXXB_ID(+)
+			   AND DC.ID = LM.DIANCXXB_ID(+)
+			   AND DC.FENX = HC.FENX(+)
+ 			  AND DC.FENX = LM.FENX(+) ) shul,
+			(select  y.DIANCXXB_ID diancxxb_id,
+			y.fenx fenx,
+			sum(decode(diancxxb_id,215,(y.fadyy + y.gongry + y.qithy + y.sunh) * 0.4,y.fadyy + y.gongry + y.qithy + y.sunh)) haoyl
+			from yueshcyb y
+			where y.riq ='${riq}' 
+			group by  y.DIANCXXB_ID , y.fenx
+			union
+			select  y.DIANCXXB_ID diancxxb_id,
+			NVL('同期累计', '') fenx,
+			sum(decode(diancxxb_id,215,(y.fadyy + y.gongry + y.qithy + y.sunh) * 0.4,y.fadyy + y.gongry + y.qithy + y.sunh)) haoyl
+			from yueshcyb y
+			where y.riq = '${lastriq}'
+			and y.fenx = '累计'
+			group by  y.DIANCXXB_ID ) haoy,
+
+			(SELECT  Z.DIANCXXB_ID DIANCXXB_ID,
+		       Z.FENX,
+		      SUM(Z.FADGRYTRML) FADGRYTRML,
+		      ROUND(DECODE(SUM(Z.FADGRYTRML),0,0,SUM(Z.RULTRMPJFRL*Z.FADGRYTRML)/SUM(Z.FADGRYTRML)),6) RULTRMPJFRL,
+		      SUM((Z.RULMZBZML+z.rulyzbzml+z.rulqzbzml))RULBML,
+		      ROUND(DECODE(SUM((Z.RULMZBZML+Z.RULYZBZML+Z.RULQZBZML)),0,0,SUM(Z.RULZHBMDJ*(Z.RULMZBZML+Z.RULYZBZML+Z.RULQZBZML))/SUM(Z.RULMZBZML+Z.RULYZBZML+Z.RULQZBZML)),2) BMDJ,
+		      DECODE(Z.FENX,'累计',0,max(z.kuctrmrz)) kuctrmrz,
+		      DECODE(Z.FENX,'累计',0,max(z.kuctrmj)) kuctrmj
+		  FROM YUEZBB Z
+		 WHERE Z.RIQ ='${riq}'
+		 group by  z.DIANCXXB_ID ,Z.FENX
+		UNION
+		SELECT  Z.DIANCXXB_ID DIANCXXB_ID,
+		       NVL('同期累计', '') FENX,
+		      SUM(Z.FADGRYTRML) FADGRYTRML,
+		      ROUND(DECODE(SUM(Z.FADGRYTRML),0,0,SUM(Z.RULTRMPJFRL*Z.FADGRYTRML)/SUM(Z.FADGRYTRML)),6) RULTRMPJFRL,
+		      SUM((Z.RULMZBZML+z.rulyzbzml+z.rulqzbzml))RULBML,
+		      ROUND(DECODE(SUM(Z.FADGRYTRML),0,0,SUM(Z.RULZHBMDJ*Z.FADGRYTRML)/SUM(Z.FADGRYTRML)),2) BMDJ,
+		      max(z.kuctrmrz)kuctrmrz,
+		      max(z.kuctrmj)kuctrmj
+		  FROM YUEZBB Z
+		 WHERE Z.RIQ = '${lastriq}'
+		   AND Z.FENX = '累计'
+		   group by  z.DIANCXXB_ID 
+		) zhibb,
+
+			(select  KJ.DIANCXXB_ID diancxxb_id,js.fenx fenx,
+			sum(decode(diancxxb_id, 215, js.jiesl * 0.4, js.jiesl)) jiesl,
+			decode(sum(decode(diancxxb_id, 215, js.jiesl * 0.4, js.jiesl)),0,0,sum(js.qnet_ar *decode(diancxxb_id, 215, js.jiesl * 0.4, js.jiesl)) /sum(decode(diancxxb_id, 215, js.jiesl * 0.4, js.jiesl))) qnet_ar,
+			decode(sum(decode(diancxxb_id, 215, js.jiesl * 0.4, js.jiesl)),0,0,(sum((js.meij) *decode(diancxxb_id, 215, js.jiesl * 0.4, js.jiesl)) /sum(decode(diancxxb_id, 215, js.jiesl * 0.4, js.jiesl)))) meij,
+			decode(sum(decode(diancxxb_id, 215, js.jiesl * 0.4, js.jiesl)),0,0,(sum((js.yunj) *decode(diancxxb_id, 215, js.jiesl * 0.4, js.jiesl)) /sum(decode(diancxxb_id, 215, js.jiesl * 0.4, js.jiesl)))) yunj,
+			decode(sum(decode(diancxxb_id, 215, js.jiesl * 0.4, js.jiesl)),0,0,(sum((js.yunjs) *decode(diancxxb_id, 215, js.jiesl * 0.4, js.jiesl)) /sum(decode(diancxxb_id, 215, js.jiesl * 0.4, js.jiesl)))) yunjs,
+			decode(sum(decode(diancxxb_id, 215, js.jiesl * 0.4, js.jiesl)),0,0,(sum((js.ZAF+js.DAOZZF+js.QIT+js.KUANGQYF) *decode(diancxxb_id, 215, js.jiesl * 0.4, js.jiesl)) /sum(decode(diancxxb_id, 215, js.jiesl * 0.4, js.jiesl)))) zaf,
+			decode(sum(decode(diancxxb_id, 215, js.jiesl * 0.4, js.jiesl)),0,0,(sum((js.ZAFS) *decode(diancxxb_id, 215, js.jiesl * 0.4, js.jiesl)) /sum(decode(diancxxb_id, 215, js.jiesl * 0.4, js.jiesl)))) zafs,
+			decode(sum(decode(diancxxb_id, 215, js.jiesl * 0.4, js.jiesl)),0,0,sum((js.meij+ js.yunj+ js.zaf +js.daozzf + js.qit+js.KUANGQYF) *decode(diancxxb_id, 215, js.jiesl * 0.4, js.jiesl)) /sum(decode(diancxxb_id, 215, js.jiesl * 0.4, js.jiesl))) zonghdj,
+			decode(sum(decode(diancxxb_id, 215, js.jiesl * 0.4, js.jiesl)),0,0,(sum((js.biaomdj) *decode(diancxxb_id, 215, js.jiesl * 0.4, js.jiesl)) /sum(decode(diancxxb_id, 215, js.jiesl * 0.4, js.jiesl)))) biaomdj,
+			decode(sum(decode(diancxxb_id, 215, js.jiesl * 0.4, js.jiesl)),0,0,(sum((js.buhsbmdj) *decode(diancxxb_id, 215, js.jiesl * 0.4, js.jiesl)) /sum(decode(diancxxb_id, 215, js.jiesl * 0.4, js.jiesl)))) buhsbmdj
+			from yuejsbmdj js,
+			(select id,
+			diancxxb_id
+			from yuetjkjb
+			where riq = '${riq}')kj
+			where kj.id = js.yuetjkjb_id(+)
+			group by  KJ.DIANCXXB_ID , js.fenx
+			UNION
+			select  KJ.DIANCXXB_ID diancxxb_id,
+			NVL('同期累计', '') fenx,
+			sum(decode(diancxxb_id, 215, js.jiesl * 0.4, js.jiesl)) jiesl,
+			decode(sum(decode(diancxxb_id, 215, js.jiesl * 0.4, js.jiesl)),0,0,sum(js.qnet_ar *decode(diancxxb_id, 215, js.jiesl * 0.4, js.jiesl)) /sum(decode(diancxxb_id, 215, js.jiesl * 0.4, js.jiesl))) qnet_ar,
+			decode(sum(decode(diancxxb_id, 215, js.jiesl * 0.4, js.jiesl)),0,0,(sum((js.meij) *decode(diancxxb_id, 215, js.jiesl * 0.4, js.jiesl)) /sum(decode(diancxxb_id, 215, js.jiesl * 0.4, js.jiesl)))) meij,
+			decode(sum(decode(diancxxb_id, 215, js.jiesl * 0.4, js.jiesl)),0,0,(sum((js.yunj) *decode(diancxxb_id, 215, js.jiesl * 0.4, js.jiesl)) /sum(decode(diancxxb_id, 215, js.jiesl * 0.4, js.jiesl)))) yunj,
+			decode(sum(decode(diancxxb_id, 215, js.jiesl * 0.4, js.jiesl)),0,0,(sum((js.yunjs) *decode(diancxxb_id, 215, js.jiesl * 0.4, js.jiesl)) /sum(decode(diancxxb_id, 215, js.jiesl * 0.4, js.jiesl)))) yunjs,
+			decode(sum(decode(diancxxb_id, 215, js.jiesl * 0.4, js.jiesl)),0,0,(sum((js.ZAF+js.DAOZZF+js.QIT+js.KUANGQYF) *decode(diancxxb_id, 215, js.jiesl * 0.4, js.jiesl)) /sum(decode(diancxxb_id, 215, js.jiesl * 0.4, js.jiesl)))) zaf,
+			decode(sum(decode(diancxxb_id, 215, js.jiesl * 0.4, js.jiesl)),0,0,(sum((js.ZAFS) *decode(diancxxb_id, 215, js.jiesl * 0.4, js.jiesl)) /sum(decode(diancxxb_id, 215, js.jiesl * 0.4, js.jiesl)))) zafs,
+			decode(sum(decode(diancxxb_id, 215, js.jiesl * 0.4, js.jiesl)),0,0,sum((js.meij+ js.yunj+ js.zaf +js.daozzf + js.qit+js.KUANGQYF) *decode(diancxxb_id, 215, js.jiesl * 0.4, js.jiesl)) /sum(decode(diancxxb_id, 215, js.jiesl * 0.4, js.jiesl))) zonghdj,
+			decode(sum(decode(diancxxb_id, 215, js.jiesl * 0.4, js.jiesl)),0,0,(sum((js.biaomdj) *decode(diancxxb_id, 215, js.jiesl * 0.4, js.jiesl)) /sum(decode(diancxxb_id, 215, js.jiesl * 0.4, js.jiesl)))) biaomdj,
+			decode(sum(decode(diancxxb_id, 215, js.jiesl * 0.4, js.jiesl)),0,0,(sum((js.buhsbmdj) *decode(diancxxb_id, 215, js.jiesl * 0.4, js.jiesl)) /sum(decode(diancxxb_id, 215, js.jiesl * 0.4, js.jiesl)))) buhsbmdj
+			FROM yuejsbmdj js,(select id, diancxxb_id, nvl('累计', '') as fenx
+			from yuetjkjb
+			where riq = '${lastriq}') kj
+			where kj.id = js.yuetjkjb_id(+)
+			and kj.fenx = js.fenx(+)
+			group by KJ.DIANCXXB_ID) jiesbm
+
+			where dianc.id = shul.diancxxb_id(+)
+			and dianc.id = haoy.diancxxb_id(+)
+			and dianc.fenx = shul.fenx(+)
+			and dianc.fenx = haoy.fenx(+)
+			and dianc.id = zhibb.diancxxb_id(+)
+			and dianc.fenx = zhibb.fenx(+)
+			and dianc.id = jiesbm.diancxxb_id(+)
+			and dianc.fenx = jiesbm.fenx(+)
+			and dianc.id not in (300,112,303)
+			group by rollup( dianc.fenx,dianc.fuid,(dianc.mingc, dianc.xuh))
+			having not grouping(dianc.fenx) + grouping(dianc.mingc) + grouping(dianc.fuid) = 3
+			order by grouping(dianc.fuid)desc,dianc.fuid,grouping(dianc.mingc) desc,dianc.xuh, dianc.mingc,grouping( dianc.fenx) desc , dianc.fenx)
+	</select>
+</mapper>

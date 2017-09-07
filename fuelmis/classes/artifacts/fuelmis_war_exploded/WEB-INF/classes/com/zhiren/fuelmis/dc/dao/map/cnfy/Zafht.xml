@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiren.fuelmis.dc.dao.cnfy.ZafhtDao" >
+	<select id="getZafhtByNianf"  resultType="java.util.HashMap">
+			select id,
+			       rownum,
+			       BIANH,
+			       MINGC,
+			       YIF,
+			       to_char(YOUXKSRQ, 'yyyy-mm-dd') || ' 至 ' ||to_char(YOUXJSRQ, 'yyyy-mm-dd') as YOUXQ,
+			       to_char(QIANDRQ, 'yyyy-mm-dd') as QIANDRQ,
+			       decode(ZHUANGT, 1, '已提交', '未提交') as ZHUANGT
+			  from RL_CNFY_HETB
+			 where to_char(QIANDRQ, 'yyyy-mm-dd') like '${_parameter}%'
+	</select>
+	<select id="getCnfyxm"  resultType="java.util.HashMap">
+		SELECT ID, MINGC,DANW FROM RL_CNFY_CHANGNFYXM WHERE ZHUANGT = 1
+	</select>
+	<insert id="addhetData" parameterType="com.zhiren.fuelmis.dc.entity.jih.Hetbean">
+		<selectKey resultType="_long" order="AFTER" keyProperty="id">  
+	   		SELECT XL_CHANGNZF_ID.CURRVAL as ID FROM DUAL  
+	   	</selectKey>
+	   	<![CDATA[   
+		INSERT INTO RL_CNFY_HETB( id,
+								  mingc,
+								  bianh,
+								  jiaf,
+								  yif,
+								  qiandrq,
+								  jiaysfzr,
+								  weiyzr,
+								  fukfs,
+								  anqzayd,
+								  youxksrq,
+								  youxjsrq,
+								  qit,
+								  qianddd,
+								  qianzy,
+								  zhuangt,
+								  feiyxmshuom )
+								VALUES(XL_CHANGNZF_ID.NEXTVAL,
+								'${mingc}',
+								'${bianh}',
+								'${jiaf}',
+								'${yif}',
+								to_date('${qiandrq}','yyyy-mm-dd'),
+								'${jiaysfzr}',
+								'${weiyzr}',
+								'${fukfs}',
+								'${anqzayd}',
+								to_date('${youxksrq}','yyyy-mm-dd'),
+								to_date('${youxjsrq}','yyyy-mm-dd'),
+								'${qit}',
+								'${qianddd}',
+								'${qianzy}',
+								0,
+								'')
+								 ]]> 
+	</insert>
+	<insert id="saveHetZaf" parameterType="java.util.HashMap">
+		insert into rl_cnfy_hetzfb(id,RL_CNFY_CHANGNFYXM_ID,RL_CNFY_HETB_ID,FEIYJE)
+		values(XL_CHANGNZF_ID.NEXTVAL,${zafid},${hetid},${zafzhi})
+	</insert>
+	<delete id="delHetById" parameterType="java.lang.String" flushCache="true">  
+         DELETE FROM rl_cnfy_hetb WHERE ID =#{id}
+    </delete>
+    <delete id="delHetzafById" parameterType="java.lang.String" flushCache="true">  
+         DELETE FROM rl_cnfy_hetzfb WHERE RL_CNFY_HETB_ID =#{id}
+    </delete>
+    <select id="getZafhtById"  resultType="java.util.HashMap">
+		SELECT id,
+			  mingc,
+			  bianh,
+			  jiaf,
+			  yif,
+			  to_char(qiandrq,'yyyy-mm-dd') as qiandrq,
+			  jiaysfzr,
+			  weiyzr,
+			  fukfs,
+			  anqzayd,
+			  to_char(youxksrq,'yyyy-mm-dd') as youxksrq,
+			  to_char(youxjsrq,'yyyy-mm-dd') as youxjsrq,
+			  qit,
+			  qianddd,
+			  qianzy
+			FROM rl_cnfy_hetb WHERE id = #{id}
+	</select>
+	<select id="getUpdateCnfyxm"  resultType="java.util.HashMap">
+		SELECT cf.ID as ID, cf.MINGC AS MINGC,cf.DANW AS DANW,zaf.FEIYJE AS FEIYJE FROM rl_cnfy_hetzfb zaf,RL_CNFY_CHANGNFYXM cf 
+		WHERE zaf.RL_CNFY_HETB_ID = #{id} and zaf.RL_CNFY_CHANGNFYXM_ID = cf.id
+	</select>
+	<update id="updatehetData" flushCache="true">
+		UPDATE  RL_CNFY_HETB set mingc = '${MINGC}',
+								  bianh = '${BIANH}',
+								  jiaf = '${JIAF}',
+								  yif = '${YIF}',
+								  qiandrq = to_date('${QIANDRQ}','yyyy-mm-dd'),
+								  jiaysfzr = '${JIAYSFZR}',
+								  weiyzr = '${WEIYZR}' ,
+								  fukfs = '${FUKFS}',
+								  anqzayd = '${ANQZAFMYD}',
+								  youxksrq = to_date('${QISRQ}','yyyy-mm-dd'),
+								  youxjsrq = to_date('${JIESRQ}','yyyy-mm-dd'),
+								  qit = '${QIT}',
+								  qianddd = '${QIANDDD}',
+								  qianzy = '${QIANZY}'  where id = #{ID}
+	</update>
+	<update id="updatehetzafData" flushCache="true">
+		UPDATE  Rl_Cnfy_Hetzfb set  FEIYJE = ${zafzhi}  
+									where RL_CNFY_HETB_ID = ${hetid} and RL_CNFY_CHANGNFYXM_ID = ${zafid}
+									
+	</update>
+	<!-- 费用的跟新没有做 -->
+	<select id="getsubmitdatas" resultType="java.util.HashMap">
+		SELECT  id,mingc,bianh,jiaf,yif,qiandrq,jiaysfzr,weiyzr,fukfs,
+  		anqzayd,youxksrq,youxjsrq,qit,qianddd,qianzy,zhuangt,feiyxmshuom
+		from RL_CNFY_HETB where to_char(QIANDRQ, 'yyyy')='${nianf}'
+	</select>
+	<update id="updateZafhtzt">
+		update RL_CNFY_HETB set zhuangt='${ZHUANGT}' where to_char(QIANDRQ, 'yyyy')='${nianf}'
+	</update>
+	<select id="getZhuangt" resultType="java.lang.String">
+		SELECT  max(zhuangt) from RL_CNFY_HETB where to_char(QIANDRQ, 'yyyy')='${nianf}'
+	</select>
+	<insert id="insertShenpjl">
+		insert into rl_sp_shenpjl (id,yewlx,shenpr,shenpsj,beiz,yewbs)
+		 VALUES ('${ID}','${YEWLX}','${SHENPR}',to_char(sysdate,'yyyy-MM-dd hh24:mi:ss'),'${BEIZ}','${YEWBS}')
+	</insert>
+</mapper>

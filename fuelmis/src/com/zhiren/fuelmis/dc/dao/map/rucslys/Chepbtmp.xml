@@ -1,0 +1,361 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiren.fuelmis.dc.dao.rucslys.ChepbtmpDao" >
+
+	<resultMap id="BaseResultMap" type="chepbtmp">
+		<result column="ID"	          	property="id"             jdbcType="NUMERIC" />
+		<result column="DIANCXXB_ID"	  property="diancxxb_id"    jdbcType="NUMERIC" />
+		<result column="PIAOJH"	      	property="piaojh"         jdbcType="VARCHAR" />
+		<result column="GONGYSMC"	      property="gongysmc"       jdbcType="VARCHAR" />
+		<result column="MEIKDWMC"	      property="meikdwmc"       jdbcType="VARCHAR" />
+		<result column="PINZ"	          property="pinz"           jdbcType="VARCHAR" />
+		<result column="FAZ"	          property="faz"            jdbcType="VARCHAR" />
+		<result column="DAOZ"	          property="daoz"           jdbcType="VARCHAR" />
+		<result column="JIHKJ"	          property="jihkj"          jdbcType="VARCHAR" />
+		<result column="fahrq"		      property="fahrq"          jdbcType="VARCHAR" />
+		<result column="DAOHRQ"	      	property="daohrq"         jdbcType="VARCHAR" />
+		<result column="HETB_ID"	      property="hetb_id"        jdbcType="NUMERIC" />
+		<result column="ZHILB_ID"	      property="zhilb_id"       jdbcType="NUMERIC" />
+		<result column="CAIYBH"	      	property="caiybh"         jdbcType="VARCHAR" />
+		<result column="JIESB_ID"	      property="jiesb_id"       jdbcType="NUMERIC" />
+		<result column="YUNSFS"	      	property="yunsfs"         jdbcType="VARCHAR" />
+		<result column="CHEC"	          property="chec"           jdbcType="VARCHAR" />
+		<result column="CHEPH"	          property="cheph"          jdbcType="VARCHAR" />
+		<result column="MAOZ"	          property="maoz"           jdbcType="NUMERIC" />
+		<result column="PIZ"	          property="piz"            jdbcType="NUMERIC" />
+		<result column="BIAOZ"	          property="biaoz"          jdbcType="NUMERIC" />
+		<result column="YINGD"           property="yingd"          jdbcType="NUMERIC" />
+		<result column="YINGK"	          property="yingk"          jdbcType="NUMERIC" />
+		<result column="YUNS"	          property="yuns"           jdbcType="NUMERIC" />
+		<result column="YUNSL"	          property="yunsl"          jdbcType="NUMERIC" />
+		<result column="KOUD"	          property="koud"           jdbcType="NUMERIC" />
+		<result column="KOUS"	          property="kous"           jdbcType="NUMERIC" />
+		<result column="KOUZ"	          property="kouz"           jdbcType="NUMERIC" />
+		<result column="SANFSL"	      	property="sanfsl"         jdbcType="NUMERIC" />
+		<result column="CHES"	          property="ches"           jdbcType="NUMERIC" />
+		<result column="JIANJFS"	      property="jianjfs"        jdbcType="VARCHAR" />
+		<result column="GUOHB_ID"	      property="guohb_id"       jdbcType="NUMERIC" />
+		<result column="FAHB_ID"	      property="fahb_id"        jdbcType="NUMERIC" />
+		<result column="FAHBTMP_ID"	  	property="fahbtmp_id"     jdbcType="NUMERIC" />
+		<result column="CHEBB_ID"	      property="chebb_id"       jdbcType="NUMERIC" />
+		<result column="YUANDZ"	      	property="yuandz"         jdbcType="VARCHAR" />
+		<result column="YUANSHDW"	      property="yuanshdw"       jdbcType="VARCHAR" />
+		<result column="KUANGFZLB_ID"	  property="kuangfzlb_id"   jdbcType="NUMERIC" />
+		<result column="YUANMKDW"	      property="yuanmkdw"       jdbcType="VARCHAR" />
+		<result column="YUNSDWB_ID"	  	property="yunsdwb_id"     jdbcType="NUMERIC" />
+		<result column="QINGCSJ"		  property="qingcsj"        jdbcType="VARCHAR" />
+		<result column="QINGCHH"	      property="qingchh"        jdbcType="VARCHAR" />
+		<result column="QINGCJJY"	      property="qingcjjy"       jdbcType="VARCHAR" />
+		<result column="ZHONGCSJ"		  property="zhongcsj"       jdbcType="VARCHAR" />
+		<result column="ZHONGCHH"	      property="zhongchh"       jdbcType="VARCHAR" />
+		<result column="ZHONGCJJY"	      property="zhongcjjy"      jdbcType="VARCHAR" />
+		<result column="MEICB_ID"	    property="meicb_id"       jdbcType="NUMERIC" />
+		<result column="DAOZCH"	      	property="daozch"         jdbcType="VARCHAR" />
+		<result column="LURY"	        property="lury"           jdbcType="VARCHAR" />
+		<result column="BEIZ"	        property="beiz"           jdbcType="VARCHAR" />
+		<result column="CAIYRQ"		  	property="caiyrq"         jdbcType="VARCHAR" />
+		<result column="LURSJ"		    property="lursj"          jdbcType="VARCHAR" />
+		<result column="YUNSDW"		  	property="yunsdw"		    jdbcType="VARCHAR" />
+		<result column="XIECFS"	      	property="xiecfs"         jdbcType="VARCHAR" />
+		<result column="YUANMZ"		 	property="yuanmz"		    jdbcType="NUMERIC" />
+		<result column="YUANPZ"		  	property="yuanpz"         jdbcType="NUMERIC" />
+		<result column="MEIGY"		    property="meigy"          jdbcType="VARCHAR" />
+		<result column="DAORSJ"		 	property="daorsj"         jdbcType="VARCHAR" />
+		<result column="DAORRY"	      	property="daorry"         jdbcType="VARCHAR" />
+		<result column="TRUCKENTER_ID"	property="truckenter_id"	jdbcType="VARCHAR" />			
+		<result column="CHUANRSJ"		property="chuanrsj"		jdbcType="VARCHAR" />	
+		<result column="ZHUANGT"		property="zhuangt"		jdbcType="VARCHAR" />	
+		<result column="CAOZLX"		  	property="caozlx"			jdbcType="VARCHAR" />
+		<result column="DAORCZR"        property="daorczr"        jdbcType="VARCHAR" />
+		<result column="MEIC"           property="meic"        jdbcType="VARCHAR" />
+	</resultMap>
+		
+	<select id="getChepbtmpList" resultType="java.util.LinkedHashMap">
+	  select * from chepbtmp
+	  <if test="diancid !=null ">
+	  	where diancxxb_id = #{diancid}
+	  </if>
+	  <if test="strdate !=null ">
+	  	and substr(lursj,0,10) <![CDATA[>= ]]>#{strdate}
+	  </if>
+	  <if test="enddate !=null ">
+	  	and substr(lursj,0,10) <![CDATA[<= ]]>#{enddate}
+	  </if>	  
+	</select>
+	
+	<select id="getChepbtmpInfo" resultMap="BaseResultMap">
+		select * from chepbtmp c where substr(lursj,0,10) between  '${sDate}'  and '${eDate}' and  c.qingcsj not in (select 
+ 			q.qingcsj  from rl_ys_chepb_qc q  where substr(q.qingcsj ,0,10) between '${sDate}'  and '${eDate}')
+	</select>
+	<select id="getChepbtmpById" resultMap="BaseResultMap">
+		select * from chepbtmp where id = #{id}
+	</select>
+	<select id="getChepbtmpByTruckenter_id" resultMap="BaseResultMap">
+		select * from chepbtmp where truckenter_id = #{id}
+	</select>
+	<select id="searchChepbtmpList" resultMap="BaseResultMap">
+	  select * from chepbtmp
+	  <if test="diancid !=null ">
+	  	where diancxxb_id = #{diancid}
+	  </if>
+	  <if test="strdate !=null ">
+	  	and substr(lursj,0,10) <![CDATA[>= ]]>#{strdate}
+	  </if>
+	  <if test="enddate !=null ">
+	  	and substr(lursj,0,10) <![CDATA[<= ]]>#{enddate}
+	  </if>
+	</select>
+	
+	<insert id="addChepb" parameterType="chepbtmp">
+	  insert into rl_ys_chepb
+      	  (id, cheph, piaojh, maoz, piz, piaoz, meikmc, meikxxb_id, gongysmc, gongysb_id, caigddb_id, faz, faz_id, daoz, 
+      	  daoz_id, jihkj, jihkjb_id, pinz, pinzb_id, yunsfs, yunsfsb_id, diancxxb_id, caozry, caozsj,SAMCODE,yingd,
+      	  kuid,yuns,meic,chec,koud,zongkd)
+      values
+	      (#{id,jdbcType=NUMERIC}, #{cheph,jdbcType=VARCHAR},#{piaojh,jdbcType=VARCHAR}, #{maoz,jdbcType=NUMERIC},#{piz,jdbcType=NUMERIC},
+	      #{biaoz,jdbcType=NUMERIC},#{meikdwmc,jdbcType=VARCHAR},
+	      (select nvl(max(id),-1) from meikxxb where mingc = #{meikdwmc,jdbcType=NUMERIC}),
+	      #{gongysmc,jdbcType=VARCHAR},
+	      (select nvl(max(id),-1) from gongysb where mingc = #{gongysmc,jdbcType=VARCHAR} and leix = 1), '0', #{faz,jdbcType=VARCHAR}, 
+	      (select nvl(max(id),-1) from chezxxb where mingc = #{faz,jdbcType=VARCHAR}), 
+	      #{daoz,jdbcType=VARCHAR},
+	      (select nvl(max(id),-1) from chezxxb where mingc = #{daoz,jdbcType=VARCHAR}),
+	      #{jihkj,jdbcType=VARCHAR},
+	      (select nvl(max(id),-1) from jihkjb where mingc = #{jihkj,jdbcType=VARCHAR}),
+	      #{pinz,jdbcType=VARCHAR},
+	      (select nvl(max(id),-1) from pinzb where mingc = #{pinz,jdbcType=VARCHAR}),
+	      #{yunsfs,jdbcType=VARCHAR},
+	      (select nvl(max(id),-1) from yunsfsb where mingc = #{yunsfs,jdbcType=VARCHAR}),
+	      #{diancxxb_id,jdbcType=NUMERIC}, 
+	      #{lury,jdbcType=VARCHAR},#{lursj,jdbcType=VARCHAR}, #{chec,jdbcType=VARCHAR},
+	      #{yingd,jdbcType=NUMERIC},#{kuid,jdbcType=NUMERIC},#{yuns,jdbcType=NUMERIC},#{meic,jdbcType=VARCHAR},
+	      #{chec,jdbcType=VARCHAR},#{koud,jdbcType=NUMERIC},#{koud,jdbcType=NUMERIC}+#{kous,jdbcType=NUMERIC}+#{kouz,jdbcType=NUMERIC})		
+	</insert>
+	
+	<insert id="addChepbls" parameterType="chepbtmp">
+      insert into rl_ys_chepb_ls 
+      	(chepb_id,cheph, piaojh, maoz, piz, piaoz, meikmc, meikxxb_id, gongysmc, gongysb_id, caigddb_id, faz, faz_id, 
+      	daoz, daoz_id, jihkj, jihkjb_id, pinz, pinzb_id, yunsfs, yunsfsb_id, diancxxb_id, caozlx, caozry, caozsj, xiehsj,
+      	 id,samcode,yingd,kuid,yuns)
+      values
+        (#{id,jdbcType=NUMERIC},#{cheph,jdbcType=VARCHAR},#{piaojh,jdbcType=VARCHAR}, #{maoz,jdbcType=NUMERIC},#{piz,jdbcType=NUMERIC},
+	     #{biaoz,jdbcType=NUMERIC},#{meikdwmc,jdbcType=VARCHAR},
+	     (select nvl(max(id),-1) from meikxxb where mingc = #{meikdwmc,jdbcType=NUMERIC}),
+	     #{gongysmc,jdbcType=VARCHAR},
+	     (select nvl(max(id),-1) from gongysb where mingc = #{gongysmc,jdbcType=VARCHAR} and leix = 1), 
+	     '0', 
+	     #{faz,jdbcType=VARCHAR}, 
+	     (select nvl(max(id),-1) from chezxxb where mingc = #{faz,jdbcType=VARCHAR}), 
+	     #{daoz,jdbcType=VARCHAR},
+	     (select nvl(max(id),-1) from chezxxb where mingc = #{daoz,jdbcType=VARCHAR}), 
+	     #{jihkj,jdbcType=VARCHAR},
+	     (select nvl(max(id),-1) from jihkjb where mingc = #{jihkj,jdbcType=VARCHAR}),
+	     #{pinz,jdbcType=VARCHAR},
+	     (select nvl(max(id),-1) from pinzb where mingc = #{pinz,jdbcType=VARCHAR}),
+	     #{yunsfs,jdbcType=VARCHAR},
+	     (select nvl(max(id),-1) from yunsfsb where mingc = #{yunsfs,jdbcType=VARCHAR}),
+         #{diancxxb_id,jdbcType=NUMERIC}, #{caozlx,jdbcType=VARCHAR},
+	     #{lury,jdbcType=VARCHAR},#{lursj,jdbcType=VARCHAR},#{daohrq,jdbcType=VARCHAR},#{lsbid,jdbcType=NUMERIC}, #{chec,jdbcType=VARCHAR},
+	     #{yingd,jdbcType=NUMERIC},#{kuid,jdbcType=NUMERIC},#{yuns,jdbcType=NUMERIC})	 		
+	</insert>
+	
+	
+	<insert id="addChepbqc" parameterType="chepbtmp">
+      insert into rl_ys_chepb_qc
+        (id,chepb_id,qingcsj, qingchh, qingcjjy, zhongcsj, zhongchh, zhongcjjy,zhuangt)
+      values
+        (#{lsbid,jdbcType=NUMERIC},#{id,jdbcType=NUMERIC}, #{qingcsj,jdbcType=VARCHAR}, #{qingchh,jdbcType=VARCHAR}, 
+        #{qingcjjy,jdbcType=VARCHAR}, #{zhongcsj,jdbcType=VARCHAR}, #{zhongchh,jdbcType=VARCHAR}, #{zhongcjjy,jdbcType=VARCHAR},1)    		
+	</insert>
+	
+	<insert id="addChepbqcls" parameterType="chepbtmp">
+	   insert into rl_ys_chepb_qc_ls
+      (id, chepb_id, qingcsj, qingchh, qingcjjy, zhongcsj, zhongchh, zhongcjjy,caozsj)
+     values
+      (#{lsbid,jdbcType=NUMERIC},#{id,jdbcType=NUMERIC},#{qingcsj,jdbcType=VARCHAR}, #{qingchh,jdbcType=VARCHAR}, 
+       #{qingcjjy,jdbcType=VARCHAR}, #{zhongcsj,jdbcType=VARCHAR}, #{zhongchh,jdbcType=VARCHAR}, #{zhongcjjy,jdbcType=VARCHAR},#{lursj,jdbcType=VARCHAR})
+	</insert>
+
+	
+	<insert id="addKoubzxxks" parameterType="chepbtmp">
+   		insert into rl_ys_koubzxx
+   		(chepb_id,koubzlxdm_id, koubzl, id,zhuangt)
+ 		values
+   		(#{id,jdbcType=NUMERIC},(select koubzlxdm_id from gy_dm_koubzlx where koubzlxmc = '扣水'), 
+   		 #{kous,jdbcType=NUMERIC}, #{lsbid,jdbcType=NUMERIC},1)
+   	</insert>
+   		
+ 	<insert id="addKoubzxxksls" parameterType="chepbtmp">
+   		insert into rl_ys_koubzxx_ls
+   		(chepb_id,koubzlxdm_id, koubzl, id,zhuangt,caozsj, caozry)
+ 		values
+   		(#{id,jdbcType=NUMERIC},(select koubzlxdm_id from gy_dm_koubzlx where koubzlxmc = '扣水'), 
+   		 #{kous,jdbcType=NUMERIC}, #{lsbid,jdbcType=NUMERIC},1,#{lursj,jdbcType=VARCHAR},#{lury,jdbcType=VARCHAR})
+   	</insert>  	
+   	
+   	
+   	<insert id="addKoubzxxkd" parameterType="chepbtmp">	 
+   		insert into rl_ys_koubzxx
+     	(chepb_id,koubzlxdm_id, koubzl, id,zhuangt)
+    	values
+     	(#{id,jdbcType=NUMERIC},(select koubzlxdm_id from gy_dm_koubzlx where koubzlxmc = '扣吨'), 
+     	 #{koud,jdbcType=NUMERIC},#{lsbid,jdbcType=NUMERIC},1)
+    </insert>
+    
+    <insert id="addKoubzxxkdls" parameterType="chepbtmp">	 
+   		insert into rl_ys_koubzxx_ls
+     	(chepb_id,koubzlxdm_id, koubzl, id,zhuangt,caozsj, caozry)
+    	values
+     	(#{id,jdbcType=NUMERIC},(select koubzlxdm_id from gy_dm_koubzlx where koubzlxmc = '扣吨'), 
+     	 #{koud,jdbcType=NUMERIC},#{lsbid,jdbcType=NUMERIC},1,#{lursj,jdbcType=VARCHAR},#{lury,jdbcType=VARCHAR})
+    </insert>   
+     	     
+ 	<insert id="addKoubzxxkz" parameterType="chepbtmp">	 
+	    insert into rl_ys_koubzxx
+	     (chepb_id,koubzlxdm_id, koubzl, id,zhuangt)
+	    values
+	     (#{id,jdbcType=NUMERIC},(select koubzlxdm_id from gy_dm_koubzlx where koubzlxmc = '扣杂'),
+	      #{kouz,jdbcType=NUMERIC}, #{lsbid,jdbcType=NUMERIC},1)	      
+	</insert>
+	
+ 	<insert id="addKoubzxxkzls" parameterType="chepbtmp">	 
+	    insert into rl_ys_koubzxx_ls
+	     (chepb_id,koubzlxdm_id, koubzl, id,zhuangt,caozsj, caozry)
+	    values
+	     (#{id,jdbcType=NUMERIC},(select koubzlxdm_id from gy_dm_koubzlx where koubzlxmc = '扣杂'),
+	      #{kouz,jdbcType=NUMERIC}, #{lsbid,jdbcType=NUMERIC},1,#{lursj,jdbcType=VARCHAR},#{lury,jdbcType=VARCHAR})	      
+	</insert>
+	
+	<update id="updateChepbtmp" parameterType="chepbtmp">
+		update CHEPBTMP set ZHUANGT = '已入库'
+		where ID=#{id}	
+	</update>
+
+	<update id="updateKoubzxxks" parameterType="chepbtmp">
+		update rl_ys_koubzxx
+		set koubzl = #{kous,jdbcType=NUMERIC} 
+		where chepb_id = #{id}
+		and koubzlxdm_id = (select koubzlxdm_id from gy_dm_koubzlx where koubzlxmc = '扣水')
+	</update>
+	
+	<update id="updateKoubzxxkz" parameterType="chepbtmp">
+		update rl_ys_koubzxx 
+		set koubzl = #{kouz,jdbcType=NUMERIC} 
+		where chepb_id = #{id}
+		and koubzlxdm_id = (select koubzlxdm_id from gy_dm_koubzlx where koubzlxmc = '扣杂')
+	</update>
+
+	<update id="updateKoubzxxkd" parameterType="chepbtmp">
+		update rl_ys_koubzxx 
+		set koubzl = #{koud,jdbcType=NUMERIC} 
+		where chepb_id = #{id}
+		and koubzlxdm_id = (select koubzlxdm_id from gy_dm_koubzlx where koubzlxmc = '扣吨')
+	</update>
+
+	<update id="updateChepbqc" parameterType="chepbtmp">
+		update rl_ys_chepb_qc
+		   <trim prefix="SET" suffixOverrides=",">
+		   		<if test="qingcsj !=null">
+		   			qingcsj = #{qingcsj},
+		   		</if>
+		   		<if test="qingchh !=null">
+		   			qingchh = #{qingchh},
+		   		</if>	
+		   		<if test="qingcjjy !=null">
+		   			qingcjjy = #{qingcjjy},
+		   		</if>
+		   		<if test="zhongcsj !=null">
+		   			zhongcsj = #{zhongcsj},
+		   		</if>
+		   		<if test="zhongchh !=null">
+		   			zhongchh = #{zhongchh},
+		   		</if>
+		   		<if test="zhongcjjy !=null">
+		   			zhongcjjy = #{zhongcjjy},
+		   		</if>	   		
+		   </trim>
+	     where id = #{id}
+	</update>
+
+	<update id="updateChepb" parameterType="chepbtmp">
+      update rl_ys_chepb
+		<trim prefix="SET" suffixOverrides=",">
+			<if test="cheph != null">
+				cheph = '${cheph}',
+			</if>			
+			<if test="piaojh != null">
+				 piaojh = '${piaojh}',
+			</if>
+			<if test="maoz != null">
+				maoz = ${maoz},
+			</if>			
+			<if test="piz != null">
+				  piz = ${piz},
+			</if>						
+			<if test="biaoz != null">
+				 piaoz = ${biaoz},
+			</if>			
+			<if test="meikdwmc != null">
+				 meikmc = '${meikdwmc}',
+				 meikxxb_id = (select nvl(max(id),-1) from meikxxb where mingc = '${meikdwmc}'),
+			</if>
+			<if test="gongysmc != null">
+				gongysmc =  '${gongysmc}',
+         		gongysb_id = (select nvl(max(id),-1) from gongysb where mingc = '${gongysmc}' and leix = 1),
+			</if>			
+
+			<if test="faz != null">
+				faz = '${faz}', 
+         		faz_id = (select nvl(max(id),-1) from chezxxb where mingc = '${faz}'),
+			</if>			
+			<if test="daoz != null">
+		         daoz =  '${daoz}',
+		         daoz_id = (select nvl(max(id),-1) from chezxxb where mingc = '${daoz}'),
+			</if>
+			<if test="jihkj != null">
+		         jihkj = '${jihkj}',
+		         jihkjb_id = (select nvl(max(id),-1) from jihkjb where mingc = '${jihkj}'),
+			</if>
+			<if test="pinz != null">
+		         pinz =  '${pinz}',
+		         pinzb_id = (select nvl(max(id),-1) from pinzb where mingc = '${pinz}'),
+			</if>			
+			<if test="yunsfs != null">
+		         yunsfs = '${yunsfs}',
+		         yunsfsb_id = (select nvl(max(id),-1) from yunsfsb where mingc = '${yunsfs}'),
+			</if>
+			<if test="diancxxb_id != null">
+				diancxxb_id = ${diancxxb_id},
+			</if>			
+			<if test="lury != null">
+		         caozry = '${lury}',
+			</if>
+			<if test="chec != null">
+				samcode = '${chec}',
+				chec = '${chec}',
+			</if>
+			<if test="lursj != null">
+				caozsj = '${lursj}',
+			</if>	
+			<if test="yingd != null">
+				yingd = ${yingd},
+			</if>
+			<if test="kuid != null">
+				kuid = ${kuid},
+			</if>
+			<if test="yuns != null">
+				yuns = ${yuns},
+			</if>
+			<if test="meic != null">
+				meic = '${meic}',
+			</if>
+			<if test="koud != null">
+				koud = #{koud},
+			</if>
+			<if test="koud != null">
+				zongkd = #{koud}+#{kous}+#{kouz},
+			</if>
+		</trim>
+   		where id = ${id}
+	</update>
+</mapper>

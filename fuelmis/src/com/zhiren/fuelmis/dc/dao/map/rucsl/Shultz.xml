@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiren.fuelmis.dc.dao.rucsl.ShultzDao">
+	<select id="getTabelData" resultType="java.util.LinkedHashMap">
+		select decode(grouping(c.gongysmc), 1, '总计', c.gongysmc) gys,
+		       decode(grouping(c.gongysmc) + grouping(c.meikmc),
+		              1,
+		              c.gongysmc || '合计',
+		              2,
+		              '总计',
+		              c.meikmc) mk,
+		              <if test='shijtj==1'>
+		       decode(grouping(c.gongysmc) + grouping(c.meikmc),
+		              1,
+		              c.gongysmc || '合计',
+		              2,
+		              '总计',
+		              substr(q.zhongcsj,0,10)) daohrq,</if>
+		              <if test='shijtj==0'>
+		       decode(grouping(c.gongysmc) + grouping(c.meikmc),
+		              1,
+		              c.gongysmc || '合计',
+		              2,
+		              '总计',
+		              substr(q.qingcsj,0,10)) daohrq,</if>
+		              <if test='shijtj==2'>
+		       decode(grouping(c.gongysmc) + grouping(c.meikmc),
+		              1,
+		              c.gongysmc || '合计',
+		              2,
+		              '总计',
+		              substr(q.caiyrq,0,10)) daohrq,</if>
+		       decode(grouping(c.gongysmc) + grouping(c.meikmc),
+		              1,
+		              c.gongysmc || '合计',
+		              2,
+		              '总计',
+		              c.PINZ) pz,
+		       decode(grouping(c.gongysmc) + grouping(c.meikmc),
+		              1,
+		              c.gongysmc || '合计',
+		              2,
+		              '总计',
+		              c.faz) fz,
+		       count(q.id) ches,
+		       
+		       sum(c.maoz - c.piz ) laimsl,
+		       sum(c.maoz - c.piz - c.zongkd) jingz,
+		       sum(c.piaoz) piaoz,
+		       sum(c.yuns) yuns,
+		       sum(c.yingk) yingk,
+		       sum(c.zongkd) zongkd
+		  from rl_ys_chepb c 
+		  left join rl_ys_chepb_qc q on c.id = q.chepb_id
+	where 
+	<!-- 重车时间 -->
+	<if test='shijtj==1'>
+	q.zhongcsj between '${strdate}' and '${enddate}'
+	<if test='diancid != null'>
+		and c.diancxxb_id = ${diancid}
+	</if>
+	<if test='gongysid != null'>
+		and c.gongysb_id = ${gongysid}
+	</if>
+	<if test='pinzid != null'>
+		and c.pinzb_id = ${pinzid}
+	</if>
+
+	<if test='jihkj != null'>
+		and c.JIHKJB_ID = ${jihkj}
+	</if>
+	group by rollup(c.gongysmc,(c.meikmc, substr( q.zhongcsj,0,10),c.pinz,c.faz))
+	</if>
+	
+	<!-- 轻车时间 -->
+	<if test='shijtj==0'>
+	q.qingcsj between '${strdate}' and '${enddate}'
+	<if test='diancid != null'>
+		and c.diancxxb_id = ${diancid}
+	</if>
+	<if test='gongysid != null'>
+		and c.gongysb_id = ${gongysid}
+	</if>
+	<if test='pinzid != null'>
+		and c.pinzb_id = ${pinzid}
+	</if>
+
+	<if test='jihkj != null'>
+		and c.JIHKJB_ID = ${jihkj}
+	</if>
+	group by rollup(c.gongysmc,(c.meikmc, substr(q.qingcsj,0,10) ,c.pinz,c.faz))
+	</if>
+	<!-- 采集时间 -->
+	<if test='shijtj==2'>
+	q.caiyrq between '${strdate}' and '${enddate}'
+	<if test='diancid != null'>
+		and c.diancxxb_id = ${diancid}
+	</if>
+	<if test='gongysid != null'>
+		and c.gongysb_id = ${gongysid}
+	</if>
+	<if test='pinzid != null'>
+		and c.pinzb_id = ${pinzid}
+	</if>
+
+	<if test='jihkj != null'>
+		and c.JIHKJB_ID = ${jihkj}
+	</if>
+	group by rollup(c.gongysmc,(c.meikmc,substr(q.caiyrq,0,10) ,c.pinz,c.faz))
+	</if>
+	
+	<!-- <if test='shijtj==2'>
+	substr(q.zhongcsj,0,10) between '${strdate}' and '${enddate}'
+	</if> -->
+	
+	</select>
+</mapper>

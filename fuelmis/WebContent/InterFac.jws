@@ -1,0 +1,57 @@
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.context.support.SpringBeanAutowiringSupport;
+
+/**
+ * @author 厂级服务
+ *         厂级：	InterFac		名称	类型
+ *         方法名1：	响应请求	request
+ *         参数名1：	用户名	usr	String
+ *         参数名2：	密码	password	String
+ *         参数名3：	任务名	task	String
+ *         返回值：	成功/失败1,失败2		String
+ *         <p>
+ *         方法名2：	响应请求	requestall
+ *         参数名1：	用户名	usr	String
+ *         参数名2：	密码	password	String
+ *         返回值：	成功/失败1,失败2		String
+ */
+//与中电投有两个区别：不使用电厂信息表，因为id是唯一的CreateSql、requestall、request的sql的diancxxb_id去掉
+
+public class InterFac extends SpringBeanAutowiringSupport {
+    @Autowired
+    private com.zhiren.fuelmis.dc.service.webInterface.InterFac_dt interFac_dt;
+    public String inceptWenj(String user, String password, byte[] XMLData){
+       return interFac_dt.inceptWenj(user,password,XMLData);
+    }
+
+    public void request(String task){
+        interFac_dt.request(task);
+    }
+
+    public void requestall(){
+        interFac_dt.requestall();
+    }
+
+    public void requestallTrans(){
+        interFac_dt.requestallTrans();
+    }
+
+    public String[] sqlExe(String[] sqls, boolean isTransaction){
+        return interFac_dt.sqlExe(sqls,isTransaction);
+    }
+
+    String[] getJiecxx_Sj(String Type){
+        return interFac_dt.getJiecxx_Sj(Type);
+    }
+
+    //	输入一个sql语句能够返回他的结果字符串，字符串格式 1123 ，20
+    //按天验证数据
+    public String getSqlString(String sql){
+        return interFac_dt.getSqlString(sql);
+    }
+
+    public String[] sqlExe(String diancxxb_id, String[] sqls, boolean isTransaction){
+        return interFac_dt.sqlExe(diancxxb_id,sqls,isTransaction);
+    }
+
+}

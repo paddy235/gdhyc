@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiren.fuelmis.dc.dao.rucsl.ZonghtzDao">
+	<select id="getTabelData" resultType="java.util.LinkedHashMap">
+		select meikdw,daohrq,mingc,bianm,jingz,QNET_AR,MT,mad , AAR,Ad,
+		VAR,STAR,std,Qnetar,vdaf,fcad,fcd,jiesjg,jiesje,
+		decode(Qnetar,0,0,round(jiesjg*29.271/Qnetar,2)) hansbd
+		from
+		( SELECT
+		decode(c.MEIKMC, NULL, '总计', c.MEIKMC) AS meikdw,
+		decode(substr(q.qingcsj, 0, 10),
+		NULL,
+		decode(c.MEIKMC, NULL, '', '合计'),
+		substr(q.qingcsj, 0, 10)) AS daohrq,
+		c.PINZ mingc,
+		gx2.mubbm bianm,
+		DECODE(SUM(c.maoz - c.piz - c.zongkd), 0, 0, SUM(c.maoz - c.piz -
+		c.zongkd)) AS JINGZ,
+		DECODE(SUM((c.maoz - c.piz - c.zongkd) *
+		nvl(h.qnet_ar, 0)), 0,0,
+		round_new(SUM(h.QNET_AR * (c.maoz - c.piz -
+		c.zongkd)) /
+		SUM(decode(nvl(h.qnet_ar, 0), 0, 0, (c.maoz - c.piz -
+		c.zongkd))) *
+		1000 / 4.1816, 0)) AS QNET_AR,
+		DECODE(SUM((c.maoz - c.piz
+		- c.zongkd) * nvl(h.MT, 0)), 0, 0,
+		round_new(SUM(h.MT * (c.maoz - c.piz
+		- c.zongkd)) / SUM(decode(nvl(h.MT, 0), 0, 0,
+		(c.maoz - c.piz -
+		c.zongkd))), 1)) AS MT,
+
+		DECODE(SUM((c.maoz - c.piz - c.zongkd) *
+		nvl(h.mad, 0)), 0, 0,
+		round_new(SUM(h.mad * (c.maoz - c.piz -
+		c.zongkd)) / SUM(decode(nvl(h.mad, 0), 0, 0,
+		(c.maoz - c.piz -
+		c.zongkd))), 2)) AS mad,
+
+		DECODE(SUM((c.maoz - c.piz - c.zongkd) *
+		nvl(h.AAR, 0)),0, 0,
+		round_new(SUM(h.AAR * (c.maoz - c.piz - c.zongkd))
+		/ SUM(decode(nvl(h.AAR, 0), 0, 0,
+		(c.maoz - c.piz - c.zongkd))), 2)) AS
+		AAR,
+
+		DECODE(SUM((c.maoz - c.piz - c.zongkd) * nvl(h.Ad, 0)),0, 0,
+		round_new(SUM(h.Ad * (c.maoz - c.piz - c.zongkd)) /
+		SUM(decode(nvl(h.Ad, 0), 0, 0,
+		(c.maoz - c.piz - c.zongkd))), 2)) AS
+		Ad,
+
+		DECODE(SUM((c.maoz - c.piz - c.zongkd) * nvl(h.fcad, 0)),0, 0,
+		round_new(SUM(h.fcad * (c.maoz - c.piz - c.zongkd)) /
+		SUM(decode(nvl(h.fcad, 0), 0, 0,
+		(c.maoz - c.piz - c.zongkd))), 2)) AS
+		fcad,
+
+		<!-- fcd -->
+		DECODE(SUM((c.maoz - c.piz - c.zongkd) * nvl(h.fcd, 0)),
+		0,
+		0,
+		round_new(SUM(h.fcd * (c.maoz - c.piz - c.zongkd)) /
+		SUM(decode(nvl(h.fcd, 0),
+		0,
+		0,
+		(c.maoz - c.piz - c.zongkd))),
+		2)) AS fcd,
+		<!-- fcd -->
+
+		DECODE(SUM(c.maoz - c.piz - c.zongkd), 0, 0,
+		round_new(SUM(h.vad * (100
+		- h.mt) / (100 - h.mad) * (c.maoz - c.piz - c.zongkd)) /
+		SUM(decode(nvl(h.vad, 0), 0, 0, (c.maoz - c.piz - c.zongkd))), 2)) AS
+		VAR,
+
+		DECODE(SUM(c.maoz - c.piz - c.zongkd), 0, 0,
+		round_new(SUM(decode(nvl(h.star, 0), 0, h.std * (100 - h.Mt) / 100,
+		h.star) * (c.maoz - c.piz -
+		c.zongkd)) /
+		SUM(decode(nvl(h.star, 0), 0,
+		0, (c.maoz - c.piz - c.zongkd))), 2)) AS STAR,
+		<!-- std -->
+		DECODE(SUM((c.maoz - c.piz - c.zongkd) * nvl(h.fcad, 0)),
+		0,
+		0,
+		round_new(SUM(h.STd * (c.maoz - c.piz - c.zongkd)) /
+		SUM(decode(nvl(h.STd, 0),
+		0,
+		0,
+		(c.maoz - c.piz - c.zongkd))),
+		2)) AS STd,
+		<!-- std -->
+		DECODE(SUM((c.maoz - c.piz - c.zongkd) * nvl(h.qnet_ar, 0)), 0, 0,
+		round_new(SUM(h.Qnet_ar * (c.maoz - c.piz - c.zongkd)) /
+		SUM(decode(nvl(h.qnet_ar, 0), 0, 0, (c.maoz - c.piz - c.zongkd))), 2))
+		AS Qnetar,
+		DECODE(SUM(c.maoz - c.piz - c.zongkd), 0, 0,
+		round_new(SUM(h.vdaf * (c.maoz - c.piz - c.zongkd)) /
+		SUM(decode(nvl(h.vdaf, 0), 0, 0,
+		(c.maoz - c.piz - c.zongkd))), 2)) AS
+		vdaf,
+
+		round(decode(SUM(c.maoz - c.piz - c.zongkd), 0, 0,
+		decode(nvl(js.jiesjg, 0), 0, 0,
+		round(sum((c.maoz - c.piz - c.zongkd) *
+		js.jiesjg) / sum(decode(nvl(js.jiesjg, 0), 0,
+		0, (c.maoz - c.piz -
+		c.zongkd))), 2)) ), 2) jiesjg,
+
+
+		round(decode(SUM(c.maoz - c.piz -
+		c.zongkd), 0, 0,
+		decode(nvl(js.jiesjg, 0), 0, 0,
+		round(sum((c.maoz -
+		c.piz - c.zongkd) * js.jiesjg) / sum(decode(nvl(js.jiesjg, 0), 0,
+		0,
+		(c.maoz - c.piz - c.zongkd))), 2)) * SUM(c.maoz - c.piz -
+		c.zongkd)),
+		2) as jiesje
+		FROM rl_ys_chepb c,
+		rl_ys_chepb_qc q,
+		rl_hy_huaydb h,
+		(select b.chepb_id,
+		decode(sum(a.jiessl),0,0,round(sum(a.jiessl *
+		a.jiesjg) / sum(a.jiessl), 2)) as jiesjg,
+		sum(a.jiesje) as jiesje
+		from
+		rl_js_rijsdb a, gx_jiesdb_chepb b
+		where a.id = b.jiesdb_id
+		group by
+		chepb_id) js,
+		(select * from gx_chep_caizhbmb where zhuanhlb_id = 1)
+		gx1,
+		(select * from gx_chep_caizhbmb where zhuanhlb_id = 2) gx2
+		WHERE
+		c.id = q.chepb_id
+		and c.id = js.chepb_id(+)
+		and gx2.mubbm = h.huaybm(+)
+		and c.samcode = gx1.yuanbm(+)
+		and gx1.mubbm = gx2.yuanbm(+)
+		and
+		substr(q.qingcsj, 0, 10) between '${strdate}' and '${enddate}'
+		<if test='diancid != null'>
+			and c.diancxxb_id = ${diancid}
+		</if>
+		<if test="type == 1 and xiax!='-1' ">
+			AND round(h.QNET_AR / 0.0041816, 0) <![CDATA[>=]]>
+			${xiax}
+		</if>
+		<if test="type == 1 and shangx!='-1'">
+			AND round(h.QNET_AR / 0.0041816, 0) <![CDATA[<=]]>
+			${shangx}
+		</if>
+		<if test="type == 2 and xiax!='-1'">
+			AND h.STAR <![CDATA[>=]]>
+			${xiax}
+		</if>
+		<if test="type == 2 and shangx!='-1'">
+			AND h.STAR <![CDATA[<=]]>
+			${shangx}
+		</if>
+		<if test='meik != null'>
+			AND c.MEIKXXB_ID = ${meik}
+		</if>
+		<if test='pinzid != null'>
+			AND c.PINZB_ID = ${pinzid}
+		</if>
+		GROUP BY ROLLUP(c.MEIKMC,(substr(q.qingcsj, 0, 10),c.PINZ,
+		gx2.mubbm,js.jiesjg,js.jiesje)) )
+		<!-- HAVING GROUPING(M.MINGC) + GROUPING(h.BIANM) = 0 OR GROUPING(substr(q.qingcsj, 
+			0, 10)) + GROUPING(h.BIANM) = 2 ORDER BY M.MINGC, substr(q.qingcsj, 0, 10) -->
+	</select>
+</mapper>

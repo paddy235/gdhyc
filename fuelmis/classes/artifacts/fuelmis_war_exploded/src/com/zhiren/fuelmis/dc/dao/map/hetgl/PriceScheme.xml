@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiren.fuelmis.dc.dao.hetgl.PriceSchemeDao" >
+    <resultMap id="BaseResultMap" type="priceScheme">
+        <id column="ID"              property="id" jdbcType="NUMERIC" />
+        <result column="PO_SUB_ID"    	 property="po_sub_id" jdbcType="NUMERIC" />
+        <result column="PRICE_COMPONENT_ID" 	 	 property="price_component_id" jdbcType="NUMERIC" />
+        <result column="PRICE_ITEM_ID" property="price_item_id" jdbcType="NUMERIC"/>
+        <result column="STATUS"   	 property="status" jdbcType="NUMERIC" />
+        <result column="DIANCXXB_ID" property="diancxxb_id" jdbcType="NUMERIC"/>
+        <result column="CREATED_BY_USERID"    	 property="created_by_userid" jdbcType="NUMERIC" />
+        <result column="CREATED_BY_USERACC"    property="created_by_useracc" jdbcType="VARCHAR" />
+        <result column="CREATED_BY_USERNAME"    property="created_by_username" jdbcType="VARCHAR" />
+        <result column="CREATION_DATE"     property="creation_date" jdbcType="VARCHAR" />
+        <result column="LAST_UPDATED_BY_USERID"    	 property="last_updated_by_userid" jdbcType="NUMERIC" />
+        <result column="LAST_UPDATED_BY_USERACC"    property="last_updated_by_useracc" jdbcType="VARCHAR" />
+        <result column="LAST_UPDATED_BY_USERNAME"    property="last_updated_by_username" jdbcType="VARCHAR" />
+        <result column="LAST_UPDATE_DATE"    property="last_update_date" jdbcType="VARCHAR" />
+        <result column="SHANGXMAX"    	 property="SHANGXMAX" jdbcType="NUMERIC" />
+        <result column="XIAXMIN"    	 property="XIAXMIN" jdbcType="NUMERIC" />
+    </resultMap>
+
+
+
+    <delete id="delPriceScheme" parameterType="java.util.Map">
+        delete from RL_HT_PRICE_SCHEME where id = #{id}
+    </delete>
+
+
+    <select id="getPriceSchemeById" resultMap="BaseResultMap">
+        select * from RL_HT_PRICE_SCHEME
+        <if test="id != null">
+            where id = #{id}
+        </if>
+    </select>
+    <insert id="insetScheme">
+        insert into RL_HT_PRICE_SCHEME (id,po_sub_id,price_component_id,price_item_id,created_by_userid,created_by_username,creation_date,diancxxb_id,status,shangxmax,xiaxmin)
+        VALUES ('${ID}','${PO_SUB_ID}','${PRICE_COMPONENT_ID}','${PRICE_ITEM_ID}','${USERID}','${USERNAME}',TO_CHAR(SYSDATE,'YYYY-MM-DD HH24:MI:SS'),'${DIANCXXB_ID}','${STATUS}','${SHANGXMAX}','${XIAXMIN}')
+    </insert>
+    <update id="updateScheme">
+        update RL_HT_PRICE_SCHEME set price_component_id='${PRICE_COMPONENT_ID}',price_item_id='${PRICE_ITEM_ID}',shangxmax='${SHANGXMAX}',xiaxmin='${XIAXMIN}',
+        last_updated_by_userid='${USERID}',last_updated_by_username='${USERNAME}',last_update_date=TO_CHAR(SYSDATE,'YYYY-MM-DD HH24:MI:SS')
+        where id='${ID}'
+    </update>
+    <select id="getPriceSchemeByCaigddId" resultMap="BaseResultMap">
+        select * from RL_HT_PRICE_SCHEME
+        <if test="id != null">
+            where po_sub_id = #{id}
+        </if>
+    </select>
+
+
+    <select id="getPriceSchemeList" resultType="java.util.Map">
+        select id,
+        po_sub_id,
+        price_component_id,
+        price_item_id,
+        created_by_useracc,
+        created_by_username,
+        creation_date,
+        last_updated_by_userid,
+        last_updated_by_useracc,
+        last_updated_by_username,
+        last_update_date,
+        diancxxb_id,
+        decode(status,1,'启用',0,'未启用') as status,
+        created_by_userid
+        from rl_ht_price_qalityrange
+    </select>
+
+
+    <update id="updatePriceScheme" parameterType="priceScheme">
+        update RL_HT_PRICE_SCHEME
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="po_sub_id != null">po_sub_id=#{po_sub_id},</if>
+            <if test="price_component_id != null">price_component_id=#{price_component_id},</if>
+            <if test="price_item_id != null">price_item_id=#{price_item_id},</if>
+            <if test="diancxxb_id != null">DIANCXXB_ID=#{diancxxb_id},</if>
+            <if test="created_by_userid != null">created_by_userid=#{created_by_userid},</if>
+            <if test="created_by_useracc != null">created_by_useracc=#{created_by_useracc},</if>
+            <if test="created_by_username != null">created_by_username=#{created_by_username},</if>
+            <if test="creation_date != null">creation_date=#{creation_date},</if>
+            <if test="last_updated_by_userid != null">last_updated_by_userid=#{last_updated_by_userid},</if>
+            <if test="last_updated_by_useracc != null">last_updated_by_useracc=#{last_updated_by_useracc},</if>
+            <if test="last_updated_by_username != null">last_updated_by_username=#{last_updated_by_username},</if>
+            <if test="last_update_date != null">last_update_date=#{last_update_date},</if>
+            <if test="shangxmax != null">shangxmax=#{shangxmax},</if>
+            <if test="xiaxmin != null">xiaxmin=#{xiaxmin}</if>
+        </trim>
+        where ID = #{id}
+    </update>
+
+    <insert id="addPriceScheme" parameterType="priceScheme">
+		insert into RL_HT_PRICE_SCHEME
+			  (id,
+			   po_sub_id,
+			   price_component_id,
+			   price_item_id,
+			   status,
+			   created_by_userid,
+			   created_by_useracc,
+			   created_by_username,
+			   creation_date,
+			   last_updated_by_userid,
+			   last_updated_by_useracc,
+			   last_updated_by_username,
+			   last_update_date,
+			   diancxxb_id,
+			   shangxmax,
+			   xiaxmin)
+		values
+			  (#{id,jdbcType=NUMERIC},
+			   #{po_sub_id,jdbcType=NUMERIC},
+			   #{price_component_id,jdbcType=NUMERIC},
+			   #{price_item_id,jdbcType=NUMERIC},
+			   #{status,jdbcType=NUMERIC},
+			   #{created_by_userid,jdbcType=NUMERIC},
+			   #{created_by_useracc,jdbcType=VARCHAR},
+			   #{created_by_username,jdbcType=NUMERIC},
+			   #{creation_date,jdbcType=VARCHAR},
+			   #{last_updated_by_userid,jdbcType=NUMERIC},
+			   #{last_updated_by_useracc,jdbcType=VARCHAR},
+			   #{last_updated_by_username,jdbcType=VARCHAR},
+			   #{last_update_date,jdbcType=VARCHAR},
+			   #{diancxxb_id,jdbcType=NUMERIC},
+			   #{shangxmax,jdbcType=NUMERIC},
+			   #{xiaxmin,jdbcType=NUMERIC})
+	</insert>
+
+
+</mapper>

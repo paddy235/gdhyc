@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiren.fuelmis.dc.dao.js.JsDao">
+	<select id="getJiesdhList" resultType="java.util.Map">
+		select j.id ID,j.JIESBH BIANM
+		from RL_JS_RIJSDB j
+		left join gongysmkglb gx on j.gongysb_id=gx.gongysb_id
+		left join meikxxb m on gx.meikxxb_id=m.id
+		<if test="_parameter!=-1">
+			WHERE m.id= #{_parameter}
+		</if>
+		order by j.jiesbh
+	</select>
+	<select id="getJiesxx" resultType="java.util.Map">
+		select j.id ID,j.JIESBH BIANM 
+		from RL_JS_RIJSDB j 
+		left join gongysmkglb gx on j.gongysb_id=gx.gongysb_id
+		left join meikxxb m on gx.meikxxb_id=m.id
+	</select>
+	<!-- 	<select id="getAllJiesxx" resultType="java.util.Map">
+            select ID,BIANM from JIESB
+        </select> -->
+	<select id="getMeikjcById" resultType="java.lang.String">
+		select mingc from MEIKXXB WHERE ID=#{id}
+	</select>
+	<select id="getJeisdhById" resultType="java.lang.String">
+		select BIANM from JIESB WHERE id=#{id}
+	</select>
+	<select id="getFap" resultType="java.util.Map">
+		SELECT f.id,
+		f.BIANM,
+		f.XINGZ,
+		m.mingc,
+		j.jiesbh,
+		f.jiesms,
+		f.qisbh,
+		f.zhongzbh,
+		f.faps,
+		f.zongje,
+		f.jiesmk,
+		to_char(f.faprq,'yyyy-mm-dd') faprq,
+		to_char(f.lursj,'yyyy-mm-dd') lursj,
+		f.lurr,
+		f.zhiftk,
+		f.zhuangt
+		from DZ_JS_FAPB f
+		full join meikxxb m
+		on f.meikxxb_id = m.id
+		full join RL_JS_RIJSDB j
+		on f.jiesb_id=j.id
+		where 1=1
+		<if test="meikxxbid!=-1">
+			and f.meikxxb_id=${meikxxbid}
+		</if>
+		and to_char(f.faprq,'yyyy-mm-dd') between '${qisrq}' and '${zhongzrq}'
+		<if test="jiesbid!=-1">
+			and f.jiesb_id=${jiesbid}
+		</if>
+	</select>
+	<select id="getFapbById" resultType="java.util.HashMap">
+	selectID,DIANCXXB_ID ,BIANM ,QISBH ,ZHONGZBH ,FAPS ,ZONGJE ,JIESMK ,RIQ ,MEIKXXB_ID ,JIESB_ID ,PIZR ,LURSJ ,LURR ,ZHIFTK ,ZHUANGT ,FUJ ,JIESMS ,
+	XINGZ,JIESDH,FAPRQ
+	FROM DZ_JS_FAPB where id=#{id}
+	</select>
+	<select id="getFapByCondition" resultType="java.util.Map">
+	select
+		ID,
+		DIANCXXB_ID ,
+		BIANM ,
+		QISBH ,
+		ZHONGZBH ,
+		FAPS ,
+		ZONGJE ,
+		JIESMK ,
+		RIQ ,
+		MEIKXXB_ID ,
+		JIESB_ID ,
+		PIZR ,
+		LURSJ ,
+		LURR ,
+		ZHIFTK ,
+		ZHUANGT ,
+		FUJ ,
+		JIESMS ,
+		XINGZ,
+		FAPRQ,
+		JIESDH
+	FROM DZ_JS_FAPB where meikxxb_id=${meikxxbid} 
+					and jiesb_id=${jiesbid} 
+					and riq>=TO_DATE('${qisrq}','yyyy-mm-dd')
+					and riq <![CDATA[<=]]> TO_DATE('${zhongzrq}','yyyy-mm-dd')
+	ORDER BY MEIKXXB_ID,JIESB_ID,FAPRQ
+	</select>
+	<select id="getMaxBianm" resultType="java.lang.Integer">
+		  SELECT  max(to_number(substr(bianm,3,length(bianm)-2))) FROM DZ_JS_FAPB 
+	</select>
+
+	<insert id="addFapData" useGeneratedKeys="true" keyProperty="id">
+		INSERT
+		INTO DZ_JS_FAPB( 
+			id,
+			BIANM,
+			MEIKXXB_ID,
+			XINGZ,
+			JIESB_ID,
+			QISBH,
+			ZHONGZBH,
+			ZONGJE,
+			JIESMK,
+			RIQ,
+			FAPRQ,
+			ZHIFTK,
+			FAPS,
+			LURR,
+			ZHUANGT,
+			JIESMS			  ) 
+		VALUES
+		(${ID},
+			'${BIANM}',
+			'${MEIKXXB_ID}',
+			'${XINGZ}',
+			 ${JIESB_ID},
+			'${QISBH}',
+			'${ZHONGZBH}',
+			 ${ZONGJE},
+			 ${JIESMK},
+			 to_date('${RIQ}','yyyy-mm-dd'),
+			 to_date('${FAPRQ}','yyyy-mm-dd'),
+			'${ZHIFTK}',
+			 ${FAPS},
+			'${LURR}',
+			'${ZHUANGT}',
+			'${JIESMS}'
+			)
+	</insert>
+	<delete id="delFapById" parameterType="java.lang.String" flushCache="true">
+	 	delete from DZ_JS_FAPB where id =#{id}
+	</delete>
+	<update id="updateFapById" flushCache="true">
+		update DZ_JS_FAPB set  
+						BIANM='${BIANM}',
+						MEIKXXB_ID='${MEIKXXB_ID}',
+						XINGZ='${XINGZ}',
+						JIESB_ID=${JIESB_ID},
+						QISBH='${QISBH}',
+						ZHONGZBH='${ZHONGZBH}',
+						ZONGJE=${ZONGJE},
+						JIESMK=${JIESMK},
+						FAPRQ=to_date('${FAPRQ}','yyyy-mm-dd'),
+						ZHIFTK='${ZHIFTK}',
+						FAPS=${FAPS},
+						JIESMS='${JIESMS}'
+		WHERE id = ${ID}
+	</update>
+	<update id="updateHuitZhuangt" flushCache="true">
+	update RL_JS_YUEJSDB set zhuangt=#{1} where jiesbh=#{0}
+	</update>
+	<update id="setJiesdLiucIDWithNull" flushCache="true">
+		update RL_JS_YUEJSDB set LIUC_ID=null where jiesbh=#{0}
+	</update>
+	<select id="getDanjAndJine" resultType="java.util.Map">
+		select round(MEIKJE/JIESSL,2) jiesdj,MEIKJE jine,caozrq balance_date  from RL_JS_YUEJSDB where JIESBH='${jiesdbh}'
+	</select>
+	<select id="getMaxRukdid" resultType="java.lang.String">
+		select  max(distinct  rk.id)  from RL_JS_YUEJSDB y
+		inner join GX_RIJSD_YUEJSD gx on y.id=gx.YUEJSDB_ID
+		inner join VM_RIJSMX r on gx.RIJSDB_ID=r.id
+		inner join vm_kucmx k on r.CHEPB_ID=k.CHEPB_ID
+		inner join RL_KC_CHURKDB rk on rk.RUKDBH=k.RUKDBH
+		where y.JIESBH=#{0}
+	</select>
+	<select id="getRukdbh" resultType="java.lang.String">
+		select  distinct  k.RUKDBH  from RL_JS_YUEJSDB y
+		inner join GX_RIJSD_YUEJSD gx on y.id=gx.YUEJSDB_ID
+		inner join VM_RIJSMX r on gx.RIJSDB_ID=r.id
+		inner join vm_kucmx k on r.CHEPB_ID=k.CHEPB_ID
+		where y.JIESBH=#{0}
+    </select>
+	<update id="updateOtherJine">
+		update RL_KC_CHURKDB set JINE=round(${jiesdj}*YANSSL,2),shifdr=0,balance_flag=1,balance_date='${balance_date}' where rukdbh in (${rukdbhs}) and id !=${maxid}
+	</update>
+	<select id="getOtherZongje" resultType="java.lang.String">
+		select sum(jine) from RL_KC_CHURKDB where  rukdbh in (${rukdbhs}) and id !=${maxid}
+	</select>
+	<update id="updateMaxRukdje">
+		UPDATE RL_KC_CHURKDB set jine=round(#{1},2),shifdr=0,balance_flag=1,balance_date=#{2} where id=#{0}
+	</update>
+	<select id="getFapById" resultType="java.util.Map">
+		select id,BIANM,MEIKXXB_ID,XINGZ,JIESB_ID,QISBH,ZHONGZBH,ZONGJE,JIESMK,RIQ,to_char(FAPRQ,'yyyy-mm-dd') FAPRQ,ZHIFTK,FAPS,LURR,ZHUANGT,JIESMS from DZ_JS_FAPB
+		where id=#{0}
+	</select>
+	<select id="getSamcode" resultType="java.lang.String">
+	select distinct c.samcode from rl_ys_chepb c
+      inner join vm_kucmx k on c.id=k.CHEPB_ID
+      where k.RUKDBH = #{0}
+	</select>
+	<select id="getHuayd" resultType="java.util.Map">
+	select h.*
+       from rl_hy_huaydb h inner join vw_hys_czh_bianm b on h.huaybm=b.huaybm
+      where b.caiybm = #{0}
+	</select>
+	<update id="updateHuaybg">
+		update RL_KC_HUAYBGB set
+			AAR='${AAR}',
+			AD='${AD}',
+			VDAF='${VDAF}',
+			MT='${MT}',
+			STAD='${STAD}',
+			AAD='${AAD}',
+			MAD='${MAD}',
+			QBAD='${QBAD}',
+			HAD='${HAD}',
+			VAD='${VAD}',
+			FCAD='${FCAD}',
+			STD='${STD}',
+			QGRAD='${QGRAD}',
+			HDAF='${HDAF}',
+			QGRAD_DAF='${QGRAD_DAF}',
+			SDAF='${SDAF}',
+			VAR='${VAR}',
+			T1='${T1}',
+			T2='${T2}',
+			T3='${T3}',
+			T4='${T4}',
+			HAR='${HAR}',
+			QGRD='${QGRD}',
+			STAR='${STAR}',
+			QNET_AR='${QNET_AR}'
+		WHERE rukdh='${RUKDBH}'
+	</update>
+	<update id="updateChurkd">
+     update rl_kc_churkdb k
+     set
+     k.KUAIJRQ=(select r.kuaijrq from gx_kuaijq_zuz gx
+                       inner join rl_kc_kuaijrqb r on gx.kuaijq_id=r.id where gx.zhuangt='启用' and
+                       gx.kuczz_id =(select distinct kuczz from rl_kc_churkdb where RUKDBH=#{0})),
+     k.kuaijrq_id=(select r.id from gx_kuaijq_zuz gx
+                       inner join rl_kc_kuaijrqb r on gx.kuaijq_id=r.id where gx.zhuangt='启用' and
+                       gx.kuczz_id =(select distinct kuczz from rl_kc_churkdb where RUKDBH=#{0})),                  
+     k.JIZRQ=to_char(sysdate,'yyyy-mm-dd hh24:mi:ss') ,
+     k.YUEJSB_ID=(select id from rl_js_yuejsdb where JIESBH=#{1}),
+     k.GONGYSB_ID=(select gongysb_id from rl_js_yuejsdb where JIESBH=#{1}),
+     k.pinzb_id=(select pinzb_id from rl_js_yuejsdb where JIESBH=#{1})
+     where k.RUKDBH=#{0}
+	</update>
+	<select id="getJiesdByYuejsdbh" resultType="java.util.Map">
+		select distinct crk.id ,yj.JIESBH,rj.jiesrz,rj.jieslf,rj.REZZK,rj.LIUFZK,round(rj.JIESJG*(nvl(crk.RUKSL,0)+nvl(crk.yanssl,0)),2) jiesje,rj.caozrq jiesrq
+		from vm_rijsmx rj inner join vm_kucmx k on rj.chepb_id=k.chepb_id
+		inner join RL_KC_CHURKDB crk on k.RUKDBH=crk.RUKDBH
+		inner join GX_RIJSD_YUEJSD g on rj.id=g.RIJSDB_ID
+		inner join RL_JS_YUEJSDB yj on yj.id=g.YUEJSDB_ID and yj.JIESBH=#{0}
+	</select>
+	<update id="updateMeikSubById">
+		update RL_KC_RUK_MEIK_SUB set
+		JIESDBH='${JIESBH}',
+		JIESRQ='${JIESRQ}',
+		QNETAR_PRICE='${JIESRZ}',
+		QNETAR_CHANGEPRICE='${REZZK}',
+		TRANSACTION_AMOUNT='${JIESJE}'
+		where id='${ID}'
+	</update>
+	<update id="updateMeikByRukdbh">
+		update RL_KC_RUK_MEIK SET
+		audit_date=to_char(sysdate,'yyyy-mm-dd hh24:mi:ss'),
+		AUDIT_STATUS='E',
+		item_key='${huitlc_id}',
+		ITEM_TYPE='结算审批',
+		remarks='${advice}',
+		LAST_UPDATE_DATE=to_char(sysdate,'yyyy-mm-dd hh24:mi:ss'),
+		LAST_UPDATED_BY_USERNAME='${caozr}'
+		where INV_NUMBER='${rukdbh}'
+	</update>
+</mapper>

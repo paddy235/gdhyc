@@ -1,0 +1,7 @@
+select * from niandjh_caig; --年采购计划
+select * from niandjh_zaf; --年度杂费计划
+select * from niandjh_zhib; --年度需求计划
+
+select * from yuedjh_caig; --月采购计划
+select * from yuedjh_zaf; --月度杂费计划
+select * from yuedjh_zhib; --月度需求计划

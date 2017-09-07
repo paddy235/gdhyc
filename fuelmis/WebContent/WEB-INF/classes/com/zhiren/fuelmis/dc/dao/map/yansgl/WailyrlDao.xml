@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiren.fuelmis.dc.dao.yansgl.WailyrlDao">
+	<select id="getWailyrlAll" resultType="java.util.Map">
+			select * from rl_hy_wailyb where quysj = to_date('${riq}','yyyy-MM-dd')
+	</select>
+</mapper>

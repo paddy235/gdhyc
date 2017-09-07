@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiren.fuelmis.dc.dao.kucgl.rukgl.ZidrkDao">
+
+	<update id="updateData">
+        insert into ${table} (
+        <foreach collection="data.keys" item="k" index="i" separator=",">
+            ${k}
+        </foreach>
+        )VALUES(
+        <foreach collection="data.values" item="v" index="i" separator=",">
+            '${v}'
+        </foreach>
+        )
+    </update>
+	
+</mapper>

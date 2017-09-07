@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.zhiren.fuelmis.dc.dao.gongyspg.rigmjh.RigmjhDao">
+	
+	<resultMap id="BaseResultMap" type="rigmjh">
+		<id column="ID" property="id" jdbcType="NUMERIC" />
+		<result column="RIQ" property="riq" jdbcType="VARCHAR" />
+		<result column="GONGYSB_ID" property="gongysb_id" jdbcType="NUMERIC" />
+		<result column="JIHML" property="jihml" jdbcType="NUMERIC" />
+		<result column="TIAOZL" property="tiaozl" jdbcType="NUMERIC" />
+		<result column="ZHUANGT" property="zhuangt" jdbcType="NUMERIC" />		
+		<result column="FABRQ" property="fabrq" jdbcType="VARCHAR" />		
+		<result column="FABRY" property="fabry" jdbcType="VARCHAR" />
+		<result column="PINGFFAB_ID" property="pingffab_id" jdbcType="NUMERIC" />		
+		<result column="LEIB" property="leib" jdbcType="NUMERIC" />	
+		
+		<result column="gongysbmc" property="gongysbmc" jdbcType="VARCHAR" />
+		<result column="pingffabmc" property="pingffabmc" jdbcType="VARCHAR" />	
+	</resultMap>
+			
+	<select id="searchRigmjhList" resultType="java.util.Map">   
+	  
+  select a.id, riq, b.mingc as gongysbmc, a.gongysb_id, a.jihml, a.tiaozl, 
+		a.zhuangt, a.fabrq, a.fabry, a.pingffab_id, a.leib,c.mingc as pingffabmc
+			from rl_gys_rigmjhb a left join gongysb b
+			on a.gongysb_id = b.id
+      left join RL_GYS_PINGFFAB c on a.PINGFFAB_id=c.id
+		
+		where 1=1
+	   
+	    <if test="zhuangt!=null">
+	     and a.zhuangt = '${zhuangt}'	
+	    </if>
+	    <if test="gongysb_id!=null">
+	     and a.gongysb_id = '${gongysb_id}'	
+	    </if>
+	     <choose>
+	     	<when test="fabrq=='来煤日期'">
+	     		    and a.riq <![CDATA[>=]]> '${strdate}'
+		     		and a.riq <![CDATA[<=]]> '${enddate}'	
+	     	</when>
+	     		   
+	     	<otherwise>
+	     		    and a.fabrq <![CDATA[>=]]> '${strdate}'
+		   		    and a.fabrq <![CDATA[<=]]> '${enddate}'	
+	     	</otherwise>
+	     </choose>
+	     
+	     	     order by a.id
+	     
+	</select>	
+
+	<insert id="insertRigmjh">	
+		<selectKey keyProperty="id" resultType="BigDecimal" order="BEFORE">
+      		select SEQ_rigmjhb.nextval from dual
+   	 </selectKey>
+	insert into rl_gys_rigmjhb
+  	(id,gongysb_id,riq,jihml, tiaozl,pingffab_id, fabrq,fabry,zhuangt,leib)
+  	values(#{id},#{GONGYSBMC},#{RIQ},#{JIHML},#{TIAOZL},#{PINGFFABMC},#{FABRQ},#{FABRY},0,1)
+	</insert>
+
+	<delete id="delRigmjh" parameterType="java.util.Map">
+	    delete from rl_gys_rigmjhb jh where jh.id in
+	    
+	     <foreach collection="array" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+	</delete>
+	
+	<update id="updateRigmjh" flushCache="true">  
+        update rl_gys_rigmjhb   set   
+		jihml='${JIHML}',
+		tiaozl='${TIAOZL}',
+		pingffab_id='${PINGFFAB_ID}'
+        where id =#{ID}   
+	</update> 
+	
+	<update id="publishRigmjh" >  
+        update rl_gys_rigmjhb   set   
+            zhuangt = 1  
+                    where id in   
+            <foreach collection="array" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+	</update> 
+	
+</mapper>

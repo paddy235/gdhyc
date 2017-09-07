@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiren.fuelmis.dc.dao.cnfy.FeiyxmsqDao" >
+	<select id="getFeiyxmData"  resultType="java.util.HashMap">
+		SELECT  ROWNUM,
+				CF.ID      AS ID,
+				DC.MINGC   AS DANW,
+		        CF.BIANM   AS BIANM,
+		        FL.MINGC AS FYXMFLMC,
+		        CF.MINGC   AS MINGC,
+		        CF.GUANLFL AS GUANLFL,
+		        CF.CAIWFL  AS CAIWUFL,
+		        DECODE(CF.ZHUANGT,0,'未提交',2,'已审核',1,'已提交','') AS ZHUANGT,
+		        CF.SHUOM   AS SHUOM,
+		        SX.MINGC   AS FEIYXMSX
+				FROM RL_CNFY_CHANGNFYXM CF,DIANCXXB DC,RL_CNFY_FEIYXMSX SX,RL_CNFY_FEIYXMFL FL
+				WHERE CF.DIANCXXB_ID = DC.ID
+				AND CF.FEIYXMFL_ID = FL.ID
+				AND CF.FEIYXMSX_ID = SX.ID
+				<if test="diancid!='-1'">
+					AND CF.DIANCXXB_ID = #{diancid}
+				</if>
+				<if test="feiyxmfl!='-1'">
+					AND CF.FEIYXMFL_ID = #{feiyxmfl}
+				</if>
+				ORDER BY ROWNUM
+	</select>
+	<select id="getFeiyxmsx"  resultType="java.util.HashMap">
+		SELECT SX.ID AS ID,SX.MINGC AS MINGC FROM RL_CNFY_FEIYXMSX SX
+	</select>
+	<select id="getFeiyxmfl"  resultType="java.util.HashMap">
+		select fyxmfl.id as id, fyxmfl.mingc as mingc
+             from RL_CNFY_FEIYXMFL fyxmfl
+            where fyxmfl.shiyzt = 1  
+	</select>
+	<insert id="addFeiyxmData"  useGeneratedKeys="true" keyProperty="id">
+		insert into RL_CNFY_CHANGNFYXM (
+								   id,
+								   bianm,
+								   feiyxmsx_id,
+								   mingc,
+								   shuom,
+								   zhuangt,
+								   caiwfl,
+								   guanlfl,
+								   feiyxmfl_id,
+								   diancxxb_id)
+									values
+								  (XL_CHANGNZF_ID.NEXTVAL,'${BIANM}', ${FEIYXMSX}, '${MINGC}','${SHUOM}',0,
+								 '${CAIWFL}', '${GUANLFL}', ${FEIYXMFLID}, ${DIANCID} )
+	</insert>
+	
+	<delete id="delFeiyxm" parameterType="java.lang.String" flushCache="true">  
+         DELETE FROM RL_CNFY_CHANGNFYXM WHERE ID = #{id}
+    </delete>
+   
+    <select id="getFeiyxmById"  resultType="java.util.HashMap">
+			SELECT  	ID,
+					   BIANM,
+					   FEIYXMSX_ID,
+					   MINGC,
+					   SHUOM,
+					   ZHUANGT,
+					   CAIWFL,
+					   GUANLFL,
+					   FEIYXMFL_ID,
+					   DIANCXXB_ID
+					FROM RL_CNFY_CHANGNFYXM WHERE ID = #{id}
+	</select>
+	<select id="getsubmitdatas"  resultType="java.util.HashMap">
+		SELECT CF.ID      AS CHANGNFYXM_ID,
+		       CF.DIANCXXB_ID AS DIANCXXB_ID,
+		       DC.MINGC   AS DANWMC,
+		       CF.BIANM   AS BIANM,
+		       FL.MINGC   AS FEIYXMFLMC,
+		       CF.MINGC   AS FEIYMC,
+		       CF.GUANLFL AS GUANLFL,
+		       CF.CAIWFL  AS CAIWFL,
+		       CF.SHUOM   AS SHUOM,
+		       SX.MINGC   AS SHUX
+		  FROM RL_CNFY_CHANGNFYXM CF,
+		       DIANCXXB           DC,
+		       RL_CNFY_FEIYXMFL   FL,
+		       RL_CNFY_FEIYXMSX   SX
+		 WHERE SX.ID = CF.FEIYXMSX_ID
+		   AND FL.ID = CF.FEIYXMFL_ID
+		   AND DC.ID = CF.DIANCXXB_ID
+		   AND CF.ID =#{id}
+	</select>
+	<update id="updateState" flushCache="true">  
+        UPDATE RL_CNFY_CHANGNFYXM SET ZHUANGT = 1 WHERE ID = #{id}
+    </update>
+    <update id="updateFeiyxmById" flushCache="true">  
+        UPDATE RL_CNFY_CHANGNFYXM SET 
+					   BIANM = '${BIANM}',
+					   FEIYXMSX_ID = ${FEIYXMSX},
+					   MINGC = '${MINGC}',
+					   SHUOM = '${SHUOM}',
+					   CAIWFL = '${CAIWFL}',
+					   GUANLFL = '${GUANLFL}'
+						   WHERE ID = #{ID}
+    </update>
+    <select id="getState"  resultType="java.lang.String">
+			SELECT ZHUANGT FROM RL_CNFY_CHANGNFYXM WHERE ID = #{id}
+	</select>
+    <update id="changeState" flushCache="true">  
+        UPDATE RL_CNFY_FEIYXMFL SET  ZHUANGT = #{zhuangt} WHERE ID = #{id}
+    </update>
+     <update id="updateFeiyxmsq" flushCache="true">  
+        UPDATE RL_CNFY_CHANGNFYXM SET ZHUANGT = 2,MINGC = #{feiymc}  WHERE ID = #{id}
+    </update>
+</mapper>

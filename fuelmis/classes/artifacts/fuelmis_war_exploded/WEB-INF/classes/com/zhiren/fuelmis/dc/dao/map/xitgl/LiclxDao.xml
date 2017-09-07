@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiren.fuelmis.dc.dao.xitgl.LiclxDao" >
+	<resultMap id="BaseResultMap" type="liclx" >
+		<id column="ID" property="id" jdbcType="NUMERIC" />
+		<result column="XUH" property="xuh" jdbcType="NUMERIC" />
+		<result column="MINGC" property="mingc" jdbcType="VARCHAR" />
+		<result column="PINY" property="piny" jdbcType="VARCHAR" />
+		<result column="BEIZ" property="beiz" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<select id="getAll" resultMap="BaseResultMap">
+		select L.ID, L.XUH, L.MINGC, L.PINY, L.BEIZ from LICLXB L
+	</select>
+	
+	<insert id="insertLiclx" parameterType="java.util.Map">
+	    insert into LICLXB(ID,XUH,MINGC,PINY,BEIZ)
+	    values (${id},nvl(${xuh},0),'${mingc}','${piny}','${beiz}')
+	</insert>
+	
+	<select id="getOne" resultMap="BaseResultMap">
+	   select L.ID, L.XUH, L.MINGC, L.PINY, L.BEIZ from LICLXB L
+	   where L.ID = #{id}
+	</select>
+	
+	<update id="updateLiclx" parameterType="java.util.Map">
+	    update LICLXB
+	    <trim prefix="SET" suffixOverrides=",">
+			<if test="xuh != null">XUH=#{xuh},</if>
+			<if test="mingc != null">MINGC=#{mingc},</if>
+			<if test="piny != null">PINY=#{piny},</if>
+			<if test="beiz != null">BEIZ=#{beiz},</if>
+		</trim>
+		where ID=#{id}
+	</update>
+	
+	<delete id="delLiclx" parameterType="java.util.Map">
+	    delete from LICLXB where ID = #{id}
+	</delete>
+</mapper>

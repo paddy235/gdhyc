@@ -1,0 +1,286 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiren.fuelmis.dc.dao.yuebgl.yuebwh.RucbmdjDao">
+    <select id="getCheckData" resultType="java.util.Map">
+	SELECT ID,GMINGC, JMINGC,PMINGC,YSMINGC,ZHUANGT,
+              FENX,YUETJKJB_ID,JIESL,meij,MEIJS,
+              KUANGQYF,HUOCYJ,HUOCYJS,QICYJ,QICYJS,YUNJ,YUNJS,DAOZZF,ZAF,ZAFS,QIT,ROUND_NEW(QNET_AR,2)QNET_AR,
+              ROUND(decode(QNET_AR,0,0,(MEIJ +YUNJ +ZAF)*29.271/QNET_AR),2) BIAOMDJ,
+              ROUND(decode(QNET_AR,0,0,ROUND((MEIJ/1.17 +YUNJ-YUNJS +ZAF-ZAFS),2)*29.271/QNET_AR),2) BUHSBMDJ
+        FROM (SELECT DECODE(GROUPING(SR.ID),1,-1,SR.ID)ID,
+             SR.GMINGC GMINGC,
+             SR.ZHUANGT ZHUANGT,
+             SR.JMINGC JMINGC,
+             SR.PMINGC PMINGC,
+             SR.YSMINGC YSMINGC,
+             DECODE(GROUPING(SR.ID),1,SR.FENX||'合计',SR.FENX)FENX,
+             SR.YUETJKJB_ID YUETJKJB_ID ,
+             SUM(SR.JIESL) JIESL,
+             ROUND(decode(sum(sr.jiesl),0,0,SUM(sr.MEIJ*sr.jiesl)/SUM(sr.jiesl)),2) meij,
+             ROUND(decode(sum(sr.jiesl),0,0,SUM(sr.MEIJS*sr.jiesl)/SUM(sr.jiesl)),2) MEIJS,
+             ROUND(decode(sum(sr.jiesl),0,0,SUM(sr.KUANGQYF*sr.jiesl)/SUM(sr.jiesl)),2) KUANGQYF,
+            ROUND(decode(sum(sr.jiesl),0,0,SUM(sr.HUOCYJ*sr.jiesl)/SUM(sr.jiesl)),2) HUOCYJ,
+             ROUND(decode(sum(sr.jiesl),0,0,SUM(sr.HUOCYJS*sr.jiesl)/SUM(sr.jiesl)),2) HUOCYJS,
+             ROUND(decode(sum(sr.jiesl),0,0,SUM(sr.QICYJ*sr.jiesl)/SUM(sr.jiesl)),2) QICYJ,
+             ROUND(decode(sum(sr.jiesl),0,0,SUM(sr.QICYJS*sr.jiesl)/SUM(sr.jiesl)),2) QICYJS,
+             ROUND(decode(sum(sr.jiesl),0,0,SUM(sr.YUNJ*sr.jiesl)/SUM(sr.jiesl)),2) YUNJ,
+             ROUND(decode(sum(sr.jiesl),0,0,SUM(sr.YUNJS*sr.jiesl)/SUM(sr.jiesl)),2) YUNJS,
+             ROUND(decode(sum(sr.jiesl),0,0,SUM(sr.DAOZZF*sr.jiesl)/SUM(sr.jiesl)),2) DAOZZF,
+             ROUND(decode(sum(sr.jiesl),0,0,SUM(sr.ZAF*sr.jiesl)/SUM(sr.jiesl)),2) ZAF,
+             ROUND(decode(sum(sr.jiesl),0,0,SUM(sr.ZAFS*sr.jiesl)/SUM(sr.jiesl)),2) ZAFS,
+             ROUND(decode(sum(sr.jiesl),0,0,SUM(sr.QIT*sr.jiesl)/SUM(sr.jiesl)),2) QIT,
+             ROUND_NEW(decode(sum(sr.jiesl),0,0,SUM(sr.QNET_AR*sr.jiesl)/SUM(sr.jiesl)),3) QNET_AR,
+             ROUND(decode(sum(sr.jiesl),0,0,SUM(sr.BIAOMDJ*sr.jiesl)/SUM(sr.jiesl)),2) BIAOMDJ,
+             ROUND(decode(sum(sr.jiesl),0,0,SUM(sr.BUHSBMDJ*sr.jiesl)/SUM(sr.jiesl)),2) BUHSBMDJ
+        FROM (SELECT Y.ID, 
+                      G.MINGC       GMINGC,
+                      J.MINGC       JMINGC,
+                      P.MINGC       PMINGC,
+                      YS.MINGC      YSMINGC,
+                      Y.FENX,
+                      Y.YUETJKJB_ID,
+                      Y.JIESL,Y.MEIJ,Y.MEIJS,Y.KUANGQYF,Y.YUNJ,Y.YUNJS,Y.DAOZZF, 
+                      YF.HUOCYJ,YF.HUOCYJS,YF.QICYJ,YF.QICYJS, Y.ZAF,Y.ZAFS,Y.QIT,Y.QNET_AR,Y.BIAOMDJ,Y.BUHSBMDJ,Y.ZHUANGT
+                FROM YUEJSBMDJ Y,YUEJSBMDJYF YF,
+                     YUETJKJB  T,
+                     MEIKXXB   G,
+                     JIHKJB    J,
+                     PINZB     P,
+                     YUNSFSB   YS
+               WHERE Y.ID=YF.ID(+) AND Y.YUETJKJB_ID = T.ID
+                 AND T.RIQ = #{riq}
+                 AND T.DIANCXXB_ID = #{dianc}
+                 AND T.GONGYSB_ID = G.ID 
+                AND T.JIHKJB_ID = J.ID
+                 AND T.PINZB_ID = P.ID
+                 AND T.YUNSFSB_ID = YS.ID) SR
+       GROUP BY ROLLUP(SR.FENX,(SR.ID,SR.GMINGC,SR.JMINGC,SR.PMINGC,SR.YSMINGC,SR.YUETJKJB_ID,SR.ZHUANGT))
+       HAVING not GROUPING(SR.FENX) = 1   
+	   )
+	</select>
+	<select id="getFirstData" resultType="java.util.Map">
+      SELECT ID,GMINGC, JMINGC,PMINGC,YSMINGC,ZHUANGT,
+              FENX,YUETJKJB_ID,JIESL,MEIJ,MEIJS,
+              KUANGQYF,HUOCYJ,HUOCYJS,QICYJ,QICYJS,YUNJ,YUNJS,DAOZZF,ZAF,ZAFS,QIT,ROUND_NEW(QNET_AR,2)QNET_AR,
+              ROUND(decode(QNET_AR,0,0,(MEIJ +YUNJ +ZAF)*29.271/QNET_AR),2) BIAOMDJ,
+              ROUND(decode(QNET_AR,0,0,ROUND((MEIJ/1.17 +YUNJ-YUNJS +ZAF-ZAFS),2)*29.271/QNET_AR),2) BUHSBMDJ
+        FROM (SELECT DECODE(GROUPING(SR.ID),1,-1,SR.ID)ID,
+             SR.GMINGC GMINGC,
+             SR.JMINGC JMINGC,
+             SR.PMINGC PMINGC,
+             SR.ZHUANGT ZHUANGT,
+             SR.YSMINGC YSMINGC,
+             DECODE(GROUPING(SR.ID),1,SR.FENX||'合计',SR.FENX)FENX,
+             SR.YUETJKJB_ID YUETJKJB_ID ,
+             SUM(SR.JIESL) JIESL,
+             ROUND(decode(sum(sr.jiesl),0,0,SUM(sr.MEIJ*sr.jiesl)/SUM(sr.jiesl)),2) meij,
+             ROUND(decode(sum(sr.jiesl),0,0,SUM(sr.MEIJS*sr.jiesl)/SUM(sr.jiesl)),2) MEIJS,
+             ROUND(decode(sum(sr.jiesl),0,0,SUM(sr.KUANGQYF*sr.jiesl)/SUM(sr.jiesl)),2) KUANGQYF,
+            ROUND(decode(sum(sr.jiesl),0,0,SUM(sr.HUOCYJ*sr.jiesl)/SUM(sr.jiesl)),2) HUOCYJ,
+             ROUND(decode(sum(sr.jiesl),0,0,SUM(sr.HUOCYJS*sr.jiesl)/SUM(sr.jiesl)),2) HUOCYJS,
+             ROUND(decode(sum(sr.jiesl),0,0,SUM(sr.QICYJ*sr.jiesl)/SUM(sr.jiesl)),2) QICYJ,
+             ROUND(decode(sum(sr.jiesl),0,0,SUM(sr.QICYJS*sr.jiesl)/SUM(sr.jiesl)),2) QICYJS,
+             ROUND(decode(sum(sr.jiesl),0,0,SUM(sr.YUNJ*sr.jiesl)/SUM(sr.jiesl)),2) YUNJ,
+             ROUND(decode(sum(sr.jiesl),0,0,SUM(sr.YUNJS*sr.jiesl)/SUM(sr.jiesl)),2) YUNJS,
+             ROUND(decode(sum(sr.jiesl),0,0,SUM(sr.DAOZZF*sr.jiesl)/SUM(sr.jiesl)),2) DAOZZF,
+             ROUND(decode(sum(sr.jiesl),0,0,SUM(sr.ZAF*sr.jiesl)/SUM(sr.jiesl)),2) ZAF,
+             ROUND(decode(sum(sr.jiesl),0,0,SUM(sr.ZAFS*sr.jiesl)/SUM(sr.jiesl)),2) ZAFS,
+             ROUND(decode(sum(sr.jiesl),0,0,SUM(sr.QIT*sr.jiesl)/SUM(sr.jiesl)),2) QIT,
+             ROUND_NEW(decode(sum(sr.jiesl),0,0,SUM(sr.QNET_AR*sr.jiesl)/SUM(sr.jiesl)),3) QNET_AR,
+             ROUND(decode(sum(sr.jiesl),0,0,SUM(sr.BIAOMDJ*sr.jiesl)/SUM(sr.jiesl)),2) BIAOMDJ,
+             ROUND(decode(sum(sr.jiesl),0,0,SUM(sr.BUHSBMDJ*sr.jiesl)/SUM(sr.jiesl)),2) BUHSBMDJ
+        FROM (SELECT Y.ID, 
+                      G.MINGC       GMINGC,
+                      J.MINGC       JMINGC,
+                      P.MINGC       PMINGC,
+                      YS.MINGC      YSMINGC,
+                      Y.FENX,
+                      Y.YUETJKJB_ID,
+                      Y.JIESL,Y.MEIJ,Y.MEIJS,Y.KUANGQYF,Y.YUNJ,Y.YUNJS,Y.DAOZZF, 
+                      YF.HUOCYJ,YF.HUOCYJS,YF.QICYJ,YF.QICYJS, Y.ZAF,Y.ZAFS,Y.QIT,Y.QNET_AR,Y.BIAOMDJ,Y.BUHSBMDJ,Y.ZHUANGT
+                FROM YUEJSBMDJ Y,YUEJSBMDJYF YF,
+                     YUETJKJB  T,
+                     meikxxb   G,
+                     JIHKJB    J,
+                     PINZB     P,
+                     YUNSFSB   YS
+               WHERE Y.ID=YF.ID(+) AND Y.YUETJKJB_ID = T.ID
+                 AND T.RIQ = '${riq}'
+                 AND T.DIANCXXB_ID = '${dianc}'
+                 AND T.GONGYSB_ID = G.ID 
+                AND T.JIHKJB_ID = J.ID
+                 AND T.PINZB_ID = P.ID
+                 AND T.YUNSFSB_ID = YS.ID) SR
+       GROUP BY ROLLUP(SR.FENX,(SR.ID,SR.GMINGC,SR.JMINGC,SR.PMINGC,SR.YSMINGC,SR.YUETJKJB_ID,SR.ZHUANGT))
+       HAVING GROUPING(SR.FENX)=0 AND GROUPING(SR.ID)=1)
+       UNION ALL
+      (SELECT * FROM (SELECT y.id,s.gmingc,s.jmingc,s.pmingc,s.ysmingc, s.zhuangt AS ZHUANGT,y.fenx,s.yuetjkjb_id,
+                   y.jiesl,y.meij,y.meijs,y.kuangqyf,nvl(yf.HUOCYJ,0),nvl(yf.HUOCYJS,0),nvl(yf.QICYJ,0),nvl(yf.QICYJS,0),y.yunj,y.yunjs,
+                   y.daozzf,y.zaf,y.zafs,y.qit,y.qnet_ar,y.biaomdj,y.buhsbmdj from
+                   (
+            select CASE WHEN yj.jiesl>0 THEN 1 ELSE 0 END paix, y.id yuetjkjb_id,yj.zhuangt AS ZHUANGT,g.mingc gmingc,j.mingc jmingc,p.mingc pmingc,ys.mingc ysmingc
+              from yuetjkjb y,
+                   meikxxb g,
+                   jihkjb j,
+                   pinzb p,
+                   yunsfsb ys,
+                   yuejsbmdj yj
+             where y.riq ='${riq}'
+               and y.diancxxb_id='${dianc}'
+               and y.gongysb_id=g.id 
+               and y.jihkjb_id=j.id
+               and y.pinzb_id=p.id
+               and y.yunsfsb_id=ys.id
+               AND yj.fenx='本月'
+               AND yj.yuetjkjb_id=y.id
+            ) s,yuejsbmdj y,YUEJSBMDJYF yf
+            where y.id=yf.id(+)
+            AND y.yuetjkjb_id(+)=s.yuetjkjb_id
+            /*and y.id  not in (select y2.id from (select*from yuejsbmdj where fenx='本月') y1
+            inner join (select * from yuejsbmdj yuejsbmdj where fenx='累计') y2 
+            on y1.yuetjkjb_id=y2.yuetjkjb_id and y1.qnet_ar=0 or y1.qnet_ar is null )
+           and Qnet_ar>0*/
+            order by YUETJKJB_ID,s.gmingc,s.jmingc,s.pmingc,s.ysmingc,y.fenx))
+             order by id,zhuangt desc
+             
+	</select>
+	<select id="getSecondData" resultType="java.util.Map">
+        SELECT * FROM (SELECT 0 ID,S.GMINGC,S.JMINGC,S.PMINGC,S.YSMINGC,SL.FENX,S.YUETJKJB_ID,SL.JINGZ JIESL,
+        0 meij,0 meijs,0 kuangqyf,0 HUOCYJ,
+        0 HUOCYJS,0 QICYJ,0 QICYJS,0 yunj, 0 yunjs, 0 daozzf,0 zaf,0 zafs, 0 qit,z.QNET_AR,0 biaomdj, 0 buhsbmdj
+          FROM (SELECT CASE WHEN YJ.JINGZ > 0 THEN 1 ELSE 0 END PAIX,
+                       Y.ID YUETJKJB_ID,G.MINGC GMINGC,J.MINGC JMINGC,P.MINGC PMINGC,YS.MINGC YSMINGC
+                  FROM YUETJKJB Y, 
+                       MEIKXXB  G,
+                       JIHKJB   J,
+                       PINZB    P,
+                       YUNSFSB  YS,
+                       YUESLB   YJ
+                 WHERE Y.RIQ = #{riq}
+                   AND Y.DIANCXXB_ID = #{diancid}
+                   AND Y.GONGYSB_ID = G.ID
+                   AND Y.JIHKJB_ID = J.ID
+                   AND Y.PINZB_ID = P.ID
+                   AND Y.YUNSFSB_ID = YS.ID
+                   AND YJ.FENX = '本月'
+                   AND YJ.YUETJKJB_ID = Y.ID) S,YUESLB SL,YUEZLB Z
+         WHERE SL.YUETJKJB_ID = S.YUETJKJB_ID
+           AND SL.FENX = Z.FENX
+           AND Z.YUETJKJB_ID = S.YUETJKJB_ID          
+         ORDER BY YUETJKJB_ID,S.GMINGC,JMINGC,PMINGC , Sl.FENX)
+	</select>
+	<select id="getZhuant" resultType="java.util.Map">
+		select s.zhuangt zhuangt from yuejsbmdj s, yuetjkjb k
+	    where s.yuetjkjb_id = k.id and k.diancxxb_id = #{dianc} and k.riq =#{riq}
+	</select>
+	<select id="getRucbmdjList" resultType="java.util.Map">
+        SELECT ID,GMINGC, JMINGC,PMINGC,YSMINGC,ZHUANGT,
+            FENX,YUETJKJB_ID,JIESL,MEIJ,MEIJS,
+            KUANGQYF,HUOCYJ,HUOCYJS,QICYJ,QICYJS,YUNJ,YUNJS,DAOZZF,ZAF,ZAFS,QIT,ROUND_NEW(QNET_AR,2)QNET_AR,
+                                                                                ROUND(decode(QNET_AR,0,0,(MEIJ +YUNJ +ZAF)*29.271/QNET_AR),2) BIAOMDJ,
+                                                                                ROUND(decode(QNET_AR,0,0,ROUND((MEIJ/1.17 +YUNJ-YUNJS +ZAF-ZAFS),2)*29.271/QNET_AR),2) BUHSBMDJ
+        FROM (SELECT DECODE(GROUPING(SR.ID),1,-1,SR.ID)ID,
+                     SR.GMINGC GMINGC,
+                     SR.JMINGC JMINGC,
+                     SR.PMINGC PMINGC,
+                     SR.ZHUANGT ZHUANGT,
+                     SR.YSMINGC YSMINGC,
+                     DECODE(GROUPING(SR.ID),1,SR.FENX||'合计',SR.FENX)FENX,
+                     SR.YUETJKJB_ID YUETJKJB_ID ,
+                     SUM(SR.JIESL) JIESL,
+                     ROUND(decode(sum(sr.jiesl),0,0,SUM(sr.MEIJ*sr.jiesl)/SUM(sr.jiesl)),2) meij,
+                     ROUND(decode(sum(sr.jiesl),0,0,SUM(sr.MEIJS*sr.jiesl)/SUM(sr.jiesl)),2) MEIJS,
+                     ROUND(decode(sum(sr.jiesl),0,0,SUM(sr.KUANGQYF*sr.jiesl)/SUM(sr.jiesl)),2) KUANGQYF,
+                     ROUND(decode(sum(sr.jiesl),0,0,SUM(sr.HUOCYJ*sr.jiesl)/SUM(sr.jiesl)),2) HUOCYJ,
+                     ROUND(decode(sum(sr.jiesl),0,0,SUM(sr.HUOCYJS*sr.jiesl)/SUM(sr.jiesl)),2) HUOCYJS,
+                     ROUND(decode(sum(sr.jiesl),0,0,SUM(sr.QICYJ*sr.jiesl)/SUM(sr.jiesl)),2) QICYJ,
+                     ROUND(decode(sum(sr.jiesl),0,0,SUM(sr.QICYJS*sr.jiesl)/SUM(sr.jiesl)),2) QICYJS,
+                     ROUND(decode(sum(sr.jiesl),0,0,SUM(sr.YUNJ*sr.jiesl)/SUM(sr.jiesl)),2) YUNJ,
+                     ROUND(decode(sum(sr.jiesl),0,0,SUM(sr.YUNJS*sr.jiesl)/SUM(sr.jiesl)),2) YUNJS,
+                     ROUND(decode(sum(sr.jiesl),0,0,SUM(sr.DAOZZF*sr.jiesl)/SUM(sr.jiesl)),2) DAOZZF,
+                     ROUND(decode(sum(sr.jiesl),0,0,SUM(sr.ZAF*sr.jiesl)/SUM(sr.jiesl)),2) ZAF,
+                     ROUND(decode(sum(sr.jiesl),0,0,SUM(sr.ZAFS*sr.jiesl)/SUM(sr.jiesl)),2) ZAFS,
+                     ROUND(decode(sum(sr.jiesl),0,0,SUM(sr.QIT*sr.jiesl)/SUM(sr.jiesl)),2) QIT,
+                     ROUND_NEW(decode(sum(sr.jiesl),0,0,SUM(sr.QNET_AR*sr.jiesl)/SUM(sr.jiesl)),3) QNET_AR,
+                     ROUND(decode(sum(sr.jiesl),0,0,SUM(sr.BIAOMDJ*sr.jiesl)/SUM(sr.jiesl)),2) BIAOMDJ,
+                     ROUND(decode(sum(sr.jiesl),0,0,SUM(sr.BUHSBMDJ*sr.jiesl)/SUM(sr.jiesl)),2) BUHSBMDJ
+              FROM (SELECT Y.ID,
+                        G.MINGC       GMINGC,
+                        J.MINGC       JMINGC,
+                        P.MINGC       PMINGC,
+                        YS.MINGC      YSMINGC,
+                        Y.FENX,
+                        Y.YUETJKJB_ID,
+                        Y.JIESL,Y.MEIJ,Y.MEIJS,Y.KUANGQYF,Y.YUNJ,Y.YUNJS,Y.DAOZZF,
+                        YF.HUOCYJ,YF.HUOCYJS,YF.QICYJ,YF.QICYJS, Y.ZAF,Y.ZAFS,Y.QIT,Y.QNET_AR,Y.BIAOMDJ,Y.BUHSBMDJ,Y.ZHUANGT
+                    FROM YUEJSBMDJ Y,YUEJSBMDJYF YF,
+                        YUETJKJB  T,
+                        meikxxb   G,
+                        JIHKJB    J,
+                        PINZB     P,
+                        YUNSFSB   YS
+                    WHERE Y.ID=YF.ID(+) AND Y.YUETJKJB_ID = T.ID
+                          AND T.RIQ = '${riq}'
+                          AND T.DIANCXXB_ID = '${diancid}'
+                          AND T.GONGYSB_ID = G.ID
+                          AND T.JIHKJB_ID = J.ID
+                          AND T.PINZB_ID = P.ID
+                          AND T.YUNSFSB_ID = YS.ID) SR
+              GROUP BY ROLLUP(SR.FENX,(SR.ID,SR.GMINGC,SR.JMINGC,SR.PMINGC,SR.YSMINGC,SR.YUETJKJB_ID,SR.ZHUANGT))
+              HAVING GROUPING(SR.FENX)=0 AND GROUPING(SR.ID)=1)
+        UNION ALL
+        (SELECT * FROM (SELECT y.id,s.gmingc,s.jmingc,s.pmingc,s.ysmingc, s.zhuangt AS ZHUANGT,y.fenx,s.yuetjkjb_id,
+                            y.jiesl,y.meij,y.meijs,y.kuangqyf,nvl(yf.HUOCYJ,0),nvl(yf.HUOCYJS,0),nvl(yf.QICYJ,0),nvl(yf.QICYJS,0),y.yunj,y.yunjs,
+                            y.daozzf,y.zaf,y.zafs,y.qit,y.qnet_ar,y.biaomdj,y.buhsbmdj from
+                            (
+                                select CASE WHEN yj.jiesl>0 THEN 1 ELSE 0 END paix, y.id yuetjkjb_id,yj.zhuangt AS ZHUANGT,g.mingc gmingc,j.mingc jmingc,p.mingc pmingc,ys.mingc ysmingc
+                                from yuetjkjb y,
+                                    meikxxb g,
+                                    jihkjb j,
+                                    pinzb p,
+                                    yunsfsb ys,
+                                    yuejsbmdj yj
+                                where y.riq ='${riq}'
+                                      and y.diancxxb_id='${diancid}'
+                                      and y.gongysb_id=g.id
+                                      and y.jihkjb_id=j.id
+                                      and y.pinzb_id=p.id
+                                      and y.yunsfsb_id=ys.id
+                                      AND yj.fenx='本月'
+                                      AND yj.yuetjkjb_id=y.id
+                            ) s,yuejsbmdj y,YUEJSBMDJYF yf
+                        where y.id=yf.id(+)
+                              AND y.yuetjkjb_id(+)=s.yuetjkjb_id
+                              /*and y.id  not in (select y2.id from (select*from yuejsbmdj where fenx='本月') y1
+                                inner join (select * from yuejsbmdj yuejsbmdj where fenx='累计') y2
+                                on y1.yuetjkjb_id=y2.yuetjkjb_id and y1.qnet_ar=0 or y1.qnet_ar is null )
+                              and Qnet_ar>0 */
+                        order by YUETJKJB_ID,s.gmingc,s.jmingc,s.pmingc,s.ysmingc,y.fenx))
+        order by id,zhuangt desc
+    </select>
+    <select id="getLastMonthLeij" resultType="java.util.Map">
+        select
+            nvl(round_new(sum(jiesl),2),0) as jiesl,
+            nvl(round_new(decode(sum(jiesl),0,0,sum(meij*jiesl)/sum(jiesl)),2),0) meij,
+            nvl(round_new(decode(sum(jiesl),0,0,sum(meijs*jiesl)/sum(jiesl)),2),0) meijs,
+            nvl(round_new(decode(sum(jiesl),0,0,sum(yunj*jiesl)/sum(jiesl)),2),0) yunj,
+            nvl(round_new(decode(sum(jiesl),0,0,sum(yunjs*jiesl)/sum(jiesl)),2),0) yunjs,
+            nvl(round_new(decode(sum(jiesl),0,0,sum(daozzf*jiesl)/sum(jiesl)),2),0) daozzf,
+            nvl(round_new(decode(sum(jiesl),0,0,sum(zaf*jiesl)/sum(jiesl)),2),0) zaf,
+            nvl(round_new(decode(sum(jiesl),0,0,sum(zafs*jiesl)/sum(jiesl)),2),0) zafs,
+            nvl(round_new(decode(sum(jiesl),0,0,sum(qit*jiesl)/sum(jiesl)),2),0) qit,
+            nvl(round_new(decode(sum(jiesl),0,0,sum(qnet_ar*jiesl)/sum(jiesl)),2),0) qnet_ar,
+            nvl(round_new(decode(sum(jiesl),0,0,sum(biaomdj*jiesl)/sum(jiesl)),2),0) biaomdj,
+            nvl(round_new(decode(sum(jiesl),0,0,sum(buhsbmdj*jiesl)/sum(jiesl)),2),0) buhsbmdj,
+            nvl(round_new(decode(sum(jiesl),0,0,sum(kuangqyf*jiesl)/sum(jiesl)),2),0) kuangqyf
+        from yuejsbmdj y,yuetjkjb yt,(select gongysb_id,jihkjb_iD,pinzb_id,yunsfsb_id,diancxxb_id,riq from yuetjkjb where id=  ${yuetjkjb_id} )yt2
+        where y.yuetjkjb_id=yt.id
+              and yt.gongysb_id=yt2.gongysb_id
+              and yt.jihkjb_id=yt2.jihkjb_id
+              and yt.pinzb_id=yt2.pinzb_id
+              and yt.yunsfsb_id=yt2.yunsfsb_id
+              and yt.diancxxb_id=yt2.diancxxb_id
+              and to_date(yt.riq,'yyyy-mm') BETWEEN trunc(to_date(yt2.riq,'yyyy-mm'),'yyyy') and ADD_MONTHS (to_date(yt2.riq,'yyyy-mm'),-1)
+              and y.fenx='本月'
+    </select>
+</mapper>

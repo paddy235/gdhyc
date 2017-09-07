@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiren.fuelmis.dc.dao.xitgl.GongysDao" >
+	<resultMap id="BaseResultMap" type="gongys" >
+		<id column="ID" property="id" jdbcType="NUMERIC" />
+		<result column="XUH" property="xuh" jdbcType="NUMERIC" />
+		<result column="BIANM" property="bianm" jdbcType="NUMERIC" />
+		<result column="MINGC" property="mingc" jdbcType="VARCHAR" />
+		<result column="QUANC" property="quanc" jdbcType="VARCHAR" />
+		<result column="PINY" property="piny" jdbcType="VARCHAR" />
+		<result column="MEIKXXB_ID" property="meikxxb_id" jdbcType="VARCHAR" />
+		<result column="SHENGFB_ID" property="shengfb_id" jdbcType="VARCHAR" />
+		<result column="SHANGJGSBM" property="shangjgsbm" jdbcType="VARCHAR" />
+		<result column="ZHUANGT" property="zhuangt" jdbcType="VARCHAR" />
+		<result column="WENJMC" property="wenjmc" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<select id="getAll" resultMap="BaseResultMap">
+		select G.ID, G.XUH,G.BIANM, G.MINGC, G.QUANC, G.PINY, M.MINGC MEIKXXB_ID, S.QUANC SHENGFB_ID,
+		G.SHANGJGSBM,G.ZHUANGT,getWenj(G.WENJMC) WENJMC 
+	    from GONGYSB G,MEIKXXB M,GONGYSMKGLB GM,SHENGFB S 
+	     where G.ID = GM.GONGYSB_ID(+)
+   		   and M.ID(+) = GM.MEIKXXB_ID
+	    	and G.SHENGFB_ID = S.ID
+	    	and g.leix = 1 
+	    order by G.ZHUANGT, G.CREATE_DATE desc
+	</select>
+	
+	<!-- <insert id="insertGongys" parameterType="java.util.Map">
+	    insert into GONGYSB (ID,XUH,BIANM,MINGC,QUANC,PINY,SHENGFB_ID,MEITLY,FADDBR,WEITDLR,MEIZ,YOUZBM,KAIHYH,ZHANGH,
+	    CHUANZ,DIANH,CHUBNL,GONGYNL,ZHONGDHT,KAICNL,LIUX,YUNSNL,KAICNX,YUNSFS,HEZNX,SHENGCNL,SHICCGL,RONGQGX,XINY,
+	    SHIFSS,SHOUMBFB,GONGSXZ,SHANGSDZ,QITBFB,KEGYWFMZ,KEGYWFMZZB,ZICBFB,DANWDZ,SHUIH,BEIZ)
+	    values(${id},nvl(${xuh},0),'${bianm}','${mingc}','${quanc}','${piny}',nvl(${shengfb_id},0),'${meitly}',
+	    '${faddbr}','${weitdlr}','${meiz}','${youzbm}','${kaihyh}','${zhangh}','${chuanz}','${dianh}','${chubnl}',
+	    '${gongynl}','${zhongdht}','${kaicnl}','${liux}','${yunsnl}','${kaicnx}','${yunsfs}','${hetnx}',
+	    '${shengcnl}','${shiccgl}',nvl(${rongqgx},0),nvl(${xiny},0),nvl(${shifss},0),'${shoumbl}','${gongsxz}',
+	    '${shangsdz}','${qitbl}','${kegymz}','${kegymzzb}','${zicbl}','${danwdz}','${shuih}','${beiz}')
+	</insert> -->
+	
+	<insert id="insertGongys" parameterType="java.util.Map">
+	    insert into GONGYSB (ID,XUH,BIANM,MINGC,QUANC,DANWDZ,SHENGFB_ID,FADDBR,YOUZBM,KAIHYH,ZHANGH,
+	    CHUANZ,DIANH,ZHUCZBJ,ZUZJGDM,SHUIWDJZ,LIANXR,SHOUJ,EMAIL,GONGSZY,GONGSXZ,FUKFS,SHUIL,YUNSSL,
+	    CREATER,CREATE_DATE,FUID,leix)
+	    values(${id},nvl(${xuh},0),'${bianm}','${mingc}','${quanc}','${danwdz}',nvl(${shengfb_id},0),
+	    '${faddbr}','${youzbm}','${kaihyh}','${zhangh}','${chuanz}','${dianh}','${zhuczbj}','${zuzjgdm}',
+	    '${shuiwdjz}','${lianxr}','${shouj}','${email}','${gongszy}','${gongsxz}','${fukfs}','${shuil}','${yunssl}',
+	    '${creater}','${create_date}',1,1)
+	</insert>
+	
+	<insert id="insertGongysmkglb" parameterType="java.util.Map">
+	    insert into GONGYSMKGLB (ID,GONGYSB_ID,MEIKXXB_ID) values (${rid},${gongysb_id},nvl(${meikxxb_id},0))
+	</insert>
+	<insert id="insertGongysdcglb" parameterType="java.util.Map">
+	    insert into gongysdcglb (ID,GONGYSB_ID,DIANCXXB_ID) values (${rid},${gongysb_id},515)
+	</insert>
+	
+	<select id="getOne" resultType="java.util.Map">
+	         select G.ID          "id",
+              G.XUH         "xuh",
+              G.BIANM       "bianm",
+              G.MINGC       "mingc",
+              G.QUANC       "quanc",
+              G.PINY        "piny",
+              G.SHENGFB_ID  "shengfb_id",
+              G.MEITLY      "meitly",
+              G.FADDBR      "faddbr",
+              G.WEITDLR     "weitdlr",
+              G.MEIZ        "meiz",
+              G.YOUZBM      "youzbm",
+              G.KAIHYH      "kaihyh",
+              G.ZHANGH      "zhangh",
+              G.CHUANZ      "chuanz",
+              G.DIANH       "dianh",
+              G.CHUBNL      "chubnl",
+              G.GONGYNL     "gongynl",
+              G.ZHONGDHT    "zhongdht",
+              G.KAICNL      "kaicnl",
+              G.LIUX        "liux",
+              G.YUNSNL      "yunsnl",
+              G.KAICNX      "kaicnx",
+              G.YUNSFS      "yunsfs",
+              G.HEZNX       "hetnx",
+              G.SHENGCNL    "shengcnl",
+              G.SHICCGL     "shiccgl",
+              G.RONGQGX     "rongqgx",
+              G.XINY        "xiny",
+              G.SHIFSS      "shifss",
+              G.SHOUMBFB    "shoumbl",
+              G.GONGSXZ     "gongsxz",
+              G.SHANGSDZ    "shangsdz",
+              G.QITBFB      "qitbl",
+              G.KEGYWFMZ    "kegymz",
+              G.KEGYWFMZZB  "kegymzzb",
+              G.ZICBFB      "zicbl",
+              G.DANWDZ      "danwdz",
+              G.SHUIH       "shuih",
+              G.BEIZ        "beiz",
+           
+              G.zhuczbj     "zhuczbj",
+              G.zuzjgdm     "zuzjgdm",
+              G.shuiwdjz    "shuiwdjz",
+              G.shouj       "shouj",
+              G.email       "email",
+              G.gongszy     "gongszy",
+              G.fukfs       "fukfs",
+              G.shuil       "shuil",
+              G.yunssl      "yunssl"
+      from GONGYSB G
+	    where  G.ID = #{id}
+	</select>
+	
+	<update id="updateGongys" parameterType="java.util.Map">
+	    update GONGYSB
+	    <trim prefix="SET" suffixOverrides=",">
+			<if test="xuh != null">XUH=#{xuh},</if>
+			<if test="bianm != null">BIANM=#{bianm},</if>
+			<if test="mingc != null">MINGC=#{mingc},</if>
+			<if test="quanc != null">QUANC=#{quanc},</if>
+			<if test="piny != null">PINY=#{piny},</if>
+			<if test="shengfb_id != null">SHENGFB_ID=#{shengfb_id},</if>
+			<if test="meitly != null">MEITLY=#{meitly},</if>
+			<if test="faddbr != null">FADDBR=#{faddbr},</if>
+			<if test="weitdlr != null">WEITDLR=#{weitdlr},</if>
+			<if test="meiz != null">MEIZ=#{meiz},</if>
+			<if test="youzbm != null">YOUZBM=#{youzbm},</if>
+			<if test="kaihyh != null">KAIHYH=#{kaihyh},</if>
+			<if test="zhangh != null">ZHANGH=#{zhangh},</if>
+			<if test="chuanz != null">CHUANZ=#{chuanz},</if>
+			<if test="dianh != null">DIANH=#{dianh},</if>
+			<if test="chubnl != null">CHUBNL=#{chubnl},</if>
+			<if test="gongynl != null">GONGYNL=#{gongynl},</if>
+			<if test="zhongdht != null">ZHONGDHT=#{zhongdht},</if>
+			<if test="kaicnl != null">KAICNL=#{kaicnl},</if>
+			<if test="liux != null">LIUX=#{liux},</if>
+			<if test="yunsnl != null">YUNSNL=#{yunsnl},</if>
+			<if test="kaicnx != null">KAICNX=#{kaicnx},</if>
+			<if test="yunsfs != null">YUNSFS=#{yunsfs},</if>
+			<if test="hetnx != null">HEZNX=#{hetnx},</if>
+			<if test="shengcnl != null">SHENGCNL=#{shengcnl},</if>
+			<if test="shiccgl != null">SHICCGL=#{shiccgl},</if>
+			<if test="rongqgx != null">RONGQGX=#{rongqgx},</if>
+			<if test="xiny != null">XINY=#{xiny},</if>
+			<if test="shifss != null">SHIFSS=#{shifss},</if>
+			<if test="shoumbl != null">SHOUMBFB=#{shoumbl},</if>
+			<if test="gongsxz != null">GONGSXZ=#{gongsxz},</if>
+			<if test="shangsdz != null">SHANGSDZ=#{shangsdz},</if>
+			<if test="qitbl != null">QITBFB=#{qitbl},</if>
+			<if test="kegymz != null">KEGYWFMZ=#{kegymz},</if>
+			<if test="kegymzzb != null">KEGYWFMZZB=#{kegymzzb},</if>
+			<if test="zicbl != null">ZICBFB=#{zicbl},</if>
+			<if test="danwdz != null">DANWDZ=#{danwdz},</if>
+			<if test="shuih != null">SHUIH=#{shuih},</if>
+			<if test="beiz != null">BEIZ=#{beiz},</if>
+			<if test="zhuczbj != null">zhuczbj=#{zhuczbj},</if>
+			<if test="zuzjgdm != null">zuzjgdm=#{zuzjgdm},</if>
+			<if test="shuiwdjz != null">shuiwdjz=#{shuiwdjz},</if>
+			<if test="lianxr != null">lianxr=#{lianxr},</if>
+			<if test="shouj != null">shouj=#{shouj},</if>
+			<if test="email != null">email=#{email},</if>
+			<if test="gongszy != null">gongszy=#{gongszy},</if>
+			<if test="fukfs != null">fukfs=#{fukfs},</if>
+			<if test="shuil != null">shuil=#{shuil},</if>
+			<if test="yunssl != null">yunssl=#{yunssl},</if>
+			<if test="last_editer != null">last_editer=#{last_editer},</if>
+			<if test="last_edit_date != null">last_edit_date=#{last_edit_date},</if>
+		</trim>
+		where ID=#{id}
+	</update>
+	
+	<update id="updateWenjmc" parameterType="java.util.Map">
+	     update GONGYSB set wenjmc=#{wenjmc} where ID=#{id}
+	</update>
+	
+	<update id="switchGongys" parameterType="java.util.Map">
+	     update GONGYSB set zhuangt=#{zhuangt} where ID=#{id}
+	</update>
+	
+	<update id="updateGongysmkglb" parameterType="java.util.Map">
+		<if test="meikxxb_id != null">
+		    update GONGYSMKGLB set MEIKXXB_ID=#{meikxxb_id} where GONGYSB_ID = #{gongysb_id}
+		</if>
+	</update>
+</mapper>

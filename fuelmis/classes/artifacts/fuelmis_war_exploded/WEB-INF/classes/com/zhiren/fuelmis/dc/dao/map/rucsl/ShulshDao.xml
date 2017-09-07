@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiren.fuelmis.dc.dao.rucsl.ShulshDao">
+	<select id="getJiesxxList" resultType="java.util.Map">
+		select * from vm_all where CAIYBM=#{samcode}
+	</select>
+	<select id="getTableData" resultType="java.util.Map">
+		select c.samcode samcode ,c.gongysmc gongysb_id,c.meikmc,q.caiyrq,
+		c.pinz pinzb_id,substr(q.zhongcsj,0,10)
+		fahrq,substr(q.zhongcsj,0,10) daohrq,
+		c.yunsfs yunsfsb_id,c.faz faz_id,c.daoz daoz_id,sum(c.maoz-c.piz-c.koud)
+		jingz,
+		sum(c.piaoz) piaoz,sum(c.zongkd) zongkd,count(c.id) ches,c.chec,c.jihkj
+		jihkjb_id,d.mingc diancxxb_id,sum(c.maoz) maoz,sum(c.piz)
+		piz,max(s.ZHUANGT) zhuangt
+		from rl_ys_chepb c,
+		rl_ys_chepb_qc q,
+		diancxxb d ,
+		rl_ys_chepb_sp s
+		where c.id = q.chepb_id
+		and c.diancxxb_id = d.id
+		and c.id = s.chepb_id(+)
+		and substr(q.caiyrq,0,10) between #{sDate} and #{eDate}
+		<if test="zhuangt ==3">
+			and s.zhuangt=3
+		</if>
+		<if test="zhuangt==0">
+			and s.zhuangt is null
+		</if>
+		group by
+		c.gongysmc,q.caiyrq,c.meikmc,c.pinz,substr(q.qingcsj,0,10),substr(q.zhongcsj,0,10),c.yunsfs,c.faz,c.daoz,c.chec,c.jihkj,c.samcode,d.mingc
+		order by samcode
+	</select>
+
+	<select id="getTableData_MX" resultType="java.util.Map">
+		select
+		id,gongysb_id,meikxxb_id,pinzb_id,fahrq,daohrq,yunsfsb_id,faz_id,daoz_id,jingz,piaoz,sum(zongkd)
+		zongkd,
+		ches,chec,jihkjb_id,zhongcrq,cheph,maoz,piz,zhongchh,caozry,caozsj
+		from (
+		select c.id,c.gongysmc gongysb_id, c.meikmc meikxxb_id,
+			c.pinz pinzb_id,cq.zhongcsj fahrq,
+			cq.zhongcsj zhongcrq,
+			cq.qingcsj daohrq, c.yunsfs yunsfsb_id,
+			c.faz faz_id,c.daoz daoz_id,(c.maoz-c.piz-c.zongkd) jingz, c.piaoz,
+			c.zongkd zongkd,1 ches, '' chec, c.jihkj jihkjb_id,
+			c.cheph,c.maoz,c.piz,cq.zhongchh,c.caozry,c.caozsj
+		from rl_ys_chepb c, rl_ys_chepb_qc cq
+		where c.id = cq.chepb_id
+			and samcode =#{samcode}
+		)
+		group by
+		id,gongysb_id,meikxxb_id,pinzb_id,fahrq,daohrq,yunsfsb_id,faz_id,daoz_id,jingz,piaoz,ches,chec,jihkjb_id,
+		zhongcrq,cheph,maoz,piz,zhongchh,caozry,caozsj
+		order by id
+	</select>
+
+	<insert id="shenh" parameterType="java.util.Map">
+		insert into RL_YS_CHEPB_SP(ID,CHEPB_ID,SHIJ,CAOZLX,ZHUANGT,SHENHR,SHENHSJ)
+		values
+		(${id},${chepb_id},'${shenhsj}',1,3,'${shenhr}','${shenhsj}')
+	</insert>
+
+	<delete id="huit" parameterType="java.util.Map">
+		delete from RL_YS_CHEPB_SP where CHEPB_ID = #{chepb_id}
+	</delete>
+
+	<insert id="insertHuaybgb">
+		insert into RL_KC_HUAYBGB (id, rukdh, aar, ad, vdaf, mt, stad, aad, mad,
+		qbad, had, vad, fcad, std, qgrad, hdaf, qgrad_daf, sdaf, var, t1, t2,
+		t3, t4, har, qgrd, star, qnet_ar)
+		(select seq_huaybgb_id.nextval id ,
+		'${rukdbh}'
+		rukdbh,aar,ad,vdaf,mt,stad,aad,mad,qbad,had,vad,fcad,std,qgrad,hdaf,qgrad_daf,sdaf,var,t1,t2,t3,t4,har,qgrd,star,qnet_ar
+		from rl_hy_huaydb h
+		inner join vw_hys_czh_bianm b
+		on h.huaybm = b.huaybm
+		where b.caiybm = '${samcode}'
+		)
+	</insert>
+	<insert id="insertGX_CHURUK_HUAYBH">
+		insert into GX_CHURUK_HUAYBH (id ,DANJB_ID,HUAYBG_ID)
+		(select distinct cr.id id, cr.id DANJB_ID,h.id HUAYBG_ID from RL_KC_HUAYBGB h
+		inner join RL_KC_CHURKDB cr on h.RUKDH=cr.RUKDBH where
+		h.RUKDH='${rukdbh}')
+	</insert>
+	<select id="isHuay" resultType="java.lang.String">
+		select max(h.HUAYD_ID) from RL_HY_HUAYDB h inner join vw_hys_czh_bianm b on
+		h.HUAYBM=b.HUAYBM
+		where b.CAIYBM = '${samcode}'
+	</select>
+	<select id="insertHuaybgbWithOtherWay">
+		insert into RL_KC_HUAYBGB (id, rukdh, aar, ad, vdaf, mt, stad, aad, mad,
+		qbad, had, vad, fcad, std, qgrad, hdaf, qgrad_daf, sdaf, var, t1, t2,
+		t3, t4, har, qgrd, star, qnet_ar)
+		select seq_huaybgb_id.nextval id,'${rukdbh}',z.*
+		from (
+		select
+		round(sum(aar*jingz)/sum(jingz),3),
+		round(sum(ad*jingz)/sum(jingz),3),
+		round(sum(vdaf*jingz)/sum(jingz),3),
+		round(sum(mt*jingz)/sum(jingz),3),
+		round(sum(stad*jingz)/sum(jingz),3),
+		round(sum(aad*jingz)/sum(jingz),3),
+		round(sum(mad*jingz)/sum(jingz),3),
+		round(sum(qbad*jingz)/sum(jingz),3),
+		round(sum(had*jingz)/sum(jingz),3),
+		round(sum(vad*jingz)/sum(jingz),3),
+		round(sum(fcad*jingz)/sum(jingz),3),
+		round(sum(std*jingz)/sum(jingz),3),
+		round(sum(qgrad*jingz)/sum(jingz),3),
+		round(sum(hdaf*jingz)/sum(jingz),3),
+		round(sum(qgrad_daf*jingz)/sum(jingz),3),
+		round(sum(sdaf*jingz)/sum(jingz),3),
+		round(sum(var*jingz)/sum(jingz),3),
+		round(sum(t1*jingz)/sum(jingz),3),
+		round(sum(t2*jingz)/sum(jingz),3),
+		round(sum(t3*jingz)/sum(jingz),3),
+		round(sum(t4*jingz)/sum(jingz),3),
+		round(sum(har*jingz)/sum(jingz),3),
+		round(sum(qgrd*jingz)/sum(jingz),3),
+		round(sum(star*jingz)/sum(jingz),3),
+		round(sum(qnet_ar*jingz)/sum(jingz),3)
+		from (
+		select * from(
+		select s.*,h.* from
+		(
+		select samcode caiybm,sum(c.maoz-c.piz-c.zongkd) jingz from rl_ys_chepb c
+		inner join
+		(select distinct gongysb_id,meikxxb_id,PINZB_ID from rl_ys_chepb where
+		samcode='${samcode}') t
+		on c.gongysb_id=t.gongysb_id and c.meikxxb_id=t.meikxxb_id and
+		c.PINZB_ID=t.pinzb_id
+		group by samcode
+		) s inner join vw_hys_czh_bianm b on s.caiybm=b.caiybm
+		inner join rl_hy_huaydb h on b.huaybm=h.huaybm
+		order by s.caiybm desc
+		)
+		where rownum between 1 and 7
+		)
+		) z
+	</select>
+	<delete id="deleteHuaybgb">
+		BEGIN
+		DELETE FROM GX_CHURUK_HUAYBH where HUAYBG_ID in ( select id from
+		rl_kc_huaybgb where rukdh=(
+		select distinct decode(max(k.rukdbh), null, '-1',max(k.rukdbh)) from
+		vm_kucmx k inner join rl_ys_chepb c on k.CHEPB_ID=c.id
+		where samcode ='${samcode}'));
+		delete from rl_kc_huaybgb where rukdh=(
+		select distinct decode(max(k.rukdbh), null, '-1',max(k.rukdbh)) from
+		vm_kucmx k inner join rl_ys_chepb c on k.CHEPB_ID=c.id
+		where samcode ='${samcode}');
+
+		end;
+	</delete>
+</mapper>

@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiren.fuelmis.dc.dao.gongyspg.fahb.FahbDao" >
+
+	<resultMap id="BaseResultMap" type="fahb">
+		<id column="ID"              property="id" jdbcType="NUMERIC" />
+		<result column="GONGYSB_ID"  property="gongysb_id" jdbcType="NUMERIC" />
+		<result column="DAOHRQ"   	 property="daohrq" jdbcType="VARCHAR" />
+		<result column="LAIML"   	 property="laiml" jdbcType="NUMERIC" />
+		<result column="BEIZ"    	 property="beiz" jdbcType="VARCHAR" />
+		<result column="CHES"    	 property="ches" jdbcType="NUMERIC" />
+		<result column="LEIX"    	 property="leix" jdbcType="NUMERIC" />
+		<result column="KAOHBZ"   	 property="kaohbz" jdbcType="NUMERIC" />
+		<result column="SAMCODE"     property="samcode" jdbcType="VARCHAR"/>		
+	</resultMap>
+	
+	<insert id="addFahb" parameterType="fahb">		  
+	  insert into rl_gys_fahb
+    	(id, gongysb_id, daohrq, laiml, beiz, ches, leix, kaohbz,samcode)
+  	  values
+    	(#{id,jdbcType=NUMERIC}, #{gongysb_id,jdbcType=NUMERIC}, #{daohrq,jdbcType=VARCHAR}, 
+    	#{laiml,jdbcType=NUMERIC}, #{beiz,jdbcType=VARCHAR}, 
+    	#{ches,jdbcType=NUMERIC}, #{leix,jdbcType=NUMERIC}, #{kaohbz,jdbcType=NUMERIC},#{samcode,jdbcType=VARCHAR})	     
+	</insert>
+	
+	<select id="getFahbByDate" resultType = "java.util.Map">
+	  select count(c.id) ches,
+	       max(c.id),
+	       sum(c.maoz - c.piz-c.zongkd) as laiml,
+	       substr(q.qingcsj, 0, 10) as daohrq,
+	       max(c.gongysb_id) as gongysb_id,
+	       c.samcode,
+	       max(h.huayd_id),
+	       max(h.star),
+	       max(h.qnet_ar),
+	       max(c.gongysmc)
+	 from rl_ys_chepb c
+	left join rl_ys_chepb_qc q
+	on c.id = q.chepb_id
+	left join (select * from gx_chep_caizhbmb where zhuanhlb_id = 1) gx1
+	on c.samcode = gx1.yuanbm
+	left join (select * from gx_chep_caizhbmb where zhuanhlb_id = 2) gx2
+	on gx1.mubbm = gx2.yuanbm
+	left join rl_hy_huaydb h
+	on gx2.mubbm = h.huaybm
+	 where 1=1
+		<if test="date != null">
+			and substr(q.qingcsj, 0, 10) = #{date}
+		</if>	   
+	 group by c.gongysb_id, c.samcode, substr(q.qingcsj, 0, 10)
+	</select>
+	
+	
+	<delete id="delFahbByDate" parameterType="java.util.Map">
+		delete from rl_gys_fahb where daohrq = #{date}
+	</delete>
+	
+	
+	<select id="getKaohzbInfo" resultType="java.util.LinkedHashMap">
+		select a.ID,
+	       a.ZHIBMC,
+	       a.ZHIBDM,
+	       a.ZHIBDW,
+	       a.BEIZ,
+	       decode(ZHUANGT, '1', '启用', '0', '禁用') as zhuangt,
+	       decode(LEIB, '1', '数量指标', '2', '质量指标', '3', '其他指标') as leib,
+	       b.mingc as DIANCXXB_ID
+	  from rl_gys_zhibdyb a
+	  where 
+	</select>
+	
+	<select id="getFahbList" resultType="java.util.Map">
+	    select a.id,
+	           a.gongysb_id,
+	           a.daohrq,
+	           a.laiml,
+	           a.ches,
+	           b.mingc as gongysmc,
+	           a.samcode
+	      from rl_gys_fahb a, gongysb b
+	     where a.gongysb_id = b.id(+)
+	     <if test="date != null">
+	     	and a.daohrq = #{date}
+	     </if>
+	</select>
+	
+	<select id="getHuaydbBySamcode" resultType="java.util.Map">
+		select nvl(hy.star,0) as star,hy.qnet_ar
+		  from rl_hy_huaydb hy
+		 where hy.huaybm =
+		       (select f.mubbm
+		          from gx_chep_caizhbmb f
+		         where f.yuanbm = (select mubbm
+		                             from gx_chep_caizhbmb
+		                            where yuanbm = #{samcode}))
+	</select>	
+	
+	
+			
+</mapper>

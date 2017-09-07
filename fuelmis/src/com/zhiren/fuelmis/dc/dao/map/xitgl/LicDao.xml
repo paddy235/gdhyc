@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiren.fuelmis.dc.dao.xitgl.LicDao" >
+	<resultMap id="BaseResultMap" type="lic" >
+		<id column="ID" property="id" jdbcType="NUMERIC" />
+		<result column="DIANCXXB_ID" property="diancxxb_id" jdbcType="NUMERIC" />
+		<result column="FAZ_ID" property="faz_id" jdbcType="VARCHAR" />
+		<result column="DAOZ_ID" property="daoz_id" jdbcType="VARCHAR" />
+		<result column="LICLXB_ID" property="liclxb_id" jdbcType="VARCHAR" />
+		<result column="ZHI" property="zhi" jdbcType="VARCHAR" />
+		<result column="BEIZ" property="beiz" jdbcType="VARCHAR" />
+		<result column="MEIKXXB_ID" property="meikxxb_id" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<select id="getAll" resultMap="BaseResultMap">
+		select L.ID,D.MINGC DIANCXXB_ID,C.MINGC FAZ_ID,C.MINGC DAOZ_ID,LL.MINGC LICLXB_ID,
+		L.ZHI,L.BEIZ,M.MINGC MEIKXXB_ID 
+	    from LICB L,DIANCXXB D,CHEZXXB C,LICLXB LL,MEIKXXB M
+	    where L.DIANCXXB_ID = D.ID and L.FAZ_ID = C.ID and L.DAOZ_ID = C.ID and L.LICLXB_ID = LL.ID
+	    and L.MEIKXXB_ID = M.ID
+	</select>
+	
+	<insert id="insertLic" parameterType="java.util.Map">
+	    insert into LICB (ID,DIANCXXB_ID,FAZ_ID,DAOZ_ID,LICLXB_ID,ZHI,BEIZ,MEIKXXB_ID)
+	    values (${id},${diancxxb_id},nvl(${faz_id},0),nvl(${daoz_id},0),nvl(${liclxb_id},0),nvl(${zhi},0),
+	    '${beiz}',nvl(${meikxxb_id},0))
+	</insert>
+	
+	<select id="getOne" resultType="java.util.Map">
+	    select ID "id",FAZ_ID "faz_id",DAOZ_ID "daoz_id",LICLXB_ID "liclxb_id",ZHI "zhi",
+	    MEIKXXB_ID "meikxxb_id",BEIZ "beiz" from LICB where ID = #{id}
+	</select>
+	
+	<update id="updateLic" parameterType="java.util.Map">
+	     update LICB 
+	    <trim prefix="SET" suffixOverrides=",">
+			<if test="faz_id != null">FAZ_ID=#{faz_id},</if>
+			<if test="daoz_id	 != null">DAOZ_ID=#{daoz_id},</if>
+			<if test="liclxb_id != null">LICLXB_ID=#{liclxb_id},</if>
+			<if test="zhi != null">ZHI=#{zhi},</if>
+			<if test="meikxxb_id != null">MEIKXXB_ID=#{meikxxb_id},</if>
+			<if test="beiz != null">BEIZ=#{beiz},</if>
+		</trim>
+		where ID=#{id}
+	</update>
+	
+	<delete id="delLic" parameterType="java.util.Map">
+	    delete from LICB where ID = #{id}
+	</delete>
+</mapper>

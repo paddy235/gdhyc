@@ -1,0 +1,417 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiren.fuelmis.dc.dao.kucgl.rukgl.RuksjdrDao">
+	<select id="getOpenKuaijrq" resultType="java.util.Map">
+	 select g.kuaijq_id,g.kuczz_id from gx_kuaijq_zuz g   where zhuangt='启用'
+	</select>
+	<insert id="insertMonthTotal">
+	insert into rl_kc_month_total (
+	id,period_id,ZUZ,  HUOZ, KUCZZ, KUCWZ, KUCWL
+	)
+	
+	(
+	select seq_month_total_id.nextval,'${KUAIJQ_ID}', ZUZ, HUOZ, KUCZZ, KUCWZ, KUCWL
+	  from (select distinct ZUZ, HUOZ, KUCZZ, KUCWZ, KUCWL
+	          from rl_kc_churkdb kc
+	         where shifdr = 0
+	           and yewlx = 1
+	           and zhuangt = 1
+	           and kuczz='${KUCZZ_ID}'
+	           )
+	 where (ZUZ, HUOZ, KUCZZ, KUCWZ, KUCWL) not in
+	       (select ZUZ, HUOZ, KUCZZ, KUCWZ, KUCWL
+	          from rl_kc_month_total t
+	         where t.period_id ='${KUAIJQ_ID}' and t.kuczz='${KUCZZ_ID}'  ))
+	</insert>
+	<!-- 删除业务表中作废的入库单Begin -->
+	<delete id="deleteMeik">
+		delete from rl_kc_ruk_meik where id in (
+			select distinct ruk_meik_id from rl_kc_ruk_meik_sub where id in(
+				select id from RL_KC_CHURKDB_DELETE where yewlx in( select id from  gy_dm_churkywlxdmb g where g.leixdm = 1 ) and yewlx!=3 and shifdr=0 ) )
+	</delete>
+	<delete id="deleteMeikSub">
+		delete from rl_kc_ruk_meik_sub where id in (
+			select id from RL_KC_CHURKDB_DELETE where yewlx in( select id from  gy_dm_churkywlxdmb g where g.leixdm = 1 ) and yewlx!=3 and shifdr=0 )
+	</delete>
+	<delete id="deleteKucmxhzb">
+		delete from rl_kc_churkmxhzb where id in (
+			select id from RL_KC_CHURKDB_DELETE where yewlx in( select id from  gy_dm_churkywlxdmb g where g.leixdm = 1 ) and yewlx!=3 and shifdr=0 )
+	</delete>
+	<update id="updateChurkdbDelete">
+		update RL_KC_CHURKDB_DELETE set shifdr='1' where yewlx  in( select id from  gy_dm_churkywlxdmb g where g.leixdm = 1 ) and yewlx!=3 and shifdr=0
+	</update>
+	<!-- 删除业务表中作废的入库单End -->
+	
+	<!-- 共用方法 -->
+	
+	<select id="getKucmxhzbID" resultType="java.lang.String">
+		select id from rl_kc_churkmxhzb where DOCUMENT_NUMBER=#{0}
+	</select>
+	
+	
+	
+	
+	<!--  ==============================================煤款入库Begin============================================================================== -->
+
+	<!-- 得到未入库的煤款订单 -->
+	<select id="getRukdbhs" resultType="java.lang.String">
+		select distinct rukdbh from
+		rl_kc_churkdb where shifdr=0 and yewlx = 1  and zhuangt = 1 
+	</select>	
+	
+	<select id="getRukdID" resultType="java.lang.String">
+		select id from rl_kc_ruk_meik
+		where inv_number=#{0}
+	</select>	
+		
+	<update id="updateRukd">
+		update rl_kc_ruk_meik set
+		(inv_number,
+		inv_transaction_type_id,
+		transaction_date,
+		last_updated_by_username,
+		last_update_date,
+		orgid,PERIOD_ID,PERIOD_DATE
+		)
+		=(
+		select
+		max(k.rukdbh),max(k.yewlx),max(k.yewrq),'系统自动导入',to_char(sysdate,'yyyy-mm-dd
+		hh24:mi:ss'),max(k.zuz),max(k.kuaijrq_id),max(k.kuaijrq)
+		from rl_kc_churkdb k where k.rukdbh=inv_number
+		)
+		where id=#{0}
+	</update>
+	<delete id="deleteRukdSub">
+		delete from rl_kc_ruk_meik_sub where RUK_MEIK_ID=#{0}
+	</delete>
+	
+	<insert id="insertRukdSub">
+		insert into rl_kc_ruk_meik_sub(
+			id, ruk_meik_id,zuz,huoz, kuczz, kucwz, kucwl, gongysb_id, meik_id,
+			ruksl, meik_hansje,meik_shuik, meik_buhsje,
+			yunf_hansje, yunf_shuik, yunf_buhsje,
+			zaf_hansje, zaf_shuik, zaf_buhsje,
+			zongje_hans,zongje_shuik,zongje_buhs,
+			qnetar, qnetar_jij, qnetar_zengk,
+			liuf_name, liuf_value,liuf_zengk,
+			piaoz, maoz, piz, jingz,jiesdbh,jiesrq,balance_flag,balance_date
+		)(
+		select
+			k.id,(select id from rl_kc_ruk_meik where INV_NUMBER=#{0}),k.zuz,k.huoz,k.kuczz,k.kucwz,k.kucwl,k.gongysb_id,k.meikxxb_id,
+			nvl(k.yanssl,0),nvl(k.hansje,0),round(nvl(k.hansje,0)-nvl(k.jine,0),2) , round(nvl(k.jine,0) ,2) ,
+			nvl(k.HANSYF,0),round(nvl(k.HANSYF,0)-nvl(k.BUHSYF,0),2) , round(nvl(k.BUHSYF,0),2),
+			nvl(k.hanszf,0),round(nvl(k.hanszf,0)-nvl(k.buhszf,0),2) , round(nvl(k.buhszf,0),2),
+			round(nvl(k.hansje,0)+nvl(k.hansyf,0)+nvl(k.hanszf,0),2) ,
+			round(nvl(k.hansje,0)+nvl(k.hansyf,0)+nvl(k.hanszf,0)-nvl(k.jine,0)-nvl(k.buhsyf,0)-nvl(k.buhszf,0) ,2),
+			round(nvl(k.jine,0)+nvl(k.buhsyf,0)+nvl(k.buhszf,0) ,2) ,
+			nvl(k.qnetar,0),nvl(k.qnetar_jij,0),nvl(k.qnetar_zengk,0),
+			nvl(k.liuf_name,0),nvl(k.liuf_value,0),nvl(k.liuf_zengk,0),
+			nvl(k.piaoz,0),nvl(k.MAOZ,0),nvl(k.PIZ,0),nvl(k.maoz,0)-nvl(k.PIZ,0),k.jiesdbh,k.jiesdrzrq,k.balance_flag,k.balance_date
+		from rl_kc_churkdb k
+		where k.rukdbh=#{0} )
+	</insert>
+	
+	<select id="getKucmxList" resultType="java.util.Map">
+		select s.id id,
+			s.zuz, s.huoz, s.kuczz, s.kucwz, s.kucwl, s.id,s.balance_date,s.balance_flag,m.PERIOD_DATE,PERIOD_ID,
+			id as  document_line_id ,m.inv_number document_number,m.inv_transaction_type_id,
+			m.transaction_date,'1' inv_operation,s.ruksl quantity,decode(s.ruksl,0,0,round(s.meik_buhsje/s.ruksl,2)) price,s.meik_buhsje amount,
+			s.balance_flag , s.balance_date ,
+			d.jisl quantity_flag,d.jije money_flag,g.mingc sup_name,s.gongysb_id sup_id,'汽车' way_mode,mk.mingc coal_mine,s.kucwl coal,s.piaoz ticket_weight,
+			s.jingz net_weight,s.yind profitalbe_tones,s.kuid lose_tones,s.yuns tra_loss,'系统导入' last_updated_by_username,
+			to_char(sysdate,'yyyy-mm-dd hh24:mi:ss') last_update_date
+		from rl_kc_ruk_meik m
+		inner join rl_kc_ruk_meik_sub s on m.id=s.ruk_meik_id
+		left join
+		gy_dm_churkywlxdmb d on d.id=m.inv_transaction_type_id
+		left join
+		gongysb g on g.id=s.gongysb_id
+		left join meikxxb mk on mk.id=s.meik_id
+		where m.inv_number=#{0}
+	</select>
+	
+	<update id="updateKucmxhzb">
+		update rl_kc_churkmxhzb set 
+		zuz='${ZUZ}',HUOZ='${HUOZ}',KUCZZ='${KUCZZ}',KUCWZ='${KUCWZ}',KUCWL='${KUCWL}',
+		DOCUMENT_LINE_ID='${DOCUMENT_LINE_ID}',DOCUMENT_NUMBER='${DOCUMENT_NUMBER}',
+		INV_TRANSACTION_TYPE_ID='${INV_TRANSACTION_TYPE_ID}',
+		TRANSACTION_DATE='${TRANSACTION_DATE}',
+		INV_OPERATION='${INV_OPERATION}',
+		QUANTITY='${QUANTITY}',PRICE='${PRICE}',AMOUNT='${AMOUNT}',
+		BALANCE_FLAG='${BALANCE_FLAG}',
+		BALANCE_DATE='${BALANCE_DATE}',
+		QUANTITY_FLAG='${QUANTITY_FLAG}',MONEY_FLAG='${MONEY_FLAG}',
+		SUP_NAME='${SUP_NAME}',SUP_ID='${SUP_ID}',WAY_MODE='${WAY_MODE}',
+		COAL_MINE='${COAL_MINE}',
+		COAL='${COAL}',TICKET_WEIGHT='${TICKET_WEIGHT}',NET_WEIGHT='${NET_WEIGHT}',
+		PROFITALBE_TONES='${PROFITALBE_TONES}',
+		LOSE_TONES='${LOSE_TONES}',
+		TRA_LOSS='${TRA_LOSS}',
+		LAST_UPDATED_BY_USERNAME='${LAST_UPDATED_BY_USERNAME}',
+		LAST_UPDATE_DATE='${LAST_UPDATE_DATE}' ,
+		PERIOD_DATE='${PERIOD_DATE}',PERIOD_ID='${PERIOD_ID}'
+		WHERE ID='${ID}'
+		
+	</update>
+	
+	<insert id="insertRukd">
+		insert into rl_kc_ruk_meik
+		(id,
+		inv_number,
+		inv_transaction_type_id,
+		inv_period,
+		transaction_date,
+		created_by_username,
+		creation_date,
+		orgid,
+		PERIOD_ID,PERIOD_DATE
+		)
+		(select #{0},
+		#{1},
+		max(yewlx),
+		max(kuaijrq),
+		max(yewrq),
+		'系统创建',
+		to_char(sysdate, 'yyyy-mm-dd hh24:mi:ss'),
+		max(zuz),
+		max(kuaijrq_id),max(kuaijrq)
+		from rl_kc_churkdb k
+		where rukdbh = #{1}
+		)
+	</insert>
+		
+	
+	<insert id="insertKucmxhzb">
+		insert into rl_kc_churkmxhzb(
+		id, zuz, huoz, kuczz,kucwz, kucwl,PERIOD_DATE,PERIOD_ID,
+		document_line_id, document_number,
+		inv_transaction_type_id,
+		transaction_date,
+		inv_operation,
+		quantity,price, amount,
+		balance_flag, balance_date,
+		quantity_flag, money_flag,
+		sup_name, sup_id, way_mode,
+		coal_mine,
+		coal,
+		ticket_weight, net_weight,
+		profitalbe_tones,
+		lose_tones,
+		tra_loss,
+		created_by_username,
+		creation_date 
+		)
+		(
+		select
+		s.id,s.zuz, s.huoz, s.kuczz, s.kucwz, s.kucwl,m.PERIOD_DATE,m.PERIOD_ID,
+		s.id,m.inv_number,m.inv_transaction_type_id,
+		m.transaction_date,'1',s.ruksl,decode(s.ruksl,0,0,round(s.meik_buhsje/s.ruksl,2)),s.meik_buhsje,		
+		balance_flag,balance_date,		
+		d.jisl,d.jije,g.mingc,s.gongysb_id,'汽车',mk.mingc,s.kucwl,s.piaoz,s.jingz,s.yind,s.kuid,s.yuns,'系统导入',
+		to_char(sysdate,'yyyy-mm-dd hh24:mi:ss') 
+		from rl_kc_ruk_meik m
+		inner
+		join rl_kc_ruk_meik_sub s on m.id=s.ruk_meik_id
+		left join
+		gy_dm_churkywlxdmb d on d.id=m.inv_transaction_type_id
+		left join
+		gongysb g on g.id=s.gongysb_id
+		left join meikxxb mk on mk.id=s.meik_id
+		where m.inv_number=#{0}
+		)
+	</insert>
+	
+	
+	
+	
+	<!--  ==============================================煤款入库End============================================================================== -->	
+		
+	
+	
+	
+	
+	
+	
+	<!-- ==============================================运杂费入库Begin========================================================== -->
+	<delete id="deleteYunzfRukd">
+		delete from RL_KC_RUK_YUNZF where id in (
+			select distinct RUK_YUNZF_ID from RL_KC_RUK_YUNZF_SUB where id in(
+				select distinct id from RL_KC_CHURKDB_DELETE where shifdr=0 and yewlx in (select id from  gy_dm_churkywlxdmb g where g.id = 3  )  and zhuangt = 1 
+			)
+		)
+	
+	</delete>
+	<delete id="deleteYunzfRukdSubByNothing">
+		delete from RL_KC_RUK_YUNZF_SUB where id in(
+			select distinct id from
+				RL_KC_CHURKDB_DELETE where shifdr=0 and yewlx in (select id from  gy_dm_churkywlxdmb g where g.id = 3  )  and zhuangt = 1 
+		)
+	</delete>
+	<update id="updateYunzfDeleteb">
+	update RL_KC_CHURKDB_DELETE set shifdr=1 where yewlx in  (select id from  gy_dm_churkywlxdmb g where g.id = 3  ) and shifdr=0
+	</update>
+	<update id="updateChurkd">
+		update rl_kc_churkdb set shifdr=1 where rukdbh=#{0}
+	</update>
+		
+	<select id="getYunzfRukdbhs" resultType="java.lang.String" >
+		select distinct rukdbh from rl_kc_churkdb 
+		where shifdr=0 and yewlx in (select id from  gy_dm_churkywlxdmb g where g.id = 3  )  and zhuangt = 1  and yewlx != 1
+	</select>
+	<select id="getYunzfRukdID" resultType="java.lang.String" >
+		select id from rl_kc_ruk_yunzf where inv_number=#{0}
+	</select>	
+	<select id="updateYunzfRukd">
+		update rl_kc_ruk_yunzf set
+		(inv_number,
+		inv_transaction_type_id,
+		transaction_date,
+		last_updated_by_username,
+		last_update_date,
+		orgid,inv_period,PERIOD_DATE,PERIOD_ID
+		)
+		=(
+		select
+		max(k.rukdbh),max(k.yewlx),max(k.yewrq),'系统自动导入',to_char(sysdate,'yyyy-mm-dd hh24:mi:ss'),max(k.zuz),max(k.kuaijrq),max(k.kuaijrq),max(k.kuaijrq_id)
+		from rl_kc_churkdb k where k.rukdbh=inv_number
+		)
+		where id=#{0}
+	</select>
+	<insert id="insertYunzfRukd">
+		insert into rl_kc_ruk_yunzf 
+	    	(id,inv_number,inv_transaction_type_id,transaction_date,
+	    		last_updated_by_username,last_update_date,orgid,inv_period,PERIOD_DATE,PERIOD_ID) 
+	   		(select #{0},max(k.rukdbh),max(k.yewlx),max(k.yewrq),'系统自动导入',to_char(sysdate,'yyyy-mm-dd hh24:mi:ss'),
+	   			max(k.zuz),max(k.kuaijrq),max(k.KUAIJRQ), max(KUAIJRQ_ID) 
+		    from rl_kc_churkdb k 
+		    where k.rukdbh=#{1} )
+	  </insert>
+	<select id="deleteYunzfRukdSub">
+		delete from rl_kc_ruk_yunzf_sub where id=#{0}
+	</select>
+	
+	<insert id="insertYunzfRukdSub">
+		insert into RL_KC_RUK_YUNZF_SUB(
+		    id, RUK_YUNZF_ID,FUEL_INV_TRANSACTION_ID,
+		    zuz, huoz, kuczz, kucwz, kucwl, FREIGHT_INCIDENTAL_NAME,
+		    YUNFJE_HANS,YUNSJE_SHUIK,YUNSJE_BHS,
+		    ZAFJE_HANS,ZAFJE_SHUIK,ZAFJE_BUHS,    
+		    ZONGJE_HANS, ZONGJE_SHUIK, ZONGJE_BUHS,
+		    balance_date,balance_flag
+		 )( 
+		    select k.id,
+		          (select id from rl_kc_ruk_yunzf where INV_NUMBER = #{0}),
+		          (select id from rl_kc_ruk_yunzf where INV_NUMBER = #{0}),
+		          k.zuz,k.huoz, k.kuczz, k.kucwz, k.kucwl, '运杂费入库',
+		          nvl(k.HANSYF, 0), nvl(k.HANSYF, 0) - nvl(k.BUHSYF, 0), nvl(k.BUHSYF, 0),
+		          nvl(k.hanszf,0), 0, nvl(k.jine, 0),
+		          nvl(k.hansyf, 0) + nvl(k.hanszf, 0),
+		          nvl(k.hansyf, 0) + nvl(k.hanszf, 0) - nvl(k.buhsyf, 0) - nvl(k.buhszf, 0),
+		          nvl(k.buhsyf, 0) + nvl(k.buhszf, 0) +nvl(jine,0),
+		          balance_date, balance_flag
+		     from rl_kc_churkdb k
+		    where k.rukdbh=#{0}
+		    )
+	</insert>
+	
+	<select id="getYunzfKucmxList" resultType="java.util.Map">
+	    select s.id id, s.zuz, s.huoz, s.kuczz, s.kucwz, s.kucwl, s.id document_line_id , 
+		    m.inv_number document_number,m.inv_transaction_type_id,
+		    m.transaction_date,'1' inv_operation,     
+		    s.balance_flag , s.balance_date ,    
+		    d.jisl quantity_flag,d.jije money_flag,g.mingc sup_name,s.gongysid sup_id,'汽车' way_mode,
+		    s.FREIGHT_INCIDENTAL_NAME FREIGHT_INCIDENTAL_NAME,
+			s.JIESSL FREIGHT_INCIDENTAL_QUANTITY,
+			YUNFJE_HANS FREIGHT_INCIDENTAL_AMOUNT,
+			YUNSJE_SHUIK FREIGHT_INCIDENTAL_TAX,
+			YUNSJE_BHS FREIGHT_INCIDENTAL_NOT_TAX,
+			ZAFJE_HANS FEE_INCIDENTAL_AMOUNT,
+			ZAFJE_BUHS FEE_INCIDENTAL_TAX,
+			ZAFJE_SHUIK FEE_INCIDENTAL_NOT_TAX,
+			m.PERIOD_ID,m.PERIOD_DATE,zongje_BUHS AMOUNT
+			s.balance_date,s.balance_flag
+	    from rl_kc_ruk_yunzf m
+	    inner join rl_kc_ruk_yunzf_sub s on m.id=s.ruk_yunzf_id
+	    left join
+	    gy_dm_churkywlxdmb d on d.id=m.inv_transaction_type_id
+	    left join gongysb g on g.id=s.gongysid
+	    where m.inv_number=#{0}
+	</select>
+	<update id="updateYunzfKucmxhzb">
+		update rl_kc_churkmxhzb set
+		    zuz='${ZUZ}',HUOZ='${HUOZ}',KUCZZ='${KUCZZ}',KUCWZ='${KUCWZ}',KUCWL='${KUCWL}',DOCUMENT_LINE_ID='${DOCUMENT_LINE_ID}',
+		    DOCUMENT_NUMBER='${DOCUMENT_NUMBER}',INV_TRANSACTION_TYPE_ID='${INV_TRANSACTION_TYPE_ID}',
+		    TRANSACTION_DATE='${TRANSACTION_DATE}',INV_OPERATION='${INV_OPERATION}',
+		    QUANTITY_FLAG='${QUANTITY_FLAG}',MONEY_FLAG='${MONEY_FLAG}',
+		    SUP_NAME='${SUP_NAME}',SUP_ID='${SUP_ID}',WAY_MODE='${WAY_MODE}',
+		    FREIGHT_INCIDENTAL_NAME='${FREIGHT_INCIDENTAL_NAME}',
+		    FREIGHT_INCIDENTAL_QUANTITY='${FREIGHT_INCIDENTAL_QUANTITY}',
+		    FREIGHT_INCIDENTAL_TAX='${FREIGHT_INCIDENTAL_TAX}',
+		    FREIGHT_INCIDENTAL_NOT_TAX='${FREIGHT_INCIDENTAL_NOT_TAX}',
+		    FEE_INCIDENTAL_AMOUNT='${FEE_INCIDENTAL_AMOUNT}',
+		    FEE_INCIDENTAL_TAX='${FEE_INCIDENTAL_TAX}',
+		    FEE_INCIDENTAL_NOT_TAX='${FEE_INCIDENTAL_NOT_TAX}',
+			PERIOD_ID='${PERIOD_ID}',PERIOD_DATE='${PERIOD_DATE}',
+		    LAST_UPDATED_BY_USERNAME='系统导入',
+		    LAST_UPDATE_DATE=to_char(sysdate,'yyyy-mm-dd hh24:mi:ss') ,
+		    balance_flag='${BALANCE_FLAG}',
+		    balance_date='${BALANCE_DATE}',
+		    AMOUNT='${AMOUNT}'
+		WHERE ID='${ID}'
+	</update>
+	<insert id="insertYunzfKucmxhzb">
+		insert into rl_kc_churkmxhzb(
+			id, zuz, huoz,kuczz,kucwz,kucwl,document_line_id ,
+			document_number,inv_transaction_type_id,
+			transaction_date,inv_operation,balance_flag,/*balance_date,*/
+			quantity_flag,money_flag,sup_name,sup_id,way_mode,
+			FREIGHT_INCIDENTAL_NAME,
+			FREIGHT_INCIDENTAL_QUANTITY,
+			FREIGHT_INCIDENTAL_AMOUNT,
+			FREIGHT_INCIDENTAL_TAX,
+			FREIGHT_INCIDENTAL_NOT_TAX,
+			FEE_INCIDENTAL_AMOUNT,
+			FEE_INCIDENTAL_TAX,
+			FEE_INCIDENTAL_NOT_TAX,
+			CREATED_BY_USERNAME,
+			CREATION_DATE,
+			PERIOD_DATE,PERIOD_ID,
+			AMOUNT, balance_date,balance_flag 
+		)(
+			select s.id id, s.zuz, s.huoz, s.kuczz, s.kucwz, s.kucwl, s.id document_line_id ,
+			m.inv_number document_number,m.inv_transaction_type_id,
+			m.transaction_date,'1'
+			inv_operation,decode(s.jiesdbh,null,'0','1')
+			balance_flag,
+			d.jisl quantity_flag,d.jije money_flag,g.mingc sup_name,s.gongysid
+			sup_id,'汽车' way_mode,
+			s.FREIGHT_INCIDENTAL_NAME FREIGHT_INCIDENTAL_NAME,
+			s.JIESSL FREIGHT_INCIDENTAL_QUANTITY,
+			YUNFJE_HANS
+			FREIGHT_INCIDENTAL_AMOUNT,
+			YUNSJE_SHUIK FREIGHT_INCIDENTAL_TAX,
+			YUNSJE_BHS FREIGHT_INCIDENTAL_NOT_TAX,
+			ZAFJE_HANS FEE_INCIDENTAL_AMOUNT,
+			ZAFJE_BUHS FEE_INCIDENTAL_TAX,
+			ZAFJE_SHUIK FEE_INCIDENTAL_NOT_TAX,
+			'系统导入' CREATED_BY_USERNAME,
+			to_char(sysdate,'yyyy-mm-dd hh24:mi:ss')
+			CREATION_DATE,
+			m.PERIOD_DATE,m.PERIOD_ID,zongje_BUHS,
+			balance_date,balance_flag
+			from rl_kc_ruk_yunzf m
+			inner
+			join
+			rl_kc_ruk_yunzf_sub s on m.id=s.ruk_yunzf_id
+			left join
+			gy_dm_churkywlxdmb d on d.id=m.inv_transaction_type_id
+			left join
+			gongysb
+			g on g.id=s.gongysid
+			where m.inv_number=#{0}
+		) 
+	</insert>
+	
+	
+	
+</mapper>

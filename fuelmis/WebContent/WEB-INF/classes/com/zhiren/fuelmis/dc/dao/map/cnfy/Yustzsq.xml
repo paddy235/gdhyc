@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiren.fuelmis.dc.dao.cnfy.YustzsqDao" >
+	<select id="getYustzsqData"  resultType="java.util.HashMap">
+					SELECT  ROWNUM,
+							YT.ID AS ID,
+							YT.ZHUANGT AS ZHUANGT,
+							YT.SHUOM AS SHUOM,
+							YT.YUSED AS YUSED,
+							CF.MINGC AS FEIYMC,
+							DC.MINGC AS DANW  
+							FROM RL_CNFY_YUSTZ YT,DIANCXXB DC,RL_CNFY_CHANGNFYXM CF
+							 WHERE YT.DIANCXXB_ID = DC.ID 
+							AND YT.CHANGNFYXM_ID = CF.ID
+							<if test="diancid!='-1'">
+							AND YT.DIANCXXB_ID = #{diancid}
+							</if>
+							<if test="zafid!='-1'">
+							AND YT.CHANGNFYXM_ID = #{zafid}
+							</if>
+							 <!-- ORDER BY YT.RIQ DESC  -->
+							 ORDER BY ROWNUM
+	</select>
+	<insert id="addYustzData"  useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO RL_CNFY_YUSTZ(ID,DIANCXXB_ID,CHANGNFYXM_ID,YUSED,SHUOM,RIQ,ZHUANGT ) 
+						 values(XL_CHANGNZF_ID.nextval,
+								${DIANCID},
+								${ZAFID},
+								${YUSED},
+								'${SHUOM}',
+								sysdate,
+								0) 
+	</insert>
+	<delete id="delYustzById" parameterType="java.lang.String" flushCache="true">  
+         DELETE FROM RL_CNFY_YUSTZ WHERE ID =#{id}
+    </delete>
+    <select id="getYustzById"  resultType="java.util.HashMap">
+			SELECT  ID,
+					DIANCXXB_ID,
+					SHUOM,
+					YUSED,
+					CHANGNFYXM_ID
+					FROM RL_CNFY_YUSTZ WHERE ID = #{id}
+	</select>
+	<select id="getsubmitdatas"  resultType="java.util.HashMap">
+		SELECT DC.MINGC AS DANWMC,
+		       CF.MINGC AS FEIYMC,
+		       YT.YUSED AS YUSED,
+		       YT.SHUOM AS SHUOM
+		  FROM RL_CNFY_YUSTZ YT, DIANCXXB DC, RL_CNFY_CHANGNFYXM CF
+		 WHERE DC.ID = YT.DIANCXXB_ID
+		   AND CF.ID = YT.CHANGNFYXM_ID
+		   AND YT.ID =#{id}
+	</select>
+    <update id="updateYustzById" flushCache="true">  
+        update RL_CNFY_YUSTZ set  SHUOM = #{SHUOM},
+						   YUSED = #{YUSED},
+						   CHANGNFYXM_ID = #{ZAFID},
+						   RIQ = sysdate
+						   WHERE ID = #{ID}
+    </update>
+    <update id="updateState" flushCache="true">  
+        UPDATE RL_CNFY_YUSTZ SET ZHUANGT = 1 WHERE ID  = #{id}
+    </update>
+    <select id="getstate"  resultType="java.lang.String">
+    	select zhuangt from RL_CNFY_YUSTZ where id = #{id}
+	</select>
+</mapper>

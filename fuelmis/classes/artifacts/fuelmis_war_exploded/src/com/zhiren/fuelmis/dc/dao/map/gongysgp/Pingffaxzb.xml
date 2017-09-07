@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.zhiren.fuelmis.dc.dao.gongyspg.pingffaxzb.PingffaxzbDao">
+	<resultMap id="BaseResultMap" type="pingffaxzb">
+		<id column="ID" property="id" jdbcType="NUMERIC" />
+		<result column="DIANCXXB_ID" property="diancxxb_id" jdbcType="NUMERIC" />
+		<result column="LEIX" property="leix" jdbcType="NUMERIC" />
+		<result column="ZHIBDM" property="zhibdm" jdbcType="NUMERIC" />
+		<result column="ZHIBFZ" property="zhibfz" jdbcType="NUMERIC" />
+		<result column="ZHIBGS" property="zhibgs" jdbcType="VARCHAR" />
+		<result column="WENZSM" property="wenzsm" jdbcType="VARCHAR" />
+		<result column="PINGFFAB_ID" property="pingffab_id" jdbcType="NUMERIC" />
+		
+	</resultMap>
+
+	<insert id="addPingffaxzb" parameterType="pingffaxzb">
+		insert into rl_gys_pingffaxzb
+		  (id, pingffab_id, leix, zhibdm, zhibfz, zhibgs, wenzsm, diancxxb_id)
+		values
+		  (SEQ_Pingffaxzb.NEXTVAL, #{pingffab_id,jdbcType=NUMERIC}, #{leix,jdbcType=NUMERIC}, #{zhibdm,jdbcType=NUMERIC}, 
+		  #{zhibfz,jdbcType=NUMERIC},#{zhibgs,jdbcType=VARCHAR},#{wenzsm,jdbcType=VARCHAR},#{diancxxb_id,jdbcType=NUMERIC})
+  	</insert>
+	
+	<sql id="Base_Column_List">
+		ID, PINGFFAB_ID, LEIX, ZHIBDM, ZHIBFZ, ZHIBGS, WENZSM, DIANCXXB_ID
+	</sql>
+	
+	<select id="getPingffaxzbById" resultMap="BaseResultMap">
+		select <include refid="Base_Column_List"></include> from rl_gys_pingffaxzb
+		<if test="id != null">
+			where id = #{id}
+		</if>
+	</select>
+	
+	
+	
+	<select id="getPingffaxzbList" resultType="java.util.LinkedHashMap">
+	    select a.ID,
+	           b.mingc as PINGFFAB_ID,
+	           decode(a.LEIX, 1, '日指标', 2, '月指标', 3, '临时指标') as leix,
+	           a.ZHIBFZ,
+	           a.ZHIBGS,
+	           a.WENZSM,
+	           a.DIANCXXB_ID,
+	           c.zhibdm
+	      from rl_gys_pingffaxzb a
+	      left join rl_gys_pingffab b
+	        on a.pingffab_id = b.id
+	      left join rl_gys_zhibdyb c  
+	        on a.zhibdm = c.id
+	</select>
+	
+	
+	<delete id="delPingffaxzb" parameterType="java.util.Map">
+	    delete from rl_gys_pingffaxzb where ID = #{id}
+	</delete>
+	
+	
+	<update id="updatePingffaxzb" parameterType="pingffaxzb">
+	    update rl_gys_pingffaxzb 
+	    <trim prefix="SET" suffixOverrides=",">
+			<if test="pingffab_id != null">PINGFFAB_ID=#{pingffab_id},</if>
+			<if test="leix != null">LEIX=#{leix},</if>
+			<if test="zhibdm != null">ZHIBDM=#{zhibdm},</if>
+			<if test="zhibfz != null">ZHIBFZ=#{zhibfz},</if>
+			<if test="zhibgs != null">ZHIBGS=#{zhibgs},</if>
+			<if test="wenzsm != null">WENZSM=#{wenzsm},</if>
+			<if test="diancxxb_id != null">DIANCXXB_ID=#{diancxxb_id},</if>
+		</trim>
+		where ID=#{id}
+	</update>
+	
+	
+</mapper>

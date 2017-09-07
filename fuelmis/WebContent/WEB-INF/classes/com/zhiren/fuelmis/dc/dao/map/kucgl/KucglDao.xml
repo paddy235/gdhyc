@@ -1,0 +1,570 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiren.fuelmis.dc.dao.rulgl.KucglDao">
+    <select id="getKuczzList" resultType="java.util.Map">
+		select ID,KUCZZMC
+		from RL_KC_KUCZZB order by KUCZZMC
+	</select>
+    <select id="getKuaijqList" resultType="java.util.Map">
+		select t.* from(
+		select ID, KUAIJRQ
+		from RL_KC_KUAIJRQB order by KUAIJRQ desc
+		) t where rownum <![CDATA[<=]]> 12
+	</select>
+    <select id="getFuKuczzList" resultType="java.util.Map">
+		select z.ID id,z.KUCZZMC kuczzmc
+    	from RL_KC_KUCWZB  w
+    	left join rl_kc_kuczzb 
+    	on w.kuczz_id=z.id
+    	where FUID=#{0}
+	</select><!-- 库存位置 -->
+    <select id="getWeiz" resultType="java.util.Map">
+		select
+		ID,CAOZSJ,TINGYSJ,FUID,KUCWZBM,KUCWZMC,KUCZZ_ID,ZHUANGT,KUCWZMS,KUCWZDM,DIANC_ID
+		from RL_KC_KUCWZB
+
+	</select>
+    <insert id="insertWeiz">
+		INSERT
+		INTO RL_KC_KUCWZB(
+		id,
+		KUCWZBM,
+		KUCWZMC,
+		FUID,
+		KUCZZ_ID,
+		ZHUANGT,
+		KUCWZMS,
+		KUCWZDM,
+		DIANC_ID
+		)
+		VALUES
+		( '${id}',
+		'${KUCWZBM}',
+		'${KUCWZMC}',
+		'${FUID}',
+		'${KUCZZ_ID}',
+		'${ZHUANGT}',
+		'${KUCWZMS}',
+		'${KUCWZDM}',
+		'${DIANC_ID}'
+		)
+	</insert>
+    <update id="updateWeiz" flushCache="true">
+		update RL_KC_KUCWZB set
+		KUCWZBM='${KUCWZBM}',
+		KUCWZMC='${KUCWZMC}',
+		FUID='${FUID}',
+		KUCZZ_ID='${KUCZZ_ID}',
+		ZHUANGT='${ZHUANGT}',
+		KUCWZMS='${KUCWZMS}',
+		KUCWZDM='${KUCWZDM}',
+		DIANC_ID='${DIANC_ID}'
+		WHERE id = ${ID}
+	</update>
+    <!-- 库存位置关联 -->
+    <select id="getGuanl" resultType="java.util.Map">
+      select *
+      from(
+      select gx.ID ,
+      gx.KUAIJQ_ID, gx.KUCZZ_ID,
+      gx.ZHUANGT
+      from GX_KUAIJQ_ZUZ gx
+      left join rl_kc_kuaijrqb k on  gx.kuaijq_id=k.id
+      order by k.kuaijrq desc) t
+      where rownum <![CDATA[<=]]> 6
+	</select>
+    <insert id="insertGuanl">
+		INSERT
+		INTO GX_KUAIJQ_ZUZ(
+		id,
+		KUAIJQ_ID,
+		KUCZZ_ID,
+		ZHUANGT
+		)
+		VALUES
+		(
+		'${ID}',
+		'${KUAIJQ_ID}',
+		'${KUCZZ_ID}',
+		'${ZHUANGT}'
+		)
+	</insert>
+
+
+    <update id="updateGuanl" flushCache="true">
+		update GX_KUAIJQ_ZUZ set  
+			KUAIJQ_ID='${KUAIJQ_ID}',
+			KUCZZ_ID='${KUCZZ_ID}',
+			ZHUANGT='${ZHUANGT}'
+		WHERE id = ${ID}
+	</update>
+    <!-- 库存组织 -->
+    <select id="getKuczz" resultType="java.util.Map">
+		select
+		ID,SUOSDW,KUCZZDM,KUCZZMC,ZHUANGT,SUOSDW DIANC_ID
+		from RL_KC_KUCZZB
+	</select>
+
+
+    <update id="update" flushCache="true">
+		update RL_KC_KUCZZB set  
+						KUCZZDM='${KUCZZDM}',
+						KUCZZMC='${KUCZZMC}',
+						ZHUANGT='${ZHUANGT}',
+						SUOSDW='${DIANC_ID}'
+						
+		WHERE id = ${ID}
+	</update>
+
+    <insert id="insert">
+		INSERT
+		INTO RL_KC_KUCZZB( 
+			id,
+			KUCZZDM,
+			KUCZZMC,
+			ZHUANGT,
+			SUOSDW
+				  ) 
+		VALUES
+		(	'${id}',
+			'${KUCZZDM}',
+			'${KUCZZMC}',
+			'${ZHUANGT}',
+			'${DIANC_ID}'
+			)
+	</insert>
+
+    <!-- 库存物种 -->
+    <select id="getKucwz" resultType="java.util.Map">
+		select ID,WUZBM,WUZMC,ZHUANGT,MIAOS,DIANC_ID
+		from RL_KC_KUCWLB
+	</select>
+
+    <update id="updateKucwz" flushCache="true">
+		update RL_KC_KUCWLB set
+		WUZBM='${WUZBM}',
+		WUZMC='${WUZMC}',
+		MIAOS='${MIAOS}',
+		DIANC_ID='${DIANC_ID}',
+		ZHUANGT='${ZHUANGT}'
+		WHERE id = ${ID}
+	</update>
+
+    <insert id="insertKucwz">
+		INSERT
+		INTO RL_KC_KUCWLB(
+		id,
+		WUZBM,
+		WUZMC,
+		ZHUANGT,
+		MIAOS,
+		DIANC_ID
+		)
+		VALUES(
+		'${id}',
+		'${WUZBM}',
+		'${WUZMC}',
+		'${ZHUANGT}',
+		'${MIAOS}',
+		'${DIANC_ID}'
+		)
+	</insert>
+    <!-- 	会计期定义		 -->
+
+    <select id="getKuaijqdy" resultType="java.util.Map">
+		select rownum ,t.* from(
+		select  ID, KUAIJRQ, KAISRQ,JIESRQ, ZHUANGT, DIANC_ID,SHUNXH
+		from RL_KC_KUAIJRQB
+		order by kuaijrq desc
+		) t where rownum <![CDATA[<]]> 5
+	</select>
+    <update id="updateKuaijqdy" flushCache="true">
+		update RL_KC_KUAIJRQB set
+		KUAIJRQ='${KUAIJRQ}',
+		KAISRQ='${KAISRQ}',
+		JIESRQ='${JIESRQ}',
+		DIANC_ID='${DIANC_ID}',
+		SHUNXH='${SHUNXH}',
+		ZHUANGT='${ZHUANGT}'
+		WHERE id = ${ID}
+	</update>
+
+    <insert id="insertKuaijqdy">
+		INSERT
+		INTO RL_KC_KUAIJRQB(
+		id,
+		KUAIJRQ,
+		KAISRQ,
+		JIESRQ,
+		DIANC_ID,
+		SHUNXH,
+		ZHUANGT
+		)
+		VALUES
+		(	'${ID}',
+		'${KUAIJRQ}',
+		'${KAISRQ}',
+		'${JIESRQ}',
+		'${DIANC_ID}',
+		'${SHUNXH}',
+		'${ZHUANGT}'
+		)
+	</insert>
+    <select id="getKucftList" resultType="java.util.Map">
+		select * from GX_KC_KUCBLFTSZB order by xuh
+	</select>
+    <select id="getKucftListFromKucwl" resultType="java.util.Map">
+		select wuzmc kucwl from RL_KC_KUCWLB order by wuzmc
+	</select>
+    <update id="updateKucftList">
+		UPDATE GX_KC_KUCBLFTSZB set xuh='${XUH}',BAIFB='${BAIFB}' where ID='${ID}'
+	</update>
+    <insert id="insertKucftList">
+		INSERT into GX_KC_KUCBLFTSZB (id,xuh,kucwl,baifb)values('${ID}','${XUH}','${KUCWL}','${BAIFB}')
+	</insert>
+    <select id="getChurkd" resultType="java.util.Map">
+		select
+		 	id,
+			rukdbh,
+			zuz,
+			kuczz,
+			kucwz,
+			kucwl,
+			huoz,
+			round(jine,2) jine,
+			tiaozje,
+			yewlx,
+			churklx,
+			yewrq,
+			kuaijrq,
+			jizrq,
+			yundsl,
+			ruksl,
+			jiessl,
+			jiz_id,
+			banz_id,
+			hangh,
+			zhuangt,
+			jiesdrzrq,
+			gongysb_id,
+			yuejsb_id from rl_kc_churkdb WHERE substr(YEWRQ,0,10)='${riq}' and yewlx='${YEWLX}'
+	</select>
+    <update id="updateChurkd">
+		UPDATE RL_KC_CHURKDB set
+			RUKDBH='${RUKDBH}',
+			ZUZ='${ZUZ}',
+			KUCZZ='${KUCZZ}',
+			KUCWZ='${KUCWZ}',
+			KUCWL='${KUCWL}',
+			HUOZ='${HUOZ}',
+			JINE='${JINE}',
+			TIAOZJE='${TIAOZJE}',
+			YEWLX='${YEWLX}',
+			CHURKLX='${CHURKLX}',
+			YEWRQ='${YEWRQ}',
+			KUAIJRQ='${KUAIJRQ}',
+			JIZRQ='${JIZRQ}',
+			YUNDSL='${YUNDSL}',
+			YANSSL='${YANSSL}',
+			RUKSL='${RUKSL}',
+			JIESSL='${JIESSL}',
+			JIZ_ID='${JIZ_ID}',
+			BANZ_ID='${BANZ_ID}',
+			HANGH='${HANGH}',
+			ZHUANGT='${ZHUANGT}',
+			JIESDRZRQ='${JIESDRZRQ}',
+			GONGYSB_ID='${GONGYSB_ID}',
+			YUEJSB_ID='${YUEJSB_ID}',
+			caozr='${CAOZR}',
+			caozsj=to_char(sysdate,'yyyy-MM-dd hh24:mi:ss'),
+			caozrid='${CAOZRID}',
+			shifdr=0
+			where id='${ID}'
+	</update>
+    <insert id="insertChurkd">
+		INSERT into
+			RL_KC_CHURKDB (rukdbh,zuz,kuczz,kucwz,kucwl,huoz,jine,tiaozje,yewlx,churklx,yewrq,kuaijrq,
+			jizrq,id,yundsl,yanssl,ruksl,jiessl,jiz_id,banz_id,hangh,zhuangt,jiesdrzrq,gongysb_id,
+			yuejsb_id ,shifdr,caozr,caozsj,caozrid) values(
+			'${RUKDBH}',
+			'${ZUZ}',
+			'${KUCZZ}',
+			'${KUCWZ}',
+			'${KUCWL}',
+			'${HUOZ}',
+			'${JINE}',
+			'${TIAOZJE}',
+			'${YEWLX}',
+			'${CHURKLX}',
+			'${YEWRQ}',
+			'${KUAIJRQ}',
+			'${JIZRQ}',
+			'${ID}',
+			'${YUNDSL}',
+			'${YANSSL}',
+			'${RUKSL}',
+			'${JIESSL}',
+			'${JIZ_ID}',
+			'${BANZ_ID}',
+			'${HANGH}',
+			'${ZHUANGT}',
+			'${JIESDRZRQ}',
+			'${GONGYSB_ID}',
+			'${YUEJSB_ID}',0,'${CAOZR}',
+			to_char(sysdate,'yyyy-MM-dd hh24:mi:ss'),
+			'${CAOZRID}'
+			)
+	</insert>
+	<delete id="delChurkd">
+		delete from RL_KC_CHURKDB where id =#{0}
+	</delete>
+    <delete id="deleteKucyeb">
+		delete from RL_KC_KUYEB where KUAIJRQ='${kuaijrq}'
+	</delete>
+    <insert id="insertKucyeb">
+	insert into rl_kc_kuyeb
+    (id, zuz, kuczz, kucwz, kucwl, huoz,
+    kuaijrq, jizrq,
+    jine_qic, shul_qic, qnetar_qic,
+    jine_churk, shul_churk, qnetar_churk,
+    jine_zang, shul_zang, qnetar_zang,
+    jiesje,jiessl,jiesrz)
+    select seq_kuyeb_id.nextval id, a.zuz,a.kuczz,a.kucwz,a.kucwl,a.huoz,
+    a.kuaijrq,a.jizrq,
+    nvl(c.jine_qic,0) jine_qic,nvl(c.shul_qic,0) shul_qic,nvl(c.qnetar_qic,0) qnetar_qic,
+    a.jine_churk,nvl(a.shul_churk,0) shul_churk,nvl(a.qnetar_churk,0) qnetar_churk,
+    nvl(b.jine_zang,0) jine_zang,nvl(b.shul_zang,0) shul_zang,nvl(b.qnetar_zang,0) qnetar_zang,
+    nvl(a.jiesje,0) jiesje,nvl(a.jiessl,0) jiessl,nvl(a.jiesrz,0) jiesrz
+    from
+    (
+    select
+    max(zuz) zuz,
+    max(kuczz) kuczz,
+    max(kucwz) kucwz,
+    max(kucwl) kucwl,
+    max(huoz) huoz,
+    max(kuaijrq) kuaijrq,
+    to_char(sysdate,'yyyy-mm-dd hh24:mi:ss') jizrq,
+    sum(jine) jine_churk,
+    sum(ruksl) shul_churk,
+    round(sum(h.qnet_ar*ruksl)/sum(ruksl),2) qnetar_churk,
+
+    sum(j.jiesje) jiesje,
+    sum(j.jiessl) jiessl,
+    round(sum(j.jiesrz*j.jiessl)/sum(j.jiessl),2) jiesrz
+
+    from rl_kc_churkdb k left join rl_kc_huaybgb h on k.rukdbh=h.rukdh left join rl_js_yuejsdb j on j.id=k.yuejsb_id
+    where kuaijrq='${kuaijrq}'
+    group by
+    zuz,
+    kuczz,
+    kucwz,
+    kucwl,
+    huoz
+    ) a left join
+    (select
+    max(zuz) zuz,
+    max(kuczz) kuczz,
+    max(kucwz) kucwz,
+    max(kucwl) kucwl,
+    max(huoz) huoz,
+    sum(jine) jine_zang,
+    sum(ruksl) shul_zang,
+    round(sum(h.qnet_ar*ruksl)/sum(ruksl),2) qnetar_zang
+
+    from rl_kc_churkdb k full join rl_kc_huaybgb h on k.rukdbh=h.rukdh
+    where kuaijrq=null and yewlx=1
+    group by
+    zuz,
+    kuczz,
+    kucwz,
+    kucwl,
+    huoz) b on a.zuz=b.zuz and a.kuczz=b.kuczz and a.kucwz=b.kucwz and a.kucwl=b.kucwl  and a.huoz=b.huoz
+    full join
+    (select
+    zuz,
+    kuczz,
+    kucwz,
+    kucwl,
+    huoz,
+    jie_jiey jine_qic,
+    shul_jiey shul_qic,
+    qnetar_jiey qnetar_qic
+    from rl_kc_kuyeb
+    where substr(jizrq,0,7)='${lastMoth}'
+    )c on a.zuz=c.zuz and a.kuczz=c.kuczz and a.kucwz=c.kucwz and a.kucwl=c.kucwl  and a.huoz=c.huoz
+</insert>
+    <select id="getChukdbh" resultType="java.lang.String">
+	select case
+			 when max(rukdbh) is null then
+			  replace(to_char(sysdate, 'yyyy-mm-dd'), '-', '') || '001'
+			 else
+			  to_char(max(rukdbh) + 1)
+		   end rukdbh
+	  from (select distinct rukdbh
+			  from RL_KC_CHURKDB
+			 where substr(rukdbh, 0, 8) =
+				   replace(to_char(sysdate, 'yyyy-mm-dd'), '-', ''))
+</select>
+	<select id="getKuaijq" resultType="java.lang.String">
+		select KUAIJRQ from RL_KC_KUAIJRQB where id=#{0}
+	</select>
+	<update id="updateMonthTotal">
+	update RL_KC_MONTH_TOTAL mt_out  set
+	(
+	in_quantity, 
+	in_amount, 
+	estimate_quantity, 
+	estimate_amount, 	
+	water_quantity, 	
+	price, 
+	out_quantity, 
+	out_amount, 
+	ending_quantity, 
+	ending_amount, 	
+	last_updated_by_userid, 	
+	last_updated_by_username, 
+	last_update_date
+	)=( 
+	select jiessl,jiesje,zangsl,zangje,shuifc,price,chuksl,round(chuksl*price,2) chukje,
+		nvl(qicsl,0) + nvl(jiessl,0) + nvl(zangsl,0) - nvl(chuksl,0),  
+		nvl(qicje,0) + nvl(jiesje,0) + nvl(zangje,0) - nvl(round(chuksl * price, 2),0) ,
+		'${userid}','${username}',to_char(sysdate,'yyyy-mm-dd hh24:mi:ss')
+	 from(
+	 select mt.zuz, mt.huoz, mt.kuczz, mt.kucwz, mt.kucwl,
+		 nvl(qic_shul,0) qicsl,nvl(qic_jine,0) qicje,
+		 nvl(jies_sl,0) jiessl,nvl(jies_je,0) jiesje,
+		 nvl(zang_sl,0) zangsl,nvl(zang_je,0) zangje,nvl(sf.shuifc,0) shuifc,
+	     decode((nvl(qic_shul,0)+nvl(jies_sl,0)+nvl(zang_sl,0)),0,0,round((nvl(qic_jine,0)+nvl(jies_je,0)+ nvl(zang_je,0))/ (nvl(qic_shul,0) + nvl(jies_sl,0) + nvl(zang_sl,0) ),4) ) as price,
+	     nvl(ck.chuk_sl,0) chuksl
+	 from
+	    /*期初*/
+	    (select zuz, huoz, kuczz, kucwz, kucwl,
+	    nvl((initial_quantity),0) as qic_shul,
+	    nvl((initial_amount),0) as qic_jine
+	    from rl_kc_month_total 
+	    where period_id = '${KUAIJQ_ID}'
+	    and kuczz='${KUCZZ}') mt,
+	    /*结算(入库)*/
+	    (SELECT ZUZ, HUOZ,KUCZZ, KUCWZ,KUCWL,
+       		SUM(DECODE(QUANTITY_FLAG, 0, 0, NVL(QUANTITY, 0))) AS JIES_SL,
+       		SUM(DECODE(MONEY_FLAG, 0, 0, NVL(AMOUNT, 0))) AS JIES_JE
+		  FROM RL_KC_CHURKMXHZB MX
+		 WHERE PERIOD_ID = '${KUAIJQ_ID}'
+		   AND INV_OPERATION = 1
+		   AND MX.INV_OPERATION = 1
+		   AND MX.BALANCE_FLAG = 1
+		   AND mx.kuczz='${KUCZZ}'
+		 GROUP BY ZUZ, HUOZ, KUCZZ, KUCWZ, KUCWL  ) js,
+	    /*出库*/
+	    (select zuz, huoz, kuczz, kucwz, kucwl,
+	    sum(nvl(QUANTITY, 0)) as chuk_sl
+	    from RL_KC_CHURKMXHZB mx
+	    where PERIOD_ID = '${KUAIJQ_ID}'
+	    and INV_OPERATION = -1
+	    and mx.kuczz='${KUCZZ}'
+	    group by zuz, huoz, kuczz, kucwz, kucwl) ck,
+	    /*暂估*/
+	    (SELECT ZUZ,HUOZ,KUCZZ,KUCWZ,KUCWL,
+		       SUM(DECODE(QUANTITY_FLAG, 0, 0, NVL(QUANTITY, 0))) AS ZANG_SL,
+		       SUM(DECODE(MONEY_FLAG, 0, 0, NVL(AMOUNT, 0))) AS ZANG_JE
+		  FROM RL_KC_CHURKMXHZB MX
+		 WHERE TRANSACTION_DATE <![CDATA[<=]]>(select JIESRQ from rl_kc_kuaijrqb where id='${KUAIJQ_ID}')
+		   AND INV_OPERATION = 1
+		   AND NVL(MX.BALANCE_FLAG, 0) = 0
+		   AND MX.KUCZZ='${KUCZZ}'
+		 GROUP BY ZUZ, HUOZ, KUCZZ, KUCWZ, KUCWL ) zangu,
+	    /*水分差*/
+	    (select zuz, huoz, kuczz, kucwz, kucwl,
+	    sum(nvl(QUANTITY, 0)) as shuifc
+	    from RL_KC_CHURKMXHZB mx
+	    where PERIOD_ID = '${KUAIJQ_ID}'
+	    and mx.inv_transaction_type_id = 9
+	    and mx.kuczz='${KUCZZ}'
+	    group by zuz, huoz, kuczz, kucwz, kucwl) sf
+	    where mt.zuz = js.zuz(+)
+	    and mt.huoz = js.huoz(+)
+	    and mt.kuczz = js.kuczz(+)
+	    and mt.kucwz = js.kucwz(+)
+	    and mt.kucwl = js.kucwl(+)
+	    and mt.zuz = zangu.zuz(+)
+	    and mt.huoz = zangu.huoz(+)
+	    and mt.kuczz = zangu.kuczz(+)
+	    and mt.kucwz = zangu.kucwz(+)
+	    and mt.kucwl = zangu.kucwl(+)
+	    and mt.zuz = sf.zuz(+)
+	    and mt.huoz = sf.huoz(+)
+	    and mt.kuczz = sf.kuczz(+)
+	    and mt.kucwz = sf.kucwz(+)
+	    and mt.kucwl = sf.kucwl(+)
+	    and mt.zuz = ck.zuz(+)
+	    and mt.huoz = ck.huoz(+)
+	    and mt.kuczz = ck.kuczz(+)
+	    and mt.kucwz = ck.kucwz(+)
+	    and mt.kucwl = ck.kucwl(+)
+	    ) o
+	 where id=(select id from RL_KC_MONTH_TOTAL where zuz=o.zuz and huoz=o.huoz and kuczz=o.kuczz and kucwz=o.kucwz and kucwl=o.kucwl and period_id='${KUAIJQ_ID}') 
+	    )
+	    where mt_out.period_id='${KUAIJQ_ID}' and mt_out.kuczz='${KUCZZ}'
+	</update>
+	<update id="updateChukdSub">
+		update RL_KC_CHUKDB_SUB s set 
+		(
+		danj,
+		jine
+		)=(
+		select m.price ,round(m.price*c.chuksl,2)
+		from rl_kc_month_total m
+		inner join rl_kc_chukdb_sub c on m.zuz=c.zuz and m.huoz=c.huoz and m.kuczz=c.kuczz and m.kucwz=c.kucwz and m.kucwl=c.kucwl
+		inner join gy_dm_churkywlxdmb d on c.yewlx=d.id
+		where m.period_id='${KUAIJQ_ID}'
+		and m.kuczz='${KUCZZ}' 
+		and d.jije=1
+		and s.id =c.id
+		)
+	</update>
+	<update id="updateChurkmxhzb">
+		update RL_KC_CHURKMXHZB mx set
+		(
+		price,amount,PERIOD_ID,PERIOD_DATE,last_updated_by_userid,last_updated_by_username,last_update_date
+		)=(
+		select m.price ,round(m.price*c.quantity,2),'${KUAIJQ_ID}',to_char(sysdate,'yyyy-mm-dd'),'${userid}','${username}',to_char(sysdate,'yyyy-mm-dd hh24:mi:ss')
+		from rl_kc_month_total m
+		inner join RL_KC_CHURKMXHZB c on m.zuz=c.zuz and m.huoz=c.huoz and m.kuczz=c.kuczz and m.kucwz=c.kucwz and m.kucwl=c.kucwl
+		inner join gy_dm_churkywlxdmb d on c.inv_transaction_type_id=d.id
+		where m.period_id='${KUAIJQ_ID}'
+		and m.kuczz='${KUCZZ}' 
+		and d.jije=1
+		and c.INV_OPERATION = -1
+		and mx.id =c.id
+		)
+	    where mx.period_id = '${KUAIJQ_ID}'
+	    and mx.kuczz = '${KUCZZ}'
+	    and mx.inv_operation = -1
+	    and mx.money_flag = 1
+	</update>
+	<select id="getKuaijqListByKuczzId" resultType="java.util.Map">
+	    select distinct kq.ID as value, kq.KUAIJRQ as name
+  		from RL_KC_KUAIJRQB kq 
+  		full join gx_kuaijq_zuz gx on kq.id=gx.kuaijq_id
+ 		where nvl(gx.kuczz_id,0)!=#{0} 
+    	order by KUAIJRQ 
+	</select>
+	<insert id="insertMonthTotal">
+	 insert into rl_kc_month_total (CREATED_BY_USERID,CREATED_BY_USERNAME,
+            id,period_id,huoz,ZUZ, KUCZZ, KUCWZ, KUCWL ,
+            initial_quantity,initial_amount 
+         )(
+         select '${CREATED_BY_USERID}','${CREATED_BY_USERNAME}',seq_month_total_id.nextval ,
+         '${KUAIJQ_ID}',huoz, ZUZ, KUCZZ, KUCWZ, KUCWL, 
+        nvl(INITIAL_QUANTITY,0) + nvl(IN_QUANTITY,0) -nvl(WATER_QUANTITY,0) - nvl(OUT_QUANTITY,0) ,nvl(INITIAL_AMOUNT,0)  + nvl(IN_AMOUNT,0)  - nvl(OUT_AMOUNT,0)   
+         from rl_kc_month_total
+          where  period_id=(select g.kuaijq_id from gx_kuaijq_zuz g inner join rl_kc_kuaijrqb k on g.kuaijq_id=k.id      
+           where k.kuaijrq= '${lastMonth}' and g.kuczz_id='${KUCZZ_ID}') and kuczz='${KUCZZ_ID}'
+         )
+	</insert>
+	<select id="getkuaijrqById" resultType="java.lang.String">
+	select kuaijrq from rl_kc_kuaijrqb where id=#{0}
+	
+	</select>
+</mapper>

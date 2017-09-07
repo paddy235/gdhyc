@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiren.fuelmis.dc.dao.kucgl.ShujlrDao">
+	<resultMap id="BaseResultMap" type="pand_gdjt">
+		<id column="ID" property="id" jdbcType="NUMERIC" />
+		<result column="RIQ" property="riq" jdbcType="VARCHAR" />
+		<result column="DIANCXXB_ID" property="diancxxb_id" jdbcType="VARCHAR" />
+		<result column="ZHANGMKC" property="zhangmkc" jdbcType="NUMERIC" />
+		<result column="SHIPKC" property="shipkc" jdbcType="NUMERIC" />
+		<result column="CHANGSL" property="changsl" jdbcType="NUMERIC" />
+		<result column="SHUIFCTZL" property="shuifctzl" jdbcType="NUMERIC" />
+		<result column="YINGKD" property="yingkd" jdbcType="NUMERIC" />
+		<result column="FUJZT" property="fujzt" jdbcType="NUMERIC" />
+		<result column="FUJMC" property="fujmc" jdbcType="VARCHAR" />
+		<result column="ZHUANGT" property="zhuangt" jdbcType="NUMERIC" />
+
+	</resultMap>
+	<!--resultMap="BaseResultMap"-->
+	<select id="getAll"  resultMap="BaseResultMap">
+		select
+		P.ID,DC.MINGC
+		DIANCXXB_ID,
+		P.ZHANGMKC,
+		P.SHIPKC,
+		P.CHANGSL,
+		P.SHUIFCTZL,
+		P.YINGKD,
+		P.FUJZT,P.FUJMC  FUJMC ,P.ZHUANGT
+		from PAND_GDJT P, DIANCXXB DC 
+		where P.DIANCXXB_ID = DC.ID and substr(P.RIQ ,0,7)='${riq}'
+		<if test=' dianc!="" and dianc!=null '>
+			and P.DIANCXXB_ID = #{dianc}
+		</if>
+	</select>
+	
+	<select id="getCount" resultType="java.lang.Integer">
+	    select count(1) from PAND_GDJT  
+	    where substr(RIQ ,0,7)='${riq}'
+		<if test=' dianc!="" and dianc!=null '>
+			and DIANCXXB_ID = ${dianc}
+		</if>
+	</select>
+
+	<insert id="insertPandxx" parameterType="pand_gdjt"
+		useGeneratedKeys="false">
+		insert into
+		PAND_GDJT(ID,RIQ,DIANCXXB_ID,ZHANGMKC,SHIPKC,CHANGSL,SHUIFCTZL,YINGKD,FUJZT,FUJMC,ZHUANGT)
+		values(#{id},'${riq}',#{diancxxb_id},#{zhangmkc},#{shipkc},#{changsl},
+		#{shuifctzl},#{yingkd},#{fujzt},#{fujmc},#{zhuangt})
+	</insert>
+
+	<update id="updatePandxx" parameterType="java.util.Map">
+		update PAND_GDJT
+		<trim prefix="SET" suffixOverrides=",">
+			<if test="zhangmkc != null">ZHANGMKC=#{zhangmkc},</if>
+			<if test="shipkc != null">SHIPKC=#{shipkc},</if>
+			<if test="changsl != null">CHANGSL=#{changsl},</if>
+			<if test="shuifctzl != null">SHUIFCTZL=#{shuifctzl},</if>
+			<if test="yingkd != null">YINGKD=#{yingkd},</if>
+			<if test="fujmc != null">fujmc=#{fujmc},</if>
+			<if test="fujzt != null">fujzt=#{fujzt},</if>
+		</trim>
+		WHERE ID=#{id}
+	</update>
+	
+	<update id="updateFuj" parameterType="java.util.Map">
+		update PAND_GDJT set fujmc=#{fujmc},fujzt=#{fujzt} where ID=#{id}
+	</update>
+</mapper>

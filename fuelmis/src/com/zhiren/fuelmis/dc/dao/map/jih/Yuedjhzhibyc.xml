@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiren.fuelmis.dc.dao.jih.YuedjhzhibycDao" >
+	<select id="getJihzbdyb"  resultType="java.util.HashMap">
+		select xuh ,mingc,danw,zidm,decode(gongs,'0',zidm,gongs )  gongs from JIHZBDYB where mokmc ='月计划' order by xuh 
+	</select>
+	<select id="getZhiFromYuedjhzhib"  resultType="java.util.HashMap">
+		${sql} from yuedjh_zhib where diancxxb_id = ${diancid} and to_char(riq,'yyyy-MM') = substr('${riq}',0,7)
+	</select>
+	<select id="getIdByRiqAndDiancid" resultType="java.lang.Integer">
+		select count(id) from yuedjh_zhib where riq=to_date('${riq}','yyyy-MM') and diancxxb_id=${diancid}
+	</select>
+	<update id="updateYuedjhzhib" flushCache="true">  
+    	update yuedjh_zhib set  ${ZIDM} = ${ZHI} where riq=to_date('${riq}','yyyy-MM') and diancxxb_id=${diancid}
+    </update>
+    <insert id="addYuedjhzhib"  useGeneratedKeys="true" keyProperty="id">
+ 		INSERT INTO yuedjh_zhib(id,riq,diancxxb_id,${ZIDM}) values(XL_YUEDJH_CAIG_ID.nextval,to_date('${riq}','yyyy-mm'),${diancid},${ZHI})
+	</insert>
+	<delete id="delByRiqAndDiancid"  flushCache="true">  
+        delete from yuedjh_zhib where diancxxb_id = ${diancid} and riq = to_date('${riq}','yyyy-mm')
+    </delete>
+    <!-- 获取耗用原煤量 、入炉综合标煤单价-->
+    <select id="selectThreeData" resultType="java.util.HashMap">
+    	SELECT ROUND(DECODE(EL1, 0, 0, BIAOMLHJ * 29.271 / EL1),2) HAOYYML,
+	          MEIZBMDJ,RULZHBMDJ 
+	  FROM (SELECT DECODE((JIH_SL + SHANGYMKC),0,0,ROUND((JIH_REZ * JIH_SL + SHANGYMKCRZ * SHANGYMKC) /(JIH_SL + SHANGYMKC),2)) EL1, 
+	              ROUND(DECODE(BIAOMLHJ,0,0,(MEIZBML * MEIZBMDJ + RANYL * RANYDJ + ZAFJE) / BIAOMLHJ),2) RULZHBMDJ, 
+	               MEIZBMDJ,BIAOMLHJ 
+	          FROM (SELECT NVL(ZAF.ZAFJE, 0) ZAFJE, 
+	                       NVL(JHCG.JIH_SL, 0) JIH_SL, 
+	                       NVL(JHCG.JIH_DAOCJBHS, 0) JIH_DAOCJBHS, 
+	                       NVL(JHCG.JIH_REZ, 0) JIH_REZ, 
+	                       NVL(YUEZB.RUCRLRZC, 0) RUCRLRZC, 
+	                       NVL(YUEZB.SHANGYMKC, 0) SHANGYMKC, 
+	                       NVL(YUEZB.BIAOMLHJ, 0) BIAOMLHJ, 
+	                       NVL(YUEZB.SHANGYMKCDJ, 0) SHANGYMKCDJ, 
+	                       NVL(YUEZB.SHANGYMKCRZ, 0) SHANGYMKCRZ, 
+	                       NVL(YUEZB.MEIZBML, 0) MEIZBML, 
+	                  ROUND(DECODE((NVL(JHCG.JIH_REZ, 0) - NVL(YUEZB.RUCRLRZC, 0)),0,0,NVL(JHCG.JIH_DAOCJBHS, 0) * 29.271 /(NVL(JHCG.JIH_REZ, 0) - NVL(YUEZB.RUCRLRZC, 0))),2) MEIZBMDJ, 
+	                       NVL(YUEZB.RANYL, 0) RANYL, 
+	                       NVL(YUEZB.RANYDJ, 0) RANYDJ 
+	                  FROM (SELECT SUM(CG.JIH_SL) JIH_SL, 
+	                               ROUND(DECODE(SUM(JIH_SL),0,0,SUM(CG.JIH_SL * CG.JIH_DAOCJBHS) /SUM(JIH_SL)),2) JIH_DAOCJBHS, 
+	                               ROUND(DECODE(SUM(JIH_SL),0,0,SUM(CG.JIH_SL * CG.JIH_REZ) /SUM(JIH_SL)),2) JIH_REZ 
+	                          FROM YUEDJH_CAIG CG 
+	                         WHERE DIANCXXB_ID = #{diancid} 
+	                           AND RIQ = date'2017-04-01') JHCG, 
+	                       (SELECT SUM(YUCJE) ZAFJE 
+	                        FROM YUEDJH_ZAF 
+	                        WHERE DIANCXXB_ID = #{diancid} 
+	                        AND to_char(RIQ,'yyyy-mm-dd') = #{riq} ) ZAF, 
+	                       (SELECT ZB.RUCRLRZC, ZB.SHANGYMKC, ZB.SHANGYMKCDJ,   ZB.MEIZBML, ZB.SHANGYMKCRZ,  ZB.BIAOMLHJ, ZB.RANYL, ZB.RANYDJ 
+	                          FROM YUEDJH_ZHIB ZB 
+	                         WHERE DIANCXXB_ID = #{diancid} 
+	                           AND to_char(RIQ,'yyyy-mm-dd') = #{riq} ) YUEZB) LY)
+     
+    </select>
+    <update id="updateThreeDate" flushCache="true">
+    	update yuedjh_zhib set    haoyyml =${haoyyml},
+    								meizbmdj =${meizbmdj},
+    								rlzhbmdj =${rulzhbmdj}
+    				where riq=to_date('${riq}','yyyy-mm-dd') and diancxxb_id=${diancid}
+    </update>
+    <select id="getLastMonthData"  resultType="com.zhiren.fuelmis.dc.entity.jih.YuedzhibycBean">
+			 select XL_YUEDJH_CAIG_ID.nextval as id,
+						${diancid} as diancid,
+			 			'${riq}' as riq,
+						   fadl,
+						   gongdmh,
+						   fadcydl,
+						   fadbml,
+						   gongrl,
+						   gongrmh,
+						   gongrbml,
+						   biaomlhj,
+						   shangymkc,
+						   shangymkcdj,
+						   shangymkcrz,
+						   yuemkcjhz,
+						   yuemkcrz,
+						   haoyyml,
+						   rlzhbmdj,
+						   zhuangt,
+						   liucztb_id,
+						   liucgzid,
+						   ranyl,
+						   ranydj,
+						   youzbml,
+						   youzbmdj,
+						   meizbml,
+						   meizbmdj,
+						   rucrlrzc
+						FROM yuedjh_zhib 
+			           WHERE DIANCXXB_ID = ${diancid}
+			            AND RIQ =to_date('${lastriq}','yyyy-mm-dd')
+	</select>
+	<select id="getshenpstate"  resultType="java.lang.String">
+			            SELECT distinct  SANJ_ZT 
+						  FROM yuedjh_zhib 
+			 				WHERE DIANCXXB_ID = ${diancid}
+			            	AND RIQ =to_date('${riq}','yyyy-mm-dd')
+	</select>
+	<delete id="DelThisMonthData" parameterType="java.lang.String" flushCache="true">  
+        delete from yuedjh_zhib where DIANCXXB_ID =#{diancid} AND  RIQ = to_date(#{riq},'yyyy-mm-dd')
+    </delete>
+	<insert id="CopyLastMonthData" parameterType="java.util.Map">
+		INSERT INTO yuedjh_zhib(id,
+						diancxxb_id,
+			 			 riq,
+						   fadl,
+						   gongdmh,
+						   fadcydl,
+						   fadbml,
+						   gongrl,
+						   gongrmh,
+						   gongrbml,
+						   biaomlhj,
+						   shangymkc,
+						   shangymkcdj,
+						   shangymkcrz,
+						   yuemkcjhz,
+						   yuemkcrz,
+						   haoyyml,
+						   rlzhbmdj,
+						   zhuangt,
+						   liucztb_id,
+						   liucgzid,
+						   ranyl,
+						   ranydj,
+						   youzbml,
+						   youzbmdj,
+						   meizbml,
+						   meizbmdj,
+						   rucrlrzc) 
+		<foreach collection="copylist" item="item" index="index"  separator="union" >
+			select  ${item.id},${item.diancid},to_date('${item.riq}','yyyy-mm-dd'),
+		${item.fadl},${item.gongdmh},${item.fadcydl},${item.fadbml},${item.gongrl},${item.gongrmh},${item.gongrbml},
+		${item.biaomlhj},${item.shangymkc},${item.shangymkcdj},${item.shangymkcrz},${item.yuemkcjhz},${item.yuemkcrz},${item.haoyyml},${item.rlzhbmdj},
+		${item.zhuangt},${item.liucztb_id},${item.liucgzid},${item.ranyl},${item.ranydj},${item.youzbml},${item.youzbmdj},${item.meizbml},${item.meizbmdj},
+		${item.rucrlrzc} from dual 
+						    
+		</foreach>
+	</insert> 
+</mapper>

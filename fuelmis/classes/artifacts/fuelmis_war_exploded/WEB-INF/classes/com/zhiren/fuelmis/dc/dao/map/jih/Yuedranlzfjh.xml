@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiren.fuelmis.dc.dao.jih.YuedRanlzfjhDao" >
+	<select id="getTabelData"  resultType="java.util.HashMap">
+		SELECT DECODE(GROUPING(DC.MINGC), 1, '合计', DC.MINGC) MK,
+			       NVL(SUM(NRL.FADL), 0) AS FDL, 
+			       ROUND(DECODE(SUM(NRL.FADL),0,0,SUM(NRL.FADCYDL * NRL.FADL) / SUM(NRL.FADL)),2) AS FADCYDL, 
+			       ROUND(DECODE(SUM(NRL.FADL*(1-NRL.FADCYDL/100)),0,0,SUM(NRL.FADL*(1-NRL.FADCYDL/100) * NRL.GONGDMH) / SUM(NRL.FADL*(1-NRL.FADCYDL/100))),2) AS GONGDMH, 
+			       NVL(SUM(NRL.FADBML), 0) AS FDBML, 
+			       NVL(SUM(NRL.GONGRL), 0) AS GRL, 
+			       ROUND(DECODE(SUM(NRL.GONGRL),0,0,SUM(NRL.GONGRMH * NRL.GONGRL) / SUM(NRL.GONGRL)),2) AS GONGRMH, 
+			       NVL(SUM(NRL.GONGRBML), 0) AS GRBML, 
+			       NVL(SUM(NRL.BIAOMLHJ), 0) AS BMLHJ, 
+			       NVL(SUM(NRL.MEIZBML), 0) AS MZBML, 
+			       ROUND(DECODE(SUM(NRL.MEIZBML),0,0,SUM(NRL.MEIZBMDJ * NRL.MEIZBML) / SUM(NRL.MEIZBML)),2) AS MZBMDJ, 
+			       NVL(SUM(NRL.RANYL), 0) AS RYL, 
+			       ROUND(DECODE(SUM(NRL.RANYL),0,0,SUM(NRL.RANYL * NRL.RANYDJ) / SUM(NRL.RANYL)),2) AS RYDJ, 
+			       NVL(SUM(NRL.YOUZBML), 0) AS YZBML, 
+			       ROUND(DECODE(SUM(NRL.YOUZBML),0,0,SUM(NRL.YOUZBML * NRL.YOUZBMDJ) / SUM(NRL.YOUZBML)),2) YZBMDJ, 
+			       NVL(SUM(ZAF.ZAFJE), 0) AS ZAFJE, 
+			       ROUND(DECODE(SUM(NRL.BIAOMLHJ),0,0,SUM(NRL.BIAOMLHJ * NRL.RLZHBMDJ) / SUM(NRL.BIAOMLHJ)),2) AS RLZHBMDJ 
+			  FROM (SELECT NZ.DIANCXXB_ID, 
+			               NZ.FADL, 
+                     NZ.FADCYDL, 
+                     NZ.GONGDMH, 
+                     Round(NZ.FADL*(1-NZ.FADCYDL/100)*NZ.GONGDMH/100,0) as FADBML, 
+                     NZ.GONGRL, 
+                     NZ.GONGRMH, 
+                     Round(NZ.GONGRL*NZ.GONGRMH*10,0) as GONGRBML, 
+                     Round(NZ.FADL*(1-NZ.FADCYDL/100)*NZ.GONGDMH/100,0)+Round(NZ.GONGRL*NZ.GONGRMH*10,0) as  BIAOMLHJ, 
+                     Round(NZ.FADL*(1-NZ.FADCYDL/100)*NZ.GONGDMH/100,0)+Round(NZ.GONGRL*NZ.GONGRMH*10,0)-Round(NZ.RANYL*41.816/29.2712,0) as MEIZBML, 
+                     NZ.MEIZBMDJ, 
+                     NZ.RANYL, 
+                     NZ.RANYDJ, 
+                     Round(NZ.RANYL*41.816/29.2712,0) as YOUZBML, 
+                     Round(DECODE(NZ.RANYL,0,0,NZ.RANYL*RANYDJ/Round(NZ.RANYL*41.816/29.2712,0)),2) as YOUZBMDJ, 
+                     NZ.RLZHBMDJ 
+			          FROM YUEDJH_ZHIB NZ where  NZ.RIQ = to_date('${riq}','yyyy-MM-dd') ) NRL, 
+			               (SELECT SUM(YUCJE) ZAFJE,DIANCXXB_ID 
+			                        FROM YUEDJH_ZAF 
+			                        WHERE RIQ = to_date('${riq}','yyyy-mm-dd') 
+			                GROUP BY DIANCXXB_ID) ZAF, 
+			               DIANCXXB DC 
+			 WHERE NRL.DIANCXXB_ID(+) = DC.ID 
+			   AND ZAF.DIANCXXB_ID(+) = DC.ID 
+			   AND DC.JIB = 3 
+			   AND DC.ID =#{id}
+			 GROUP BY ROLLUP(DC.MINGC, DC.XUH) 
+			HAVING NOT GROUPING(DC.MINGC) + GROUPING(DC.XUH) = 1 
+			ORDER BY GROUPING(DC.XUH) DESC, dc.xuh,GROUPING(DC.MINGC) DESC, DC.MINGC
+	</select>
+	<select id="getRanlzfData"  resultType="java.util.HashMap">
+			SELECT ZAF.ID AS ID,
+				   ROWNUM,
+			       ZAF.DIANCXXB_ID AS DIANCXXB_ID, 
+			       ZAF.RIQ AS RIQ,
+			       ZAF.TBRQ AS TBRQ, 
+			       IT.MINGC AS ZAFMC, 
+			       ZAF.YUCJE AS YUCJE, 
+			       ZAF.YUCSM AS YUCSM,
+			       ZAF.ZHUANGT  AS ZHUANGT
+			  FROM YUEDJH_ZAF  ZAF ,ITEM IT
+			 WHERE ZAF.DIANCXXB_ID = #{diancid}
+			 AND ZAF.ZAFMC = IT.ID
+			   AND ZAF.RIQ = TO_DATE('${riq}','yyyy-mm-dd')
+				ORDER BY ZAF.RIQ,ZAF.ID
+	</select>
+	<select id="getRanlzfById"  resultType="java.util.HashMap">
+		SELECT ID,
+	       DIANCXXB_ID, 
+	       to_char(RIQ,'yyyy-mm-dd') RIQ,
+	       TBRQ, 
+	       ZAFMC, 
+	       YUCJE, 
+	       YUCSM,
+	       ZHUANGT 
+			FROM YUEDJH_ZAF 
+			 WHERE id =#{id}
+	</select>
+	<select id="getZafmingc" resultType="java.util.HashMap">
+		SELECT ID, MINGC
+			 FROM ITEM 
+			 WHERE ITEMSORTID IN (SELECT ID FROM ITEMSORT WHERE BIANM = 'ZAFMC')
+			 ORDER BY XUH
+	</select>
+	<insert id="addRanlzfData"  useGeneratedKeys="true" keyProperty="id">
+ 		INSERT INTO YUEDJH_ZAF(id,DIANCXXB_ID,RIQ,TBRQ,ZAFMC,YUCJE,YUCSM,ZHUANGT) 
+								VALUES (XL_YUEDJH_CAIG_ID.nextval,#{DIANCID}, 
+								  to_date('${RIQ}','yyyy-mm-dd'), 
+								  	sysdate,
+								   	#{ZAFMC}, 
+								    round(#{YUCJE},1), 
+								   	#{YUCSM}, 
+								    0)
+	</insert>
+	<delete id="delRanlzfById" parameterType="java.lang.String" flushCache="true">  
+        delete from YUEDJH_ZAF where id =  #{id} 
+    </delete>
+    <update id="updateRanlzfById" flushCache="true">  
+    	update YUEDJH_ZAF set DIANCXXB_ID = #{DIANCID},
+						    	RIQ = to_date('${RIQ}','yyyy-mm-dd'),
+						    	TBRQ = sysdate,
+						    	ZAFMC = #{ZAFMC},
+						    	YUCJE = round(#{YUCJE},1),
+						    	YUCSM = #{YUCSM}
+						    	 WHERE ID = #{ID}
+    </update>
+	<select id="getRanlzfByDiancidAndRiq"  resultType="com.zhiren.fuelmis.dc.entity.jih.YuedranlzfjhBean">
+			 select XL_YUEDJH_CAIG_ID.nextval as id,
+						${diancid} as diancid,
+			 			'${riq}' as riq,
+						to_char(sysdate,'yyyy-mm-dd') as tbrq,
+						ZAFMC,
+						YUCJE,
+						YUCSM,
+						0 as zhuangt
+						FROM YUEDJH_ZAF 
+			           WHERE DIANCXXB_ID = ${diancid}
+			            AND RIQ =to_date('${lastriq}','yyyy-mm-dd')
+	</select>
+	<select id="getshenpstate"  resultType="java.lang.String">
+			            SELECT distinct SANJ_ZT 
+						  FROM YUEDJH_ZAF 
+			 				WHERE DIANCXXB_ID = ${diancid}
+			            	AND RIQ =to_date('${riq}','yyyy-mm-dd')
+	</select>
+	<delete id="DelRanlzfByDiancidAndRiq" parameterType="java.lang.String" flushCache="true">  
+        delete from YUEDJH_ZAF where DIANCXXB_ID =#{diancid} AND  RIQ = to_date('${riq}','yyyy-mm-dd')
+    </delete>	
+	<insert id="CopyRanlzfData" parameterType="java.util.Map">
+		INSERT INTO YUEDJH_ZAF(id,DIANCXXB_ID,RIQ,TBRQ,ZAFMC,YUCJE,YUCSM,ZHUANGT) 
+		<foreach collection="copylist" item="item" index="index"  separator="union" >
+			select  ${item.id},${item.diancid},to_date('${item.riq}','yyyy-mm-dd'),to_date('${item.tbrq}','yyyy-mm-dd'),
+		'${item.zafmc}',${item.yucje},'${item.yucsm}',${item.zhuangt} from dual  
+		</foreach>
+	</insert> 
+</mapper>

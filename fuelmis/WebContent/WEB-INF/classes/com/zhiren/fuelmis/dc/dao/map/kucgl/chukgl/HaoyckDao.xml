@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiren.fuelmis.dc.dao.kucgl.chukgl.HaoyckDao">
+    <insert id="insertChukd">
+	insert into RL_KC_CHUKDB (
+id,org_id,code,transaction_date,inv_period,created_by_userid,created_by_username,creation_date,audit_status
+) values ('${CHUKDID}','${ZUZ}','${CHUKDBH}','${CHUKRQ}','${KUAIJRQ}','${CAOZRID}','${CAOZR}',to_char(sysdate,'yyyy-mm-dd hh24:mi:ss'),'A'
+)
+</insert>
+    <insert id="insertChukdSub">
+		insert into rl_kc_chukdb_sub(
+		id,
+		line,
+		inv_out_id,
+		inv_transaction_type_id,
+		inv_item_id,
+		inv_subinventory_id,
+		inv_power_unit_id,
+		inv_team_unit_id,
+		quantity,
+		created_by_userid,
+		created_by_username,
+		creation_date)VALUES (
+		'${ID}',
+		'${HANGH}',
+		'${CHURKDID}',
+		'${YEWLX}',
+		'${KUCWL}',
+		'${KUCWZ}',
+		'${JIZ_ID}',
+		'${BANZ_ID}',
+		'${CHUKSL}',
+		'${CAOZRID}',
+		'${CAOZR}',
+		to_char(sysdate,'yyyy-mm-dd hh24:mi:ss')
+		)
+	</insert>
+    <insert id="insertChurkd">
+		insert into rl_kc_churkdb(
+		rukdbh,zuz,kuczz,kucwz,kucwl,huoz,yewlx,churklx,yewrq,kuaijrq,id,ruksl,jiz_id,banz_id,hangh,zhuangt,biaomdj,rukbml,pinzb_id,caozrid,caozr,caozsj,kuaijrq_id
+		) values(
+		'${CHUKDBH}','${ZUZ}','${KUCZZ}','${KUCWZ}','${KUCWL}','${HUOZ}','${YEWLX}','出库','${CHUKRQ}','${KUAIJRQ}','${ID}','${CHUKSL}','${JIZ_ID}','${BANZ_ID}',
+		'${HANGH}','${ZHUANGT}','${BIAOMDJ}','${RUKBML}','${PINZB_ID}','${CAOZRID}','${CAOZR}',
+		to_char(sysdate,'yyyy-mm-dd hh24:mi:ss'),(select k.id from rl_kc_kuaijrqb k where k.kuaijrq='${KUAIJRQ}')
+		)
+	</insert>
+    <update id="updateChurkd">
+		UPDATE RL_KC_CHURKDB SET
+		RUKDBH='${CHUKDBH}',
+		ZUZ='${ZUZ}',
+		KUCZZ='${KUCZZ}',
+		KUCWZ='${KUCWZ}',
+		KUCWL='${KUCWL}',
+		HUOZ='${HUOZ}',
+		YEWLX='${YEWLX}',
+		CHURKLX='${CHURKLX}',
+		YEWRQ='${CHUKRQ}',
+		KUAIJRQ='${KUAIJRQ}',
+		RUKSL='${CHUKSL}',
+		JIZ_ID='${JIZ_ID}',
+		BANZ_ID='${BANZ_ID}',
+		HANGH='${HANGH}',
+		ZHUANGT='${ZHUANGT}',
+		BIAOMDJ='${BIAOMDJ}',
+		RUKBML='${RUKBML}',
+		PINZB_ID='${PINZB_ID}',
+		caozrid='${CAOZRID}',
+		caozr='${CAOZR}',
+		caozsj=to_char(sysdate,'yyyy-mm-dd hh24:mi:ss')
+		where id='${ID}'
+	</update>
+    <select id="getKuaijrq" resultType="java.lang.String">
+		select r.KUAIJRQ from RL_KC_KUAIJRQB r inner join GX_KUAIJQ_ZUZ g on r.id=g.KUAIJQ_ID and g.ZHUANGT='启用' and g.KUCZZ_ID=#{0}
+	</select>
+    <delete id="deleteChurkd">
+		delete from RL_KC_CHURKDB where id=#{0}
+	</delete>
+    <select id="getChukdhList" resultType="java.util.Map">
+		select kc.zuz,
+		       kc.kuczz,
+		       kc.kucwz,
+		       wz.kucwzms,
+		       kc.kucwl,
+		       kc.huoz,
+		       kc.yewlx,
+		       kc.churklx,
+		       kc.yewrq    chukrq,
+		       kc.kuaijrq,
+		       kc.id,
+		       kc.ruksl    chuksl,
+		       kc.jiz_id,
+		       kc.banz_id,
+		       kc.hangh,
+		       kc.zhuangt,
+		       kc.biaomdj,
+		       kc.rukbml,
+		       kc.pinzb_id,
+		       kc.caozrid,
+		       kc.caozr,
+		       kc.caozsj
+		  from RL_KC_CHURKDB kc, rl_kc_kucwzb wz
+		 where RUKDBH = '${rukdbh}' 
+		   and kc.Kucwz = wz.id(+)
+		 order by wz.kucwzms
+	
+	</select>
+    <select id="getChukd" resultType="java.util.Map">
+		select
+		max(rukdbh) chukdbh,
+		max(zuz) zuz,
+		max(kuczz) kuczz,
+		max(huoz) huoz,
+		max(yewrq) chukrq,
+		max(zhuangt) zhuangt,
+		sum(ruksl) chukzsl
+		 from RL_KC_CHURKDB
+		 where RUKDBH='${rukdbh}'
+	</select>
+    <update id="updateChurkdZhuant">
+		update rl_kc_churkdb set zhuangt='${ZHUANGT}' where RUKDBH='${CHUKDBH}'
+	</update>
+    <delete id="deleteChurkdByChukdbh">
+		delete from RL_KC_CHURKDB where RUKDBH=#{0}
+	</delete>
+    <select id="getChukdList" resultType="java.util.Map">
+		select
+		C.RUKDBH,Z.KUCZZMC KUCZZ,D.MINGC HUOZ,
+		Y.LEIXMC YEWLX,c.yewrq,
+		sum(nvl(C.RUKSL,0)) chuksl,
+		case C.ZHUANGT when 0 then '未出库'
+		else '已出库' end ZHUANGT
+		from RL_KC_CHURKDB C,DIANCXXB D,RL_KC_KUCZZB Z,GY_DM_CHURKYWLXDMB Y
+		where C.HUOZ=D.ID and C.KUCZZ = Z.ID and C.YEWLX = Y.ID
+		and C.YEWLX in ( select id from gy_dm_churkywlxdmb d where d.leixdm = -1
+		)
+		and C.YEWRQ <![CDATA[>=]]> '${sDate}'
+		and C.YEWRQ <![CDATA[<=]]> '${eDate}'
+		group by C.RUKDBH,c.yewrq,Z.KUCZZMC,D.MINGC,Y.LEIXMC,C.ZHUANGT
+		order by c.yewrq ,C.RUKDBH
+	</select>
+    <select id="getQicChurkBean" resultType="ChurkBean">
+		select
+		'期初' jizfl,
+		'期初' jizsm,
+		120 shul,
+		26400000  jine,
+		0 danwcb,
+		80000 zangsl,
+		18400000 zangje,
+		0 zangdj,
+		0 jieysl,
+		0 jieyje,
+		0 jieycb,
+		0 shismcsl,
+		0 shismcje,
+		0 shismccb,
+		'2016-05-01' jizrq from dual
+	</select>
+    <select id="getChukBean" resultType="ChurkBean">
+       select '出库' jizfl,'生产消耗' jizsm,'2016-05-08' jizrq ,123 shul from
+		(select
+		sum(ruksl) shul
+		from RL_KC_CHURKDB
+		where YEWRQ='2016-05-08' and CHURKLX='出库'
+		)
+	</select>
+    <select id="getRukBean" resultType="ChurkBean">
+       select '入库' jizfl,'结算入库' jizsm,'2016-05-02' jizrq ,456 shul,678 jine from
+		(select
+		sum(yanssl) shul,
+		sum(nvl(JINE,0)) jine
+		from RL_KC_CHURKDB
+		where YEWRQ='2016-05-02' and CHURKLX='入库'
+		)
+    </select>
+    <insert id="saveChurkBean" parameterType="ChurkBean">
+      insert into RL_KC_DANWCBSLB(
+      ID,DANWCB,JIEYCB,JIEYJE,JIEYSL,JINE,JIZFL,JIZSM,RIQ,SHISMCCB,SHISMCJE,SHISMCSL,SHUL,ZANGDJ,ZANGJE,ZANGSL)values(
+      #{id},#{danwcb},#{jieycb},#{jieyje},#{jieysl},#{jine},#{jizfl},#{jizsm},#{jizrq},#{shismccb},#{shismcje},#{shismcsl},
+      #{shul},#{zangdj},#{zangje},#{zangsl}
+      )
+    </insert>
+    <update id="updateChurkdShifdrZhuant">
+    	update rl_kc_churkdb set zhuangt='${ZHUANGT}',shifdr='0' where RUKDBH='${CHUKDBH}'
+    </update>
+    <select id="getDangrjc" resultType="java.util.Map">
+		select*from(
+		  select wz.kucwzms kucwz,wl.wuzmc kucwl,wz.id kucwz_id,wl.id kucwl_id,
+				 get_dangrjc(o.huoz,o.zuz,o.kuczz,o.kucwz,o.kucwl,(select jiesrq from GX_KUAIJQ_ZUZ g inner join RL_KC_KUAIJRQB k on g.KUAIJQ_ID=k.id
+																		  where g.zhuangt='启用'),o.period_id,0) shul
+
+		  from rl_kc_month_total o inner join rl_kc_kucwzb wz on o.kucwz=wz.id
+			inner join rl_kc_kucwlb wl on o.kucwl=wl.id
+
+		  where period_id= (select kuaijq_id from GX_KUAIJQ_ZUZ where zhuangt='启用')
+		  order by wz.kucwzms,wl.wuzmc
+		)    where shul!=0
+    </select>
+</mapper>

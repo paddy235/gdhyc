@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiren.fuelmis.dc.dao.hetgl.RlhtmbDao" >
+	<resultMap id="BaseResultMap" type="rlhtmb">
+		<id column="ID"              property="id" jdbcType="NUMERIC" />
+		<result column="MINGC"    	 property="mingc" jdbcType="VARCHAR" />		
+		<result column="LUJ" 		 property="luj" jdbcType="VARCHAR" />
+		<result column="MUBBH" 	 	 property="mubbh" jdbcType="VARCHAR" />
+		<result column="ZHUANGT"   	 property="zhuangt"  jdbcType="NUMERIC" />
+		<result column="YOUXKSSJ"   	 property="youxkssj" jdbcType="VARCHAR" />
+		<result column="YOUXJSSJ"    	 property="youxjssj" jdbcType="VARCHAR" />
+		<result column="DIANCXXB_ID"    property="diancxxb_id" jdbcType="NUMERIC" />
+		<result column="CAOZRY"    property="caozry" jdbcType="NUMERIC" />
+		<result column="CAOZSJ"    property="caozsj" jdbcType="VARCHAR" />	
+		<result column="MUBLJ"    property="mublj" jdbcType="VARCHAR" />	
+	</resultMap>
+	
+	
+	<delete id="delHetmb" parameterType="java.util.Map">
+		delete from RL_HT_HETMB where id = #{id}
+	</delete>
+
+	
+	<select id="getHetmbById" resultMap="BaseResultMap">
+		select * from RL_HT_HETMB
+		<if test="id != null">
+			where id = #{id}
+		</if>
+	</select>
+
+	<select id="getHetmbByhtId" resultMap="BaseResultMap">
+		select a.id, a.mingc, a.zhuangt, a.luj, a.mubbh, a.youxkssj, a.youxjssj, a.diancxxb_id,a.caozry, a.caozsj,a.mublj
+			from rl_ht_hetmb a ,rl_ht_hetb b
+			where a.id = b.mubid(+)
+			<if test="id != null">
+				and b.id = #{id}
+			</if>
+	</select>
+
+	<select id="getHetmbList" resultType="java.util.Map">
+	      select a.id,
+	             a.mingc,
+	             decode(a.zhuangt, 1, '启用', '0', '未启用') as zhuangt,
+	             a.luj,
+	             a.mubbh,
+	             a.youxkssj,
+	             a.youxjssj,
+	             a.diancxxb_id,
+	             a.caozry,
+	             c.mingc as caozry,
+	             b.mingc as diancmc,
+	             a.caozsj,
+	             a.mublj
+	        from rl_ht_hetmb a, diancxxb b,renyxxb c
+	       where a.diancxxb_id = b.id(+)
+	       and a.caozry = c.id(+)
+	</select>
+	
+
+	<update id="updateHetmb" parameterType="rlhtmb">
+         update rl_ht_hetmb
+         	<trim prefix="SET" suffixOverrides=",">
+         		<if test="mingc != null">MINGC=#{mingc},</if>
+				<if test="zhuangt != null">ZHUANGT=#{zhuangt},</if>
+				<if test="luj != null">LUJ=#{luj},</if>
+				<if test="youxkssj != null">YOUXKSSJ=#{youxkssj},</if>
+				<if test="youxjssj != null">YOUXJSSJ=#{youxjssj},</if>
+				<if test="diancxxb_id != null">DIANCXXB_ID=#{diancxxb_id},</if>				
+				<if test="caozry != null">CAOZRY=#{caozry},</if>
+				<if test="caozsj != null">CAOZSJ=#{caozsj},</if>				
+				<if test="mubbh != null">MUBBH=#{mubbh},</if>
+				<if test="mublj != null">MUBLJ=#{mublj}</if>					
+		</trim>     
+           where ID = #{id}
+	</update>
+	
+	<insert id="addHetmb" parameterType="rlhtmb">
+		insert into rl_ht_hetmb
+		  (id, mingc, zhuangt, luj, mubbh, youxkssj, youxjssj, diancxxb_id, caozry, caozsj,mublj)
+		values
+		  (#{id,jdbcType=NUMERIC}, #{mingc,jdbcType=VARCHAR},#{zhuangt,jdbcType=NUMERIC}, #{luj,jdbcType=VARCHAR}, #{mubbh,jdbcType=VARCHAR}, #{youxkssj,jdbcType=VARCHAR}, 
+		  #{youxjssj,jdbcType=VARCHAR}, #{diancxxb_id,jdbcType=NUMERIC}, #{caozry,jdbcType=NUMERIC}, #{caozsj,jdbcType=VARCHAR},#{mublj,jdbcType=VARCHAR})
+	</insert>
+	
+	
+</mapper>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiren.fuelmis.dc.dao.gongyspg.jcxx.RitszbDao">
+<select id="getRitszb" resultType="java.util.Map">
+select * from ( 
+    SELECT DISTINCT t.id,'rl_gys_fahb' as tname,daohrq,gongysb.mingc, rl_gys_zhibdyb.zhibdm,rl_gys_zhibdyb.zhibmc,  
+    t.kaohbz as kaohbz  
+     FROM gongysb,rl_gys_zhibdyb,rl_gys_fahb t  
+     WHERE gongysb.id = t.gongysb_id  
+     AND rl_gys_zhibdyb.beiz='可以免考核'  
+     and rl_gys_zhibdyb.Zhibdm = 'SL'  
+     AND substr(daohrq,0,10) between '${sDate}' and '${eDate}' 
+     <if test="gongysid!=-1">
+     and gongysb.id =${gongysid}
+     </if>
+    Union  
+    SELECT DISTINCT t.id,'rl_gys_zhilb' as tname,daohrq,gongysb.mingc, rl_gys_zhibdyb.zhibdm,rl_gys_zhibdyb.zhibmc,  
+    t.kaohbz as kaohbz  
+     FROM gongysb,rl_gys_zhibdyb,rl_gys_zhilb t,rl_gys_fahb  
+     WHERE gongysb.id = rl_gys_fahb.gongysb_id AND t.fahb_id = rl_gys_fahb.id  
+     AND rl_gys_zhibdyb.beiz='可以免考核'  
+     and rl_gys_zhibdyb.Zhibdm =t.Zhibdm  
+        AND substr(daohrq,0,10) between '${sDate}' and '${eDate}' 
+     <if test="gongysid!=-1">
+     and gongysb.id =${gongysid}
+     </if>
+     )
+    order by substr(daohrq,0,10),mingc,zhibmc
+</select>
+<update id="updateRitszb">
+	update rl_gys_fahb set kaohbz='${KAOHBZ}' where id=${ID}
+</update>
+</mapper>

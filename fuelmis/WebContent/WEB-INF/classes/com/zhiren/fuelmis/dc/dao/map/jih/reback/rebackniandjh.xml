@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiren.fuelmis.dc.dao.jih.reback.RebackNiandJhDao" >
+	<insert id="addAdviceHistory"  useGeneratedKeys="true" keyProperty="id">
+		insert into LISHTYJ(id,yewlx,huitlc_id,year,month,rebacker,diancxxb_id,rebackdate,advice)
+				values(${ID},'${yewlx}','${huitlc_id}','${year}','${month}','${rebacker}','${diancxxb_id}',sysdate,'${advice}')			
+	</insert>
+	<update id="updateNiandjhZhib" flushCache="true">  
+         UPDATE NIANDJH_ZHIB ZHIB
+				     SET ZHIB.sanj_zt = #{zhuangt}
+				   WHERE ZHIB.RIQ =to_date( #{riq},'yyyy-mm-dd')
+				     AND ZHIB.DIANCXXB_ID =  #{diancxxb_id}
+				
+    </update>
+    <update id="updateNiandjhZaf" flushCache="true">  
+          UPDATE NIANDJH_ZAF ZAF
+				     SET ZAF.sanj_zt = #{zhuangt}
+				  WHERE ZAF.RIQ = to_date( #{riq},'yyyy-mm-dd')
+				    AND ZAF.DIANCXXB_ID =  #{diancxxb_id}
+				 
+    </update>
+    <update id="updateNiandjhCaig" flushCache="true">  
+          UPDATE NIANDJH_CAIG CG
+				 SET CG.sanj_zt = #{zhuangt}
+			   WHERE CG.RIQ = to_date( #{riq},'yyyy-mm-dd')
+			    AND CG.DIANCXXB_ID =  #{diancxxb_id}
+    </update>
+</mapper>

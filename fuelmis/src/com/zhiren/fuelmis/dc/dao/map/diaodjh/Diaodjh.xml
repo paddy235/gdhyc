@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiren.fuelmis.dc.dao.diaodjh.DiaodjhDao" >
+
+	<resultMap id="BaseResultMap" type="daiodjh">
+		<id column="ID" property="id" jdbcType="NUMERIC" />
+		<result column="DIANCXXB_ID" property="diancxxb_id" jdbcType="NUMERIC" />
+		<result column="BIANH" property="bianh" jdbcType="NUMERIC" />
+		<result column="RIQ" property="riq" jdbcType="VARCHAR" />
+		<result column="PINZB_ID" property="pinzb_id" jdbcType="NUMERIC" />
+		<result column="JIHSL" property="jihsl" jdbcType="NUMERIC" />
+		<result column="MEIKXXB_ID" property="meikxxb_id" jdbcType="NUMERIC" />
+		<result column="LURY" property="lury" jdbcType="NUMERIC" />
+		<result column="PIZR" property="pizr" jdbcType="NUMERIC" />
+		<result column="LURSJ" property="lursj" jdbcType="VARCHAR" />
+		<result column="ZHUANGT" property="zhuangt" jdbcType="NUMERIC" />
+	</resultMap>
+
+	<insert id="addDiaodjh" parameterType="daiodjh">
+		insert into rl_gys_diaodjh
+ 		 (id, diancxxb_id, bianh, riq, pinzb_id, jihsl, meikxxb_id, lury, pizr, lursj, zhuangt,gongysb_id)
+		values
+  		(#{id,jdbcType=NUMERIC}, #{diancxxb_id,jdbcType=NUMERIC}, #{bianh,jdbcType=NUMERIC}, #{riq,jdbcType=VARCHAR},
+  		 #{pinzb_id,jdbcType=NUMERIC}, #{jihsl,jdbcType=NUMERIC}, #{meikxxb_id,jdbcType=NUMERIC}, 
+  		 #{lury,jdbcType=NUMERIC}, #{pizr,jdbcType=NUMERIC}, #{lursj,jdbcType=VARCHAR}, #{zhuangt,jdbcType=NUMERIC},
+  		 #{gongysb_id,jdbcType=NUMERIC})
+	</insert>
+	
+	<sql id="Base_Column_List">
+		ID, BIANH, RIQ, PINZB_ID, JIHSL, MEIKXXB_ID, LURY, PIZR, LURSJ, ZHUANGT,GONGYSB_ID
+	</sql>
+	
+	<select id="getDiaodById" resultMap="BaseResultMap">
+		select <include refid="Base_Column_List"></include> from rl_gys_diaodjh
+		<if test="id != null">
+			where id = #{id}
+		</if>
+	</select>
+	
+	
+	<select id="getDiaodjhinfoList" resultType="java.util.LinkedHashMap">
+		select a.riq, a.week, a.jihsl, b.quanc as lury, a.shenh
+		  from (select riq,
+		               sum(jihsl) as jihsl,
+		               max(lury) as lury,
+		               to_char(to_date(riq, 'yyyy-MM-dd'), 'iw') as week,
+		               '未审核' as shenh
+		          from rl_gys_diaodjh
+		         where riq <![CDATA[< ]]> #{enddate}
+		      
+		         <if test="strdate!=null">
+		         	and riq <![CDATA[>= ]]> #{strdate}
+		         </if>
+		         
+		         <if test="diancid!=null">
+		         	and diancxxb_id = #{diancid}
+		         </if>		         
+		         group by riq) a
+		  left join renyxxb b
+		    on a.lury = b.id
+		 order by a.riq desc	
+	</select>
+	
+	<select id="getDiaodjhList" resultType="java.util.LinkedHashMap">
+	  select jh.ID,
+	       jh.BIANH,
+	       jh.RIQ,
+	       pz.mingc as PINZB_ID,
+	       jh.JIHSL,
+	       mk.mingc as MEIKXXB_ID, 
+	       ry.quanc as lury,
+	       pizr.quanc as pizr,
+	       jh.LURSJ,
+	       jh.ZHUANGT
+	  from rl_gys_diaodjh jh left join pinzb pz 
+	  on jh.pinzb_id = pz.id
+	  left join meikxxb mk
+	  on jh.meikxxb_id = mk.id
+	  left join renyxxb ry
+	  on
+	  jh.lury = ry.id
+	  left join renyxxb pizr
+	  on jh.pizr = pizr.id
+	  <if test="diancid != null">
+	  		where jh.diancxxb_id = #{diancid}
+	  </if>
+	  <if test="strdate != null">
+	  		and jh.riq <![CDATA[>= ]]> #{strdate}
+	  </if>
+	  <if test="enddate != null">
+	  		and jh.riq <![CDATA[< ]]> #{enddate}
+	  </if>
+	    order by riq asc,jh.bianh asc
+	</select>
+	
+	
+	<select id="getBianm" resultType="String">
+		select count(id) from rl_gys_diaodjh where riq = #{riq}
+	</select>
+	
+	<delete id="delDiaodjh" parameterType="java.util.Map">
+	    delete from rl_gys_diaodjh where ID = #{id}
+	</delete>
+	
+	
+	<update id="updateDiaodjh" parameterType="daiodjh">
+	    update rl_gys_diaodjh 
+	    <trim prefix="SET" suffixOverrides=",">
+			<if test="riq != null">RIQ=#{riq},</if>
+			<if test="pinzb_id != null">PINZB_ID=#{pinzb_id},</if>
+			<if test="jihsl != null">JIHSL=#{jihsl},</if>
+			<if test="meikxxb_id != null">MEIKXXB_ID=#{meikxxb_id},</if>
+			<if test="lury != null">LURY=#{lury},</if>
+			<if test="pizr != null">PIZR=#{pizr},</if>
+			<if test="gongysb_id != null">GONGYSB_ID=#{gongysb_id},</if>			
+		</trim>
+		where ID=#{id}
+	</update>
+	
+	
+</mapper>

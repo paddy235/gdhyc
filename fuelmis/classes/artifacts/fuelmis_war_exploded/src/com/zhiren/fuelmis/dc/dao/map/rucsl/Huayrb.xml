@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiren.fuelmis.dc.dao.rucsl.HuayrbDao">
+	<select id="getTabelData" resultType="java.util.LinkedHashMap">
+		select t.bianh bianh,t.fahdw fahdw,t.meikdwmc meikdwmc,t.pinz pinz,t.fazmc fazmc,t.ches ches,t.jzsl jzsl,round_new(h.mt,1) quansf,
+	                h.mad as KONGQGZJSF,
+	                h.aad as KONGQGZJHF,
+	                h.ad as GANZJHF,
+	                h.aar as SHOUDJHF,
+	                h.vad as KONGQGZJHFF,
+	                h.vdaf as HUIFF,
+	                round_new(h.qbad * 1000,0) as DANTRL,
+	                round_new(h.qnet_ar * 1000,0) as FARL,
+	                round_new(h.qnet_ar * 7000 / 29.271,0) as FARL1,
+	                h.sdaf AS SDAF,
+	                h.std as GANZJL,
+	                h.stad as stad,
+	                h.std * (100 - h.mt) / 100 as star,
+	                h.hdaf as HDAF,
+	                h.had as had,
+	                h.fcad as FCAD,
+	                round_new(h.qgrd,0) as QGRD,
+	                h.huaysj AS CAIYSJ
+			from (select c.samcode bianh,count(q.id) ches,c.GONGYSMC fahdw,c.MEIKMC meikdwmc,c.PINZ pinz,c.FAZ fazmc,sum(c.maoz)-sum(c.piz)-sum(c.zongkd) jzsl,substr(q.zhongcsj,0,10) daohrq
+				from rl_ys_chepb c 
+				left join  rl_ys_chepb_qc q
+				on c.id=q.chepb_id
+				where 1=1
+				<if test='date != null'>
+		       		and substr(q.zhongcsj,0,10) ='${date}'
+			    </if>
+				group by c.samcode,c.GONGYSMC ,c.MEIKMC ,c.PINZ ,c.FAZ ,substr(q.zhongcsj,0,10)
+			) t left join gx_chep_caizhbmb gx1 on t.bianh=gx1.yuanbm
+			left join gx_chep_caizhbmb gx2 on gx1.mubbm=gx2.yuanbm
+			left join rl_hy_huaydb h on gx2.mubbm=h.huaybm
+		
+	</select>
+</mapper>

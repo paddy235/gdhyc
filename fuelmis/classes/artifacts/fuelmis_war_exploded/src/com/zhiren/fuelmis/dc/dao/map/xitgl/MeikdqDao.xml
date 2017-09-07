@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiren.fuelmis.dc.dao.xitgl.MeikdqDao" >
+	<resultMap id="BaseResultMap" type="meikdq" >
+		<id column="ID" property="id" jdbcType="NUMERIC" />
+		<result column="XUH" property="xuh" jdbcType="NUMERIC" />
+		<result column="BIANM" property="bianm" jdbcType="NUMERIC" />
+		<result column="MINGC" property="mingc" jdbcType="VARCHAR" />
+		<result column="QUANC" property="quanc" jdbcType="VARCHAR" />
+		<result column="SHENGFB_ID" property="shengfb_id" jdbcType="VARCHAR" />
+		<result column="ZHUANGT" property="zhuangt" jdbcType="NUMERIC" />
+	</resultMap>
+	
+	<select id="getAll" resultMap="BaseResultMap">
+		select
+		M.ID, M.XUH, M.BIANM, M.MINGC, M.QUANC, S.QUANC SHENGFB_ID, M.ZHUANGT
+    	from MEIKDQB M,SHENGFB S
+    	where M.SHENGFB_ID = S.ID
+	</select>
+	
+	<insert id="insertMeikdq" parameterType="java.util.Map">
+	    insert into MEIKDQB (ID,MINGC,QUANC,ZHUANGT,BIANM,SHENGFB_ID,XUH)
+	    values (${id},'${mingc}','${quanc}',${zhuangt},'${bianm}',nvl(${shengfb_id},0),nvl(${xuh},0))
+	</insert>
+	
+	<select id="getOne" resultMap="BaseResultMap">
+	    select ID ,MINGC ,QUANC ,ZHUANGT ,BIANM ,
+	    SHENGFB_ID ,XUH from MEIKDQB where ID = #{id}
+	</select>
+	
+	<update id="updateMeikdq" parameterType="java.util.Map">
+	     update MEIKDQB
+	    <trim prefix="SET" suffixOverrides=",">
+			<if test="mingc != null">MINGC=#{mingc},</if>
+			<if test="quanc != null">QUANC=#{quanc},</if>
+			<if test="zhuangt != null">ZHUANGT=#{zhuangt},</if>
+			<if test="bianm != null">BIANM=#{bianm},</if>
+			<if test="shengfb_id != null">SHENGFB_ID=#{shengfb_id},</if>
+			<if test="xuh != null">XUH=#{xuh},</if>
+		</trim>
+		where ID=#{id}
+	</update>
+</mapper>

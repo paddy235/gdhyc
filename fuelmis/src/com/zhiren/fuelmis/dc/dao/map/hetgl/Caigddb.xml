@@ -1,0 +1,347 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiren.fuelmis.dc.dao.hetgl.CaigddbDao" >
+	<resultMap id="BaseResultMap" type="caigddb">
+		<id column="ID"              property="id" jdbcType="NUMERIC" />
+		<result column="DIANCXXB_ID" property="diancxxb_id" jdbcType="NUMERIC" />
+		<result column="BIANH"    	 property="bianh" jdbcType="VARCHAR" />
+		<result column="OU" 	  	 property="ou" jdbcType="VARCHAR" />
+		<result column="GONGYS_ID" 	 property="gongys_id" jdbcType="NUMERIC" />
+		<result column="GONYSMC"   	 property="gonysmc" jdbcType="VARCHAR" />
+		<result column="KAISSJ"   	 property="kaissj" jdbcType="VARCHAR" />
+		<result column="JIESSJ"    	 property="jiessj" jdbcType="VARCHAR" />
+		<result column="CAOZRY"    	 property="caozry" jdbcType="VARCHAR" />
+		<result column="CAOZSJ"    	 property="caozsj" jdbcType="VARCHAR" />
+		<result column="HETB_ID"   	 property="hetb_id" jdbcType="NUMERIC" />
+		<result column="KOUJ_ID" 	 property="kouj_id" jdbcType="NUMERIC" />
+		<result column="CAIGDDLX" 	 property="caigddlx" jdbcType="VARCHAR" />
+		<result column="DINGDRQ" 	 property="dingdrq" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<resultMap id="CaigddbsubMap" type="caigddbsub">
+		<id column="ID"              property="id" jdbcType="NUMERIC" />
+		<result column="CAIGDDB_ID"  property="caigddb_id" jdbcType="NUMERIC" />
+		<result column="XUH"    	 property="xuh" jdbcType="NUMERIC" />
+		<result column="SHUL" 	  	 property="shul" jdbcType="NUMERIC" />
+		<result column="ZHIL" 	     property="zhil" jdbcType="VARCHAR" />
+		<result column="PINGCJ"   	 property="pingcj" jdbcType="NUMERIC" />
+		<result column="YUNZF"   	 property="yunzf" jdbcType="NUMERIC" />
+		<result column="DAOCJ"    	 property="daocj" jdbcType="NUMERIC" />
+		<result column="YUNSFS_ID"   property="yunsfs_id" jdbcType="NUMERIC" />
+		<result column="SHULJSFS"    property="shuljsfs" jdbcType="VARCHAR" />
+		<result column="JIJFS_ID"    property="jijfs_id" jdbcType="NUMERIC" />
+		<result column="GONGYS_ID" 	 property="gongys_id" jdbcType="NUMERIC" />
+		<result column="GONGYSMC" 	 property="gongysmc" jdbcType="VARCHAR" />
+		<result column="DIANCXXB_ID" property="diancxxb_id" jdbcType="NUMERIC" />
+		<result column="HUOW_ID" 	 property="huow_id" jdbcType="NUMERIC" />
+		<result column="HUOWMC" 	 property="huowmc" jdbcType="VARCHAR" />
+		<result column="HUOWGG" 	 property="huowgg" jdbcType="VARCHAR" />
+		<result column="HETJSFSB_ID"  property="hetjsfsb_id" jdbcType="NUMERIC" />
+		<result column="ZHILJSYJ"   property="zhiljsyj" jdbcType="VARCHAR" />
+		<result column="SHULJSYJ"   property="shuljsyj" jdbcType="VARCHAR" />
+		<result column="JIESFS"   property="jiesfs" jdbcType="VARCHAR" />
+		<result column="STARTDATE"   property="startdate" jdbcType="VARCHAR" />
+		<result column="ENDDATE"   property="enddate" jdbcType="VARCHAR" />
+		<result column="MEIZ_ID" property="meiz_id" jdbcType="NUMERIC" />
+		<result column="PINZ_ID" property="pinz_id" jdbcType="NUMERIC" />
+		<result column="PINGCJ_BHS" property="pingcj_bhs" jdbcType="NUMERIC" />
+		<result column="YUNZF_BHS" property="yunzf_bhs" jdbcType="NUMERIC" />
+		<result column="DAOCJ_BHS" property="daocj_bhs" jdbcType="NUMERIC" />
+		<result column="MEIKXXB_ID" property="meikxxb_id" jdbcType="NUMERIC" />
+	</resultMap>
+
+	<resultMap id="CaigddbyfsubMap" type="caigddbyfsub">
+		<id column="ID"              property="id" jdbcType="NUMERIC" />
+		<result column="CAIGDDB_ID"  property="caigddb_id" jdbcType="NUMERIC" />
+		<result column="FEIYXM_ID"    	 property="feiyxm_id" jdbcType="NUMERIC" />
+		<result column="FAZ_ID" 	  	 property="faz_id" jdbcType="NUMERIC" />
+		<result column="DAOZ_ID" 	     property="daoz_id" jdbcType="NUMERIC" />
+		<result column="YUNSFS_ID"   	 property="yunsfsb_id" jdbcType="NUMERIC" />
+		<result column="SHUL"   	 property="shul" jdbcType="NUMERIC" />
+		<result column="HANSYFDJ"    	 property="hansyfdj" jdbcType="NUMERIC" />
+		<result column="BUHSYFDJ"   property="buhsyfdj" jdbcType="NUMERIC" />
+		<result column="HANSZFDJ"    property="hanszfdj" jdbcType="NUMERIC" />
+		<result column="BHSZFDJ"    property="bhszfdj" jdbcType="NUMERIC" />
+		<result column="SHULJSFS" 	 property="shuljsfs" jdbcType="VARCHAR" />
+		<result column="MEIKXXB_ID" property="meikxxb_id" jdbcType="NUMERIC" />
+	</resultMap>
+
+	<resultMap id="GysResultMap" type="gongys" >
+		<id column="ID" property="id" jdbcType="NUMERIC" />
+		<result column="XUH" property="xuh" jdbcType="NUMERIC" />
+		<result column="BIANM" property="bianm" jdbcType="NUMERIC" />
+		<result column="MINGC" property="mingc" jdbcType="VARCHAR" />
+		<result column="QUANC" property="quanc" jdbcType="VARCHAR" />
+		<result column="PINY" property="piny" jdbcType="VARCHAR" />
+		<result column="MEIKXXB_ID" property="meikxxb_id" jdbcType="VARCHAR" />
+		<result column="SHENGFB_ID" property="shengfb_id" jdbcType="VARCHAR" />
+		<result column="SHANGJGSBM" property="shangjgsbm" jdbcType="VARCHAR" />
+		<result column="ZHUANGT" property="zhuangt" jdbcType="VARCHAR" />
+		<result column="WENJMC" property="wenjmc" jdbcType="VARCHAR" />
+		<result column="WENJMC" property="wenjmc" jdbcType="VARCHAR" />
+		<result column="FADDBR" property="faddbr" jdbcType="VARCHAR" />
+		<result column="YOUZBM" property="youzbm" jdbcType="VARCHAR"/>
+		<result column="DIANH" property="dianh" jdbcType="VARCHAR"/>
+		<result column="KAIHYH" property="kaihyh" jdbcType="VARCHAR"/>
+		<result column="ZHANGH" property="zhangh" jdbcType="VARCHAR"/>
+		<result column="SHUIH" property="shuih" jdbcType="VARCHAR"/>
+		<result column="CHUANZ" property="chuanz" jdbcType="VARCHAR"/>
+	</resultMap>
+
+	<insert id="addCaigddb" parameterType="caigddb">
+		insert into rl_ht_caigddb
+		(id, bianh,gongys_id,kaissj,jiessj,caozry,caozsj,diancxxb_id, caigddlx, dingdrq,kouj_id)
+		values
+		(#{id,jdbcType=NUMERIC}, #{bianh,jdbcType=VARCHAR}, #{gongys_id,jdbcType=NUMERIC},
+		#{kaissj,jdbcType=VARCHAR}, #{jiessj,jdbcType=VARCHAR},#{caozry,jdbcType=VARCHAR},
+		#{caozsj,jdbcType=VARCHAR}, #{diancxxb_id,jdbcType=NUMERIC}, #{caigddlx,jdbcType=VARCHAR},
+		#{dingdrq,jdbcType=VARCHAR},#{kouj_id,jdbcType=NUMERIC})
+	</insert>
+
+	<insert id="addKaohzb" parameterType="hetkhzb">
+		insert into rl_ht_kaohzbb
+		(id, xuh, shangx, jizjg, xiax, shijrz, jizrz, rezjs, jizzb, jiangkjs, jijgs_id, jizkj, leix, tiaoj, scheme_id,shijzkj,shangxmax,xiaxmin)
+		values
+		(#{id,jdbcType=NUMERIC}, #{xuh,jdbcType=NUMERIC}, #{shangx,jdbcType=NUMERIC},#{jizjg,jdbcType=NUMERIC}, #{xiax,jdbcType=NUMERIC},
+		#{shijrz,jdbcType=NUMERIC} , #{jizrz,jdbcType=NUMERIC} , #{rezjs,jdbcType=NUMERIC} , #{jizzb,jdbcType=NUMERIC} ,
+		#{jiangkjs,jdbcType=NUMERIC} , #{jijgs_id,jdbcType=NUMERIC} , #{jizkj,jdbcType=NUMERIC} , #{leix,jdbcType=VARCHAR},
+		#{tiaoj,jdbcType=NUMERIC} ,#{scheme_id,jdbcType=NUMERIC},#{shijzkj,jdbcType=NUMERIC}, #{shangxmax,jdbcType=NUMERIC}, #{xiaxmin,jdbcType=NUMERIC})
+	</insert>
+
+	<update id="updateKaohzb" parameterType="hetkhzb">
+		update rl_ht_kaohzbb
+		set
+			shangx='${SHANGX}',
+			shangxmax='${SHANGXMAX}',
+			jizjg='${JIZJG}',
+			xiax='${XIAX}',
+			xiaxmin='${XIAXMIN}',
+			jizrz='${JIZRZ}',
+			jizzb='${JIZZB}',
+			shijzkj='${SHIJZKJ}',
+			jiangkjs='${JIANGKJS}',
+			jizkj='${JIZKJ}',
+			tiaoj='${TIAOJ}'
+		where ID=${ID}
+	</update>
+<insert id="insertKaohzb">
+  	insert into rl_ht_kaohzbb
+		(id, xuh,caigddb_id, shangx, jizjg, xiax, shijrz, jizrz, rezjs, jizzb, jiangkjs, jijgs_id, jizkj, leix, tiaoj, scheme_id,shijzkj,shangxmax,xiaxmin)
+		values
+		(${ID}, '${XUH}','${caigddb_id}','${SHANGX}','${JIZJG}', '${XIAX}',
+		'${SHIJRZ}' , '${JIZRZ}' ,'${REZJS}'  , '${JIZZB}' ,
+		'${JIANGKJS}' , '${SCHEME_ID}' , '${JIZKJ}' , '${LEIX}',
+		'${TIAOJ}' ,'${SCHEME_ID}','${SHIJZKJ}', '${SHANGXMAX}', '${XIAXMIN}')
+</insert>
+	<insert id="addCaigddbsub" parameterType="caigddbsub">
+		insert into rl_ht_caigddb_sub
+		(id, caigddb_id, huow_id, shul, zhil, pingcj, yunzf, daocj, yunsfs_id, gongys_id, diancxxb_id,zhiljsyj,shuljsyj,jiesfs,startdate,enddate,meiz_id,pinz_id,hetjsfsb_id,pingcj_bhs,yunzf_bhs,daocj_bhs,meikxxb_id)
+		values
+		(#{id,jdbcType=NUMERIC}, #{caigddb_id,jdbcType=NUMERIC}, #{huow_id,jdbcType=NUMERIC},#{shul,jdbcType=NUMERIC},
+		#{zhil,jdbcType=NUMERIC},#{pingcj,jdbcType=NUMERIC},#{yunzf,jdbcType=NUMERIC},#{daocj,jdbcType=NUMERIC},
+		#{yunsfs_id,jdbcType=NUMERIC},#{gongys_id,jdbcType=NUMERIC},#{diancxxb_id,jdbcType=NUMERIC},
+		#{zhiljsyj,jdbcType=VARCHAR},#{shuljsyj,jdbcType=VARCHAR},#{jiesfs,jdbcType=VARCHAR},#{startdate,jdbcType=VARCHAR},#{enddate,jdbcType=VARCHAR},
+		#{meiz_id,jdbcType=NUMERIC},#{pinz_id,jdbcType=NUMERIC},#{hetjsfsb_id,jdbcType=NUMERIC},#{pingcj_bhs,jdbcType=NUMERIC},
+		#{yunzf_bhs,jdbcType=NUMERIC},#{daocj_bhs,jdbcType=NUMERIC},#{meikxxb_id,jdbcType=NUMERIC})
+	</insert>
+
+	<insert id="addCaigddbyfsub" parameterType="caigddbyfsub">
+		insert into rl_ht_caigddbyf_sub
+		(id, caigddb_id, feiyxm_id, faz_id, daoz_id, yunsfsb_id, shul, hansyfdj, buhsyfdj, hanszfdj, bhszfdj,shuljsfs,meikxxb_id)
+		values
+		(#{id,jdbcType=NUMERIC}, #{caigddb_id,jdbcType=NUMERIC}, #{feiyxm_id,jdbcType=NUMERIC},#{faz_id,jdbcType=NUMERIC},
+		#{daoz_id,jdbcType=NUMERIC},#{yunsfsb_id,jdbcType=NUMERIC},#{shul,jdbcType=NUMERIC},#{hansyfdj,jdbcType=NUMERIC},
+		#{buhsyfdj,jdbcType=NUMERIC},#{hanszfdj,jdbcType=NUMERIC},#{bhszfdj,jdbcType=NUMERIC},
+		#{shuljsfs,jdbcType=VARCHAR},#{meikxxb_id,jdbcType=NUMERIC})
+	</insert>
+
+
+	<sql id="Base_Column_List">
+		ID, BIANH, OU, GONGYS_ID, GONYSMC, KAISSJ, JIESSJ, CAOZRY, CAOZSJ, HETB_ID, KOUJ_ID, DIANCXXB_ID, CAIGDDLX, DINGDRQ
+	</sql>
+
+	<select id="getCaigddbById" resultMap="BaseResultMap">
+		select * from rl_ht_caigddb
+		<if test="id != null">
+			where id = #{id}
+		</if>
+	</select>
+
+	<select id="getCaigddByBh" resultMap="BaseResultMap">
+		select * from rl_ht_caigddb
+		<if test="dingdrq != null">
+			where substr(bianh,0,10) = #{dingdrq}
+		</if>
+	</select>
+	<select id="getjiagtype" resultType="java.util.Map">
+		select id,mingc from GY_DM_HETJSFSB
+	</select>
+	<select id="getCaigddbsubById" resultMap="CaigddbsubMap">
+		select * from rl_ht_caigddb_sub
+		<if test="id != null">
+			where caigddb_id = #{id}
+		</if>
+	</select>
+
+	<select id="getCaigddbyfsubById" resultMap="CaigddbyfsubMap">
+		select * from rl_ht_caigddbyf_sub
+		<if test="id != null">
+			where caigddb_id = #{id}
+		</if>
+	</select>
+
+
+	<select id="getCaigddbList" resultType="java.util.Map">
+		select a.ID, a.DINGDRQ,a.CAIGDDLX,a.BIANH, a.OU, b.quanc as GONGYS_ID, a.GONGYS_ID, a.GONYSMC, a.KAISSJ, a.JIESSJ, a.CAOZRY,c.quanc as DIANCXXB_ID
+		from rl_ht_caigddb a ,gongysb b,diancxxb c
+		where a.gongys_id = b.id(+)
+		and a.diancxxb_id = c.id(+)
+		<if test="strdate != null">
+			and a.kaissj <![CDATA[>= ]]> #{strdate}
+		</if>
+		<if test="enddate != null">
+			and a.jiessj <![CDATA[<= ]]> #{enddate}
+		</if>
+		<if test="gongys != null">
+			and a.gongys_id = #{gongys}
+		</if>
+		<if test="diancid != null">
+			and a.diancxxb_id = #{diancid}
+		</if>
+		order by dingdrq desc
+	</select>
+
+	<select id="getJihkjById" resultType="java.util.Map">
+		select id,mingc,bianm,xuh from jihkjb
+		where id = #{id}
+	</select>
+
+	<select id="getGongysById" resultMap="GysResultMap">
+		select * from gongysb
+		<if test="id!=null">
+			where id = #{id}
+		</if>
+	</select>
+
+	<select id="getHuowMingcById" resultType="java.lang.String">
+		select wuzmc from rl_kc_kucwlb
+		where id = #{id}
+	</select>
+
+	<select id="getYunsfsMingcById" resultType="java.lang.String">
+		select mingc from yunsfsb
+		where id = #{id}
+	</select>
+
+	<select id="beforedelCaigddb" resultType="java.lang.String">
+		select count(a.rukdbh) from gx_churkdb_yunsdj a, gy_dm_yuansdjlxdmb b
+		where a.yuandjlx = b.id(+)
+		and b.leixmc = 'RL_HT_CAIGDDB'
+		and a.yuandj_id = #{id}
+	</select>
+
+
+	<delete id="delCaigddb" parameterType="java.util.Map">
+		delete from rl_ht_caigddb where ID = #{id}
+	</delete>
+
+	<delete id="delKaohzbbyid" parameterType="java.util.Map">
+		delete from rl_ht_kaohzbb where ID = #{id}
+	</delete>
+	
+	<delete id="delKaohzbbyPriceschemeId" parameterType="java.util.Map">
+		delete from rl_ht_kaohzbb where SCHEME_ID = #{id}
+	</delete>
+
+	<delete id="delCaigddbsubbyid" parameterType="java.util.Map">
+		delete from rl_ht_caigddb_sub where ID = #{id}
+	</delete>
+
+	<delete id="delCaigddbyfsubbyid" parameterType="java.util.Map">
+		delete from rl_ht_caigddbyf_sub where ID = #{id}
+	</delete>
+
+	<delete id="delCaigddbsub" parameterType="java.util.Map">
+		delete from rl_ht_caigddb_sub where caigddb_id = #{id}
+	</delete>
+
+	<delete id="delCaigddbyfsub" parameterType="java.util.Map">
+		delete from rl_ht_caigddbyf_sub where caigddb_id = #{id}
+	</delete>
+
+
+	<update id="updateCaigddb" parameterType="caigddb">
+		update RL_HT_CAIGDDB
+		<trim prefix="SET" suffixOverrides=",">
+			<if test="diancxxb_id != null">DIANCXXB_ID=#{diancxxb_id},</if>
+			<if test="bianh != null">BIANH=#{bianh},</if>
+			<if test="ou != null">OU=#{ou},</if>
+			<if test="gongys_id != null">GONGYS_ID=#{gongys_id},</if>
+			<if test="gonysmc != null">GONYSMC=#{gonysmc},</if>
+			<if test="kaissj != null">KAISSJ=#{kaissj},</if>
+			<if test="jiessj != null">JIESSJ=#{jiessj},</if>
+			<if test="caozry != null">CAOZRY=#{caozry},</if>
+			<if test="caozsj != null">CAOZSJ=#{caozsj},</if>
+			<if test="hetb_id != null and hetb_id !=0">HETB_ID=#{hetb_id},</if>
+			<if test="kouj_id != null and kouj_id !=0">KOUJ_ID=#{kouj_id},</if>
+			<if test="caigddlx != null">CAIGDDLX=#{caigddlx},</if>
+			<if test="dingdrq != null">DINGDRQ=#{dingdrq},</if>
+		</trim>
+		where ID=#{id}
+	</update>
+
+	<update id="updateCaigddbsub" parameterType="caigddbsub">
+		update RL_HT_CAIGDDB_SUB
+		<trim prefix="SET" suffixOverrides=",">
+			<if test="caigddb_id != null">CAIGDDB_ID=#{caigddb_id},</if>
+			<if test="xuh != null">XUH=#{xuh},</if>
+			<if test="shul != null">SHUL=#{shul},</if>
+			<if test="zhil != null">ZHIL=#{zhil},</if>
+			<if test="zhil != null">HETJSFSB_ID=#{hetjsfsb_id},</if>
+			<if test="pingcj != null">PINGCJ=#{pingcj},</if>
+			<if test="yunzf != null">YUNZF=#{yunzf},</if>
+			<if test="daocj != null">DAOCJ=#{daocj},</if>
+			<if test="yunsfs_id != null and yunsfs_id !=0">YUNSFS_ID=#{yunsfs_id},</if>
+			<if test="shuljsfs != null and shuljsfs != 0">SHULJSFS=#{shuljsfs},</if>
+			<if test="jijfs_id != null">JIJFS_ID=#{jijfs_id},</if>
+			<if test="gongys_id != null">GONGYS_ID=#{gongys_id},</if>
+			<if test="gongysmc != null">GONGYSMC=#{gongysmc},</if>
+			<if test="diancxxb_id != null">DIANCXXB_ID=#{diancxxb_id},</if>
+			<if test="huow_id != null and huow_id !=0">HUOW_ID=#{huow_id},</if>
+			<if test="huowmc != null">HUOWMC=#{huowmc},</if>
+			<if test="huowgg != null">HUOWGG=#{huowgg},</if>
+			<if test="zhiljsyj != null">ZHILJSYJ=#{zhiljsyj},</if>
+			<if test="shuljsyj != null">SHULJSYJ=#{shuljsyj},</if>
+			<if test="jiesfs != null">JIESFS=#{jiesfs},</if>
+			<if test="startdate != null">STARTDATE=#{startdate},</if>
+			<if test="enddate != null">ENDDATE=#{enddate},</if>
+			<if test="meiz_id != null">MEIZ_ID=#{meiz_id},</if>
+			<if test="pinz_id != null">PINZ_ID=#{pinz_id},</if>
+			<if test="pingcj_bhs != null">PINGCJ_BHS=#{pingcj_bhs},</if>
+			<if test="yunzf_bhs != null">YUNZF_BHS=#{yunzf_bhs},</if>
+			<if test="daocj_bhs != null">DAOCJ_BHS=#{daocj_bhs},</if>
+			<if test="meikxxb_id != null">MEIKXXB_ID=#{meikxxb_id}</if>
+		</trim>
+		where ID=#{id}
+	</update>
+
+	<update id="updateCaigddbyfsub" parameterType="caigddbyfsub">
+		update RL_HT_CAIGDDBYF_SUB
+		<trim prefix="SET" suffixOverrides=",">
+			<if test="caigddb_id != null">CAIGDDB_ID=#{caigddb_id},</if>
+			<if test="feiyxm_id != null">FEIYXM_ID=#{feiyxm_id},</if>
+			<if test="faz_id != null">FAZ_ID=#{faz_id},</if>
+			<if test="daoz_id != null">DAOZ_ID=#{daoz_id},</if>
+			<if test="yunsfsb_id != null">YUNSFSB_ID=#{yunsfsb_id},</if>
+			<if test="shul != null">SHUL=#{shul},</if>
+			<if test="hansyfdj != null">HANSYFDJ=#{hansyfdj},</if>
+			<if test="buhsyfdj != null">BUHSYFDJ=#{buhsyfdj},</if>
+			<if test="hanszfdj != null">HANSZFDJ=#{hanszfdj},</if>
+			<if test="bhszfdj != null">BHSZFDJ=#{bhszfdj},</if>
+			<if test="shuljsfs != null and shuljsfs != 0">SHULJSFS=#{shuljsfs},</if>
+			<if test="meikxxb_id != null">MEIKXXB_ID=#{meikxxb_id}</if>
+		</trim>
+		where ID=#{id}
+	</update>
+
+</mapper>

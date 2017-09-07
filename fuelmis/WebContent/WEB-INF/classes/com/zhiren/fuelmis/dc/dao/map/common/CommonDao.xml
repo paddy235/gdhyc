@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiren.fuelmis.dc.dao.common.CommonDao" >	
+	<select id="getAllShengf" resultType="java.util.Map">
+		select ID,QUANC from SHENGFB
+	</select>
+	
+	<select id="getAllChez" resultType="java.util.Map">
+		select ID,QUANC from CHEZXXB where LEIB = '车站'  order by quanc 
+	</select>
+	
+	<select id="getAllGangk" resultType="java.util.Map">
+		select ID,QUANC from CHEZXXB where LEIB = '港口'  order by quanc
+	</select>
+	
+	<select id="getAllDianclb" resultType="java.util.Map">
+		select ID,QUANC from DIANCLBB  order by quanc
+	</select>
+	
+	<select id="getAllLiclx" resultType="java.util.Map">
+		select ID,MINGC from LICLXB  order by mingc
+	</select>
+	
+	<select id="getAllMeikxx" resultType="java.util.Map">
+		select ID,MINGC from MEIKXXB where shiyzt = 1 order by mingc 
+	</select>
+	
+	<select id="getAllPinz" resultType="java.util.Map">
+		SELECT ID,MINGC FROM PINZB  order by MINGC
+	</select>
+	
+	<select id="getAllJihkj" resultType="java.util.Map">
+		SELECT ID,MINGC FROM JIHKJB  order by xuh
+	</select>
+	
+	<select id="getGongysLikeJianc" resultType="java.util.Map">
+		SELECT ID,MINGC FROM gongysb where leix =1 and zhuangt = 1  and mingc like '%'||#{mingc}||'%' 
+	</select>	
+
+	<select id="getAllLuj" resultType="java.util.Map">
+		select ID,MINGC from LUJXXB order by MINGC
+	</select>
+	
+	<select id="getAllKaohzb" resultType="java.util.Map">
+		select ID,ZHIBDM from RL_GYS_ZHIBDYB where zhuangt = 1 order by ZHIBDM
+	</select>
+	
+
+	<select id="getAllPriceComponet" resultType="java.util.Map">
+		select id,name,url from rl_ht_price_component where status = 1
+	</select>
+	
+	<select id="getAllPriceItem" resultType="java.util.Map">
+		select id,name,code from rl_ht_price_item where status = 1
+	</select>
+	
+
+	
+	
+	<select id="getAllYunsfs" resultType="java.util.Map">
+		select ID,MINGC from YUNSFSB
+	</select>
+
+	<select id="getAllMeikdq" resultType="java.util.Map">
+		select ID,MINGC from MEIKDQB
+	</select>
+	
+	<insert id="insertWenjxx" parameterType="java.util.Map">
+	    insert into WENJXXB(ID,MINGC,WENJLJ) values (#{id},#{mingc},#{wenjlj})
+	</insert>
+	<select id="getWenjmc" resultType="java.lang.String">
+	    select MINGC from WENJXXB where ID = #{id}
+	</select>
+	
+	<select id="getAllGongys" resultType="java.util.Map">
+	    select ID,MINGC,QUANC from GONGYSB where  leix = 1  and zhuangt = 1
+	    order by mingc
+	</select>
+	
+	<!-- 系统管理模块，序号、编码自增及验证名称是否存在，其他模块若有相同功能可直接调用 Begin-->
+	<!-- 验证名称是否存在
+		   参数： 
+		   tableName 表名
+		   columnName 列名
+		   value 要查询的值
+	 -->
+	<select id="checkNameExist" resultType="java.lang.Integer">
+	    select count(1) from ${tableName} where ${columnName} = #{value} 
+	</select>
+	<!-- 序号、编码自增
+		  参数：
+		   tableName 表名
+		   columnName 列名
+	 -->
+	 <select id="getNextNum" resultType="java.lang.Integer">
+	     select max(${columnName})+1 from ${tableName}
+	 </select>
+	 <!-- 系统管理模块，序号、编码自增及验证名称是否存在，其他模块若有相同功能可直接调用 End-->
+	
+	<select id="getAllRenyxx" resultType="java.util.Map">
+	    select ID,QUANC from RENYXXB where ZHUANGT = 1
+	</select>
+	
+	<select id="getAllPingffa" resultType="java.util.Map">
+	    select ID,MINGC from rl_gys_pingffab where ZHUANGT = 1
+	</select>
+	
+	<select id="getAllCaigddb" resultType="java.util.Map">
+		select id,bianh as quanc from rl_ht_caigddb
+	</select>
+	
+	
+	<select id="getAllJijfs" resultType="java.util.Map">
+		select id,gongs from rl_ht_jijfsb
+		where leix = #{type}
+	</select>
+	
+	
+	
+	<insert id="saveFujxx" parameterType="fujxx">
+		insert into fujxx
+		   (id, mingc, luj, yewly, guanlid, zhuangt, daim,fid)
+		 values
+		   (#{id,jdbcType=NUMERIC}, #{mingc,jdbcType=VARCHAR}, #{luj,jdbcType=VARCHAR},#{yewly,jdbcType=VARCHAR},
+		    #{guanlid,jdbcType=NUMERIC},#{zhuangt,jdbcType=NUMERIC}, #{daim,jdbcType=VARCHAR},#{fid,jdbcType=NUMERIC})
+	</insert>
+	
+	<select id="getComboHetmb" resultType="java.util.Map">
+		select id,daim from fujxx where yewly = #{yewly}
+			and youxksrq <![CDATA[<= ]]>  #{date}
+			and youxjsrq <![CDATA[>= ]]>  #{date}
+	</select>
+	<select id="getAllKuczz" resultType="java.util.Map">
+	    select ID,KUCZZMC from RL_KC_KUCZZB where ZHUANGT = '启用' and SUOSDW = #{suosdw}
+	</select>
+	
+	<select id="getAllKucwz" resultType="java.util.Map">
+select ID,KUCWZMS from RL_KC_KUCWZB where ZHUANGT = '启用' and id in (select fuid from RL_KC_KUCWZB ) order by KUCWZMS
+	  <!--   select ID,KUCWZMS from RL_KC_KUCWZB where ZHUANGT = '启用' -->
+	</select>
+	
+	<select id="getAllKucwl" resultType="java.util.Map">
+	    select ID,WUZMC from RL_KC_KUCWLB where ZHUANGT = '启用'
+	</select>
+	
+	<select id="getAllChurkywlx" resultType="java.util.Map">
+	    select ID,LEIXMC from GY_DM_CHURKYWLXDMB <!--where ID in (3,4,5)-->
+	</select>
+	
+	<select id="getAllChurkywlx_fdck" resultType="java.util.Map">
+	    select ID,LEIXMC from GY_DM_CHURKYWLXDMB where leixdm='-1'
+	</select>
+	
+	<select id="getAllHetbh" resultType="java.util.Map">
+	    select ID,HETBH from RL_HT_HETB
+	</select>
+	
+	<select id="getAllRuljz" resultType="java.util.Map">
+	    select ID,MINGC from RL_RUL_JIZB
+	</select>
+	
+	<select id="getAllRulbz" resultType="java.util.Map">
+	    select ID,MINGC from RL_RUL_BANZB
+	</select>
+	<select id="getAllFeiyxm" resultType="java.util.Map">
+		SELECT ID,MINGC FROM gy_dm_feiyxmb   order by bianm 
+	</select>
+
+	<select id="getAllChezXxb" resultType="java.util.Map">
+		select ID,QUANC from CHEZXXB
+	</select>
+</mapper>

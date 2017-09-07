@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiren.fuelmis.dc.dao.hetgl.PriceComponetDao" >
+	<resultMap id="BaseResultMap" type="priceComponet">
+		<id column="ID"              property="id" jdbcType="NUMERIC" />
+		<result column="NAME"    	 property="name" jdbcType="VARCHAR" />
+		<result column="CLASSNAME" 	 property="classname" jdbcType="VARCHAR" />
+		<result column="URL" 	 	 property="url" jdbcType="VARCHAR" />
+		<result column="REMARKS"   	 property="remarks"  jdbcType="VARCHAR" />
+		<result column="STATUS"   	 property="status" jdbcType="NUMERIC" />
+		<result column="CREATED_BY_USERID"    	 property="created_by_userid" jdbcType="NUMERIC" />
+		<result column="CREATED_BY_USERACC"    property="created_by_useracc" jdbcType="VARCHAR" />
+		<result column="CREATED_BY_USERNAME"    property="created_by_username" jdbcType="VARCHAR" />
+		<result column="CREATION_DATE"     property="creation_date" jdbcType="VARCHAR" />
+		<result column="LAST_UPDATED_BY_USERID"    	 property="last_updated_by_userid" jdbcType="NUMERIC" />
+		<result column="LAST_UPDATED_BY_USERACC"    property="last_updated_by_useracc" jdbcType="VARCHAR" />
+		<result column="LAST_UPDATED_BY_USERNAME"    property="last_updated_by_username" jdbcType="VARCHAR" />
+		<result column="LAST_UPDATE_DATE"    property="last_update_date" jdbcType="VARCHAR" />	
+	</resultMap>
+	
+	
+	
+	<delete id="delPriceComponet" parameterType="java.util.Map">
+		delete from RL_HT_PRICE_COMPONENT where id = #{id}
+	</delete>
+
+	
+	<select id="getPriceComponetById" resultMap="BaseResultMap">
+		select * from RL_HT_PRICE_COMPONENT
+		<if test="id != null">
+			where id = #{id}
+		</if>
+	</select>
+
+	<select id="getPriceComponetList" resultType="java.util.Map">
+		select id,
+		       name,
+		       classname,
+		       url,
+		       remarks,
+		       decode(status,1,'启用',0,'未启用') as status,
+		       created_by_userid,
+		       created_by_useracc,
+		       created_by_username,
+		       creation_date,
+		       last_updated_by_userid,
+		       last_updated_by_useracc,
+		       last_updated_by_username,
+		       last_update_date,
+		       diancxxb_id
+		  from rl_ht_price_component
+	</select>
+	
+
+	<update id="updatePriceComponet" parameterType="priceComponet">
+         update RL_HT_PRICE_COMPONENT
+         	<trim prefix="SET" suffixOverrides=",">         	
+         		<if test="name != null">name=#{name},</if>
+				<if test="classname != null">classname=#{classname},</if>
+				<if test="url != null">url=#{url},</if>
+				<if test="remarks != null">remarks=#{remarks},</if>
+				<if test="status != null">status=#{status},</if>
+				<if test="diancxxb_id != null">DIANCXXB_ID=#{diancxxb_id},</if>				
+				<if test="created_by_userid != null">created_by_userid=#{created_by_userid},</if>
+				<if test="created_by_useracc != null">created_by_useracc=#{created_by_useracc},</if>				
+				<if test="created_by_username != null">created_by_username=#{created_by_username},</if>
+				<if test="creation_date != null">creation_date=#{creation_date},</if>
+				<if test="last_updated_by_userid != null">last_updated_by_userid=#{last_updated_by_userid},</if>				
+				<if test="last_updated_by_useracc != null">last_updated_by_useracc=#{last_updated_by_useracc},</if>	
+				<if test="last_updated_by_username != null">last_updated_by_username=#{last_updated_by_username},</if>
+				<if test="last_update_date != null">last_update_date=#{last_update_date}</if>
+		</trim>     
+           where ID = #{id}
+	</update>
+	
+	<insert id="addPriceComponet" parameterType="priceComponet">
+		insert into rl_ht_price_component
+			  (id,
+			   name,
+			   classname,
+			   url,
+			   remarks,
+			   status,
+			   created_by_userid,
+			   created_by_useracc,
+			   created_by_username,
+			   creation_date,
+			   last_updated_by_userid,
+			   last_updated_by_useracc,
+			   last_updated_by_username,
+			   last_update_date,
+			   diancxxb_id)
+		values
+			  (#{id,jdbcType=NUMERIC},
+			   #{name,jdbcType=VARCHAR},
+			   #{classname,jdbcType=VARCHAR},
+			   #{url,jdbcType=VARCHAR},
+			   #{remarks,jdbcType=VARCHAR},
+			   #{status,jdbcType=NUMERIC},
+			   #{created_by_userid,jdbcType=NUMERIC},
+			   #{created_by_useracc,jdbcType=VARCHAR},
+			   #{created_by_username,jdbcType=NUMERIC},
+			   #{creation_date,jdbcType=VARCHAR},
+			   #{last_updated_by_userid,jdbcType=NUMERIC},
+			   #{last_updated_by_useracc,jdbcType=VARCHAR},
+			   #{last_updated_by_username,jdbcType=VARCHAR},
+			   #{last_update_date,jdbcType=VARCHAR},
+			   #{diancxxb_id,jdbcType=NUMERIC})
+	</insert>
+	
+	
+</mapper>

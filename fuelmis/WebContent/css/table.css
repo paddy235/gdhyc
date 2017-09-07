@@ -1,0 +1,56 @@
+td input.editorable {
+    background-color: rgba(98, 196, 151, 0.29) !important;
+}
+td.table-div-line {
+    border-left-width: 2px;
+    border-left-color: rgba(0, 102, 255, 0.61);
+}
+th {
+	text-align: center !important;
+}
+td {
+	text-align: center !important;
+	margin: 0px !important;
+	padding: 0px !important;
+}
+td input.warning{
+	background-color: rgba(214, 253, 0, 0.38) !important;
+}
+td input,td select {
+	width: 100% !important;
+	height: 25px !important;
+	margin: 0px !important;
+	padding: 0px !important;
+	border: 0px !important;
+	text-align: center !important;
+	font-size: 15px !important;
+}
+td input{
+	background-color: transparent !important;
+}
+td select{padding: 0px 0 !important;}
+.img{
+margin-top:5px;
+width : 30px !important;
+}
+/* .table-head{
+	padding-right:17px;background-color:#999;color:#000;
+} */
+ .table-body{
+	width:100%; overflow-y:scroll;
+}
+/*.table-head table,.table-body table{
+	width:100%;
+} */
+/* .table-body table tr:nth-child(2n+1){
+	background-color:#f2f2f2;
+}
+ */
+.my-table-header{
+	margin-bottom: 0px !important;
+	border-bottom:0px !important;
+}
+.bgRed{/*选择后的背景颜色*/
+	background-color: rgba(0, 161, 255, 0.48) !important;
+}
+

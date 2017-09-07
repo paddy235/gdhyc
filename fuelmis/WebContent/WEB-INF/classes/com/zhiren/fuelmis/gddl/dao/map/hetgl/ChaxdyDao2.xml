@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiren.fuelmis.gddl.dao.hetgl.ChaxdyDao2">
+    <select id="getHetbh" resultType="java.util.Map">
+        SELECT ID,HETBH FROM HETB
+        WHERE QIANDRQ BETWEEN to_date(#{sDate},'yyyy-MM-dd') AND to_date(#{eDate},'yyyy-MM-dd')
+        GROUP BY ID,HETBH
+        ORDER BY HETBH
+    </select>
+
+    <select id="getHetxx" resultType="java.util.Map">
+        SELECT TO_CHAR(QIANDRQ, 'yyyy\"年\"mm\"月\"dd\"日\"') QIANDRQ, HETBH, GONGFDWMC, JG.JIJ
+        FROM HETB,(SELECT HETB_ID, JIAG,JIJ FROM
+        (SELECT JG.HETB_ID, FS.MINGC||'：' || JG.JIJ || D.MINGC JIAG, JG.JIJ || D.MINGC JIJ
+        FROM HETJGB JG, HETJSFSB FS, DANWB D WHERE JG.HETB_ID =#{hetb_id} AND JG.HETJSFSB_ID = FS.ID
+        AND JG.JIJDWID = D.ID
+        ORDER BY JG.JIJ DESC)
+        WHERE ROWNUM = 1) JG
+        WHERE ID = #{hetb_id} AND HETB.ID = JG.HETB_ID(+)
+    </select>
+
+    <select id="getPingsxx" resultType="java.util.LinkedHashMap">
+        SELECT TO_CHAR(RZB.SHIJ, 'yyyy"年"mm"月"dd"日') SHIJ,
+        (SELECT MAX(MINGC) FROM RENYXXB WHERE QUANC = RZB.CAOZY) CAORY
+        FROM (SELECT MAX(RZB.ID) ID
+        FROM HETB, LIUCGZB RZB
+        WHERE HETB.LIUCGZID = RZB.LIUCGZID
+        AND HETB.ID = #{hetb_id}
+        GROUP BY QIANQZTMC) RZ,
+        LIUCGZB RZB
+        WHERE RZ.ID = RZB.ID
+        ORDER BY RZB.ID
+    </select>
+</mapper>
